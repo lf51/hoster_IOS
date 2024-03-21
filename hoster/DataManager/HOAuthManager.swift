@@ -8,7 +8,7 @@
 import Foundation
 import Firebase
 import MyPackView
-
+// su github i file sono fuori la cartella authentication
 @MainActor
 final public class HOAuthManager:NSObject, ObservableObject {
 
