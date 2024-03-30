@@ -12,6 +12,8 @@ struct WorkSpaceData:HOProStarterPack,Codable {
     
     let uid: String
     
+    var refPortali:[String]?
+    
     init(focusUid:String) {
         self.uid = focusUid
     }

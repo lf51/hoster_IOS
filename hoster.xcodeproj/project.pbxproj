@@ -10,6 +10,9 @@
 		3F09E28E2B91F54A00B64783 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 3F09E28D2B91F54A00B64783 /* GoogleSignIn */; };
 		3F09E2902B91F54A00B64783 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 3F09E28F2B91F54A00B64783 /* GoogleSignInSwift */; };
 		3F09E2932B91FBBC00B64783 /* CSUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F09E2922B91FBBC00B64783 /* CSUtilities.swift */; };
+		3F0AE8562BB079250026A1C2 /* HOBedUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0AE8552BB079250026A1C2 /* HOBedUnit.swift */; };
+		3F2144E52BB6BFBF00839157 /* ImputationTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2144E42BB6BFBF00839157 /* ImputationTest.swift */; };
+		3F2144E82BB75DC800839157 /* HOCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2144E72BB75DC800839157 /* HOCalendar.swift */; };
 		3F4F0F3B2BA4B20D00C8BB44 /* Protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F4F0F3A2BA4B20D00C8BB44 /* Protocol.swift */; };
 		3F71C25E2B98B50100837F9F /* HOViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F71C25D2B98B50100837F9F /* HOViewModel.swift */; };
 		3F71C2602B98E6D000837F9F /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F71C25F2B98E6D000837F9F /* MainView.swift */; };
@@ -18,7 +21,7 @@
 		3F859A9E2BAC83BC00297E13 /* HOAuthData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F859A9D2BAC83BC00297E13 /* HOAuthData.swift */; };
 		3F859AA22BAC844800297E13 /* WorkSpaceUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F859AA12BAC844800297E13 /* WorkSpaceUnit.swift */; };
 		3F859AA42BAC845700297E13 /* WorkSpaceData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F859AA32BAC845700297E13 /* WorkSpaceData.swift */; };
-		3F859AA62BAC84C400297E13 /* UnitModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F859AA52BAC84C400297E13 /* UnitModel.swift */; };
+		3F859AA62BAC84C400297E13 /* HOUnitModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F859AA52BAC84C400297E13 /* HOUnitModel.swift */; };
 		3F859AA82BAC850600297E13 /* WorkSpaceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F859AA72BAC850600297E13 /* WorkSpaceType.swift */; };
 		3F859AAB2BAC853800297E13 /* UnitType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F859AAA2BAC853800297E13 /* UnitType.swift */; };
 		3F859AAE2BAC85DF00297E13 /* GoogleSignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F859AAD2BAC85DF00297E13 /* GoogleSignIn.swift */; };
@@ -36,6 +39,11 @@
 		3F8FEA2D2B8F9E1600A2BC34 /* HOUserDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8FEA2C2B8F9E1600A2BC34 /* HOUserDataModel.swift */; };
 		3F8FEA302B8FA3BB00A2BC34 /* HOAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8FEA2F2B8FA3BB00A2BC34 /* HOAuthManager.swift */; };
 		3F8FEA322B8FA41000A2BC34 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F8FEA312B8FA41000A2BC34 /* SignInView.swift */; };
+		3F95866C2BADA28C00774733 /* HOPortale.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F95866B2BADA28C00774733 /* HOPortale.swift */; };
+		3F9586712BADDF7400774733 /* HOReservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9586702BADDF7400774733 /* HOReservation.swift */; };
+		3F9586732BADE5F700774733 /* WorkSpaceReservation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9586722BADE5F700774733 /* WorkSpaceReservation.swift */; };
+		3F9586762BAF2D2900774733 /* HOCostAggregationLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9586752BAF2D2900774733 /* HOCostAggregationLabel.swift */; };
+		3F9586782BAF2DAB00774733 /* HOCostUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9586772BAF2DAB00774733 /* HOCostUnit.swift */; };
 		3FBCB93F2B90CE4A0043B0B4 /* MyPackView in Frameworks */ = {isa = PBXBuildFile; productRef = 3FBCB93E2B90CE4A0043B0B4 /* MyPackView */; };
 		3FE20C6C2BA89B7000ECCB88 /* HOCustomError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE20C6B2BA89B7000ECCB88 /* HOCustomError.swift */; };
 		3FE2AE9A2B8F76B000A7B350 /* hosterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE2AE992B8F76B000A7B350 /* hosterApp.swift */; };
@@ -54,6 +62,9 @@
 
 /* Begin PBXFileReference section */
 		3F09E2922B91FBBC00B64783 /* CSUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSUtilities.swift; sourceTree = "<group>"; };
+		3F0AE8552BB079250026A1C2 /* HOBedUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOBedUnit.swift; sourceTree = "<group>"; };
+		3F2144E42BB6BFBF00839157 /* ImputationTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImputationTest.swift; sourceTree = "<group>"; };
+		3F2144E72BB75DC800839157 /* HOCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOCalendar.swift; sourceTree = "<group>"; };
 		3F4F0F3A2BA4B20D00C8BB44 /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
 		3F71C25D2B98B50100837F9F /* HOViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOViewModel.swift; sourceTree = "<group>"; };
 		3F71C25F2B98E6D000837F9F /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
@@ -62,7 +73,7 @@
 		3F859A9D2BAC83BC00297E13 /* HOAuthData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOAuthData.swift; sourceTree = "<group>"; };
 		3F859AA12BAC844800297E13 /* WorkSpaceUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSpaceUnit.swift; sourceTree = "<group>"; };
 		3F859AA32BAC845700297E13 /* WorkSpaceData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSpaceData.swift; sourceTree = "<group>"; };
-		3F859AA52BAC84C400297E13 /* UnitModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitModel.swift; sourceTree = "<group>"; };
+		3F859AA52BAC84C400297E13 /* HOUnitModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOUnitModel.swift; sourceTree = "<group>"; };
 		3F859AA72BAC850600297E13 /* WorkSpaceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSpaceType.swift; sourceTree = "<group>"; };
 		3F859AAA2BAC853800297E13 /* UnitType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnitType.swift; sourceTree = "<group>"; };
 		3F859AAD2BAC85DF00297E13 /* GoogleSignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleSignIn.swift; sourceTree = "<group>"; };
@@ -82,6 +93,11 @@
 		3F8FEA312B8FA41000A2BC34 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		3F8FEA3C2B8FFD2D00A2BC34 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3F8FEA3D2B90022B00A2BC34 /* hosterRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = hosterRelease.entitlements; sourceTree = "<group>"; };
+		3F95866B2BADA28C00774733 /* HOPortale.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOPortale.swift; sourceTree = "<group>"; };
+		3F9586702BADDF7400774733 /* HOReservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOReservation.swift; sourceTree = "<group>"; };
+		3F9586722BADE5F700774733 /* WorkSpaceReservation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkSpaceReservation.swift; sourceTree = "<group>"; };
+		3F9586752BAF2D2900774733 /* HOCostAggregationLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOCostAggregationLabel.swift; sourceTree = "<group>"; };
+		3F9586772BAF2DAB00774733 /* HOCostUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOCostUnit.swift; sourceTree = "<group>"; };
 		3FE20C6B2BA89B7000ECCB88 /* HOCustomError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOCustomError.swift; sourceTree = "<group>"; };
 		3FE2AE962B8F76B000A7B350 /* hoster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = hoster.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FE2AE992B8F76B000A7B350 /* hosterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hosterApp.swift; sourceTree = "<group>"; };
@@ -121,6 +137,14 @@
 			path = ServiceObjects;
 			sourceTree = "<group>";
 		};
+		3F2144E62BB75DB300839157 /* Calendario */ = {
+			isa = PBXGroup;
+			children = (
+				3F2144E72BB75DC800839157 /* HOCalendar.swift */,
+			);
+			path = Calendario;
+			sourceTree = "<group>";
+		};
 		3F859A9A2BAC832200297E13 /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -132,6 +156,10 @@
 		3F859A9B2BAC833000297E13 /* DataModel */ = {
 			isa = PBXGroup;
 			children = (
+				3F2144E62BB75DB300839157 /* Calendario */,
+				3F9586742BAF2D1A00774733 /* Costi */,
+				3F95866D2BADDE3F00774733 /* Check-In */,
+				3F95866A2BADA27000774733 /* Portali */,
 				3F859AB32BAC898D00297E13 /* CloudData */,
 				3F859AA92BAC851B00297E13 /* Unit */,
 				3F859AA02BAC841900297E13 /* WorkSpace */,
@@ -166,6 +194,7 @@
 				3F859AA12BAC844800297E13 /* WorkSpaceUnit.swift */,
 				3F859AA32BAC845700297E13 /* WorkSpaceData.swift */,
 				3F859AA72BAC850600297E13 /* WorkSpaceType.swift */,
+				3F9586722BADE5F700774733 /* WorkSpaceReservation.swift */,
 			);
 			path = WorkSpace;
 			sourceTree = "<group>";
@@ -173,7 +202,7 @@
 		3F859AA92BAC851B00297E13 /* Unit */ = {
 			isa = PBXGroup;
 			children = (
-				3F859AA52BAC84C400297E13 /* UnitModel.swift */,
+				3F859AA52BAC84C400297E13 /* HOUnitModel.swift */,
 				3F859AAA2BAC853800297E13 /* UnitType.swift */,
 			);
 			name = Unit;
@@ -250,6 +279,32 @@
 			path = Libreria;
 			sourceTree = "<group>";
 		};
+		3F95866A2BADA27000774733 /* Portali */ = {
+			isa = PBXGroup;
+			children = (
+				3F95866B2BADA28C00774733 /* HOPortale.swift */,
+			);
+			path = Portali;
+			sourceTree = "<group>";
+		};
+		3F95866D2BADDE3F00774733 /* Check-In */ = {
+			isa = PBXGroup;
+			children = (
+				3F9586702BADDF7400774733 /* HOReservation.swift */,
+			);
+			path = "Check-In";
+			sourceTree = "<group>";
+		};
+		3F9586742BAF2D1A00774733 /* Costi */ = {
+			isa = PBXGroup;
+			children = (
+				3F9586752BAF2D2900774733 /* HOCostAggregationLabel.swift */,
+				3F9586772BAF2DAB00774733 /* HOCostUnit.swift */,
+				3F0AE8552BB079250026A1C2 /* HOBedUnit.swift */,
+			);
+			path = Costi;
+			sourceTree = "<group>";
+		};
 		3FBCB9382B90CAA10043B0B4 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -306,6 +361,7 @@
 			isa = PBXGroup;
 			children = (
 				3FEE44CA2B9F25D3008CFCAF /* SinkTextField.swift */,
+				3F2144E42BB6BFBF00839157 /* ImputationTest.swift */,
 			);
 			path = TestLAB;
 			sourceTree = "<group>";
@@ -418,23 +474,31 @@
 				3F71C25E2B98B50100837F9F /* HOViewModel.swift in Sources */,
 				3F859AB22BAC860300297E13 /* Providers.swift in Sources */,
 				3F8FEA2D2B8F9E1600A2BC34 /* HOUserDataModel.swift in Sources */,
-				3F859AA62BAC84C400297E13 /* UnitModel.swift in Sources */,
+				3F95866C2BADA28C00774733 /* HOPortale.swift in Sources */,
+				3F859AA62BAC84C400297E13 /* HOUnitModel.swift in Sources */,
+				3F9586762BAF2D2900774733 /* HOCostAggregationLabel.swift in Sources */,
 				3FE20C6C2BA89B7000ECCB88 /* HOCustomError.swift in Sources */,
+				3F2144E52BB6BFBF00839157 /* ImputationTest.swift in Sources */,
 				3F8FEA292B8F8FD500A2BC34 /* HOCloudDataManager.swift in Sources */,
+				3F2144E82BB75DC800839157 /* HOCalendar.swift in Sources */,
 				3FE2AE9C2B8F76B000A7B350 /* ContentView.swift in Sources */,
 				3F859AB52BAC89A700297E13 /* HOCloudData.swift in Sources */,
+				3F9586712BADDF7400774733 /* HOReservation.swift in Sources */,
 				3FE2AE9A2B8F76B000A7B350 /* hosterApp.swift in Sources */,
 				3F09E2932B91FBBC00B64783 /* CSUtilities.swift in Sources */,
 				3F859AC42BAC8CCA00297E13 /* HOCollectionTreePath.swift in Sources */,
 				3FEE44CB2B9F25D3008CFCAF /* SinkTextField.swift in Sources */,
 				3F859AC22BAC8C7800297E13 /* HODataForPublishing.swift in Sources */,
 				3FFC0CDD2B9CAB3F00287489 /* BedUnityBuilderView.swift in Sources */,
+				3F9586732BADE5F700774733 /* WorkSpaceReservation.swift in Sources */,
 				3F859AA42BAC845700297E13 /* WorkSpaceData.swift in Sources */,
 				3F859AAB2BAC853800297E13 /* UnitType.swift in Sources */,
 				3F8FEA302B8FA3BB00A2BC34 /* HOAuthManager.swift in Sources */,
+				3F0AE8562BB079250026A1C2 /* HOBedUnit.swift in Sources */,
 				3F859A9E2BAC83BC00297E13 /* HOAuthData.swift in Sources */,
 				3F859AB72BAC89D700297E13 /* HOViewCases.swift in Sources */,
 				3F859AA22BAC844800297E13 /* WorkSpaceUnit.swift in Sources */,
+				3F9586782BAF2DAB00774733 /* HOCostUnit.swift in Sources */,
 				3F4F0F3B2BA4B20D00C8BB44 /* Protocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -565,7 +629,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = hoster/hoster.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"hoster/Preview Content\"";
 				DEVELOPMENT_TEAM = 2HR732K89Z;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -603,7 +667,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = hoster/hosterRelease.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 4;
 				DEVELOPMENT_ASSET_PATHS = "\"hoster/Preview Content\"";
 				DEVELOPMENT_TEAM = 2HR732K89Z;
 				ENABLE_HARDENED_RUNTIME = YES;

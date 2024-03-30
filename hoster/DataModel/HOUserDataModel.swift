@@ -14,7 +14,6 @@ struct HOUserDataModel:HOProStarterPack {
     var isPremium:Bool?
     
     var wsFocusUnitRef:String?
-   // var workSpaces:[String]?
         
 }
      

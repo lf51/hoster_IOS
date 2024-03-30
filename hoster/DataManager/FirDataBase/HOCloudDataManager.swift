@@ -16,7 +16,7 @@ public final class HOCloudDataManager {
     
     private(set) var userData:HOSyncroDocumentManager<HOUserDataModel>
     private(set) var workSpaceData:HOSyncroDocumentManager<WorkSpaceData>
-    private(set) var workSpaceUnits:HOSyncroCollectionManager<UnitModel>
+    private(set) var workSpaceUnits:HOSyncroCollectionManager<HOUnitModel>
     
     private(set) var loadingPublisher = PassthroughSubject<HOLoadingStatus?,Error>()
     
@@ -39,7 +39,7 @@ extension HOCloudDataManager {
     func batchMultiObject(
         user:HODataForPublishing<HOUserDataModel>?,
         wsData:HODataForPublishing<WorkSpaceData>?,
-        wsUnits:[HODataForPublishing<UnitModel>]?) throws {
+        wsUnits:[HODataForPublishing<HOUnitModel>]?) throws {
         
         let batch = self.db_base.batch()
             //self.loadingPublisher.send(true)

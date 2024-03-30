@@ -12,19 +12,19 @@ struct WorkSpaceUnit {
     
     let uid:String
     
-    var all:[UnitModel]
+    var all:[HOUnitModel]
     /// la label corrisponde alla label dell'intero workspace per entrambi i type
-    var main:UnitModel {
+    var main:HOUnitModel {
         get { self.getMainUnit() }
         set { self.setMainUnit(to: newValue) }
     }
     
-    var subs:[UnitModel]? {
+    var subs:[HOUnitModel]? {
         get { self.getSubUnits() }
         set { self.setSubUnits(to: newValue) }
     }
    
-    init(focusUid:String,allUnit:[UnitModel] = []) {
+    init(focusUid:String,allUnit:[HOUnitModel] = []) {
        // self.uid = UUID().uuidString
         self.uid = focusUid
         self.all = allUnit
@@ -37,7 +37,7 @@ struct WorkSpaceUnit {
 /// Managing subUnits
 extension WorkSpaceUnit {
     
-    private func getSubUnits() -> [UnitModel]? {
+    private func getSubUnits() -> [HOUnitModel]? {
         
         guard !self.all.isEmpty else { return nil }
         
@@ -49,7 +49,7 @@ extension WorkSpaceUnit {
         
     }
     
-    mutating private func setSubUnits(to newArray:[UnitModel]?) {
+    mutating private func setSubUnits(to newArray:[HOUnitModel]?) {
         
         self.all.removeAll(where: { $0.unitType == .sub })
         
@@ -64,17 +64,17 @@ extension WorkSpaceUnit {
 /// Managing Main Unit
 extension WorkSpaceUnit {
     
-    private func getMainUnit() -> UnitModel {
+    private func getMainUnit() -> HOUnitModel {
         
         guard !self.all.isEmpty,
               let main = self.all.first(where: {$0.unitType == .main}) else {
-            return UnitModel(type: .main)
+            return HOUnitModel(type: .main)
         }
         
         return main
     }
     
-    mutating private func setMainUnit(to newValue:UnitModel) {
+    mutating private func setMainUnit(to newValue:HOUnitModel) {
         
         guard newValue.unitType == .main else { return } // verifica che il valore sia main
         

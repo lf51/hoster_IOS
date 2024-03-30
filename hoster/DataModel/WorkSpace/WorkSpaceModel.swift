@@ -12,6 +12,12 @@ struct WorkSpaceModel {
     var wsData:WorkSpaceData
     var wsUnit:WorkSpaceUnit
     
+    var wsReservation:WorkSpaceReservation = WorkSpaceReservation()
+    //var wsCost final
+    // var wsCost automatic
+    //var wsCalendar
+    //var wsTax
+    
     var uid:String { self.wsData.uid }
 
     var wsType:WorkSpaceType { get { self.getWsType() } }

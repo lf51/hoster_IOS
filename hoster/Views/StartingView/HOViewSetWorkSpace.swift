@@ -220,7 +220,7 @@ struct HOViewSetWorkSpace: View {
            // self.workSpace.allUnits = [self.workSpace.mainUnit]
           
         case .withSub:
-            let firstSub = UnitModel(type: .sub)
+            let firstSub = HOUnitModel(type: .sub)
             self.workSpace.wsUnit.main.pax = nil
             self.workSpace.wsUnit.subs = [firstSub]
            
@@ -342,7 +342,7 @@ struct HOViewSetWorkSpace: View {
     
     private func addUnit() { 
         
-        let newUnit = UnitModel(type: .sub)
+        let newUnit = HOUnitModel(type: .sub)
         self.workSpace.wsUnit.subs?.append(newUnit)
     }
     
@@ -365,7 +365,7 @@ struct HOViewSetWorkSpace: View {
 
 struct RowSetUnitModelView:View {
 
-   @Binding var unit:UnitModel
+   @Binding var unit:HOUnitModel
    let position:Int
    let generalCheck:Bool
     
