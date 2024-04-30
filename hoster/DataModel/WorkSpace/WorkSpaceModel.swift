@@ -12,12 +12,9 @@ struct WorkSpaceModel {
     var wsData:WorkSpaceData
     var wsUnit:WorkSpaceUnit
     
-    var wsReservation:WorkSpaceReservation = WorkSpaceReservation()
-    //var wsCost final
-    // var wsCost automatic
-    //var wsCalendar
-    //var wsTax
-    
+    var wsReservations:HOWsReservations
+    var wsOperations:HOWsOperations = HOWsOperations()
+
     var uid:String { self.wsData.uid }
 
     var wsType:WorkSpaceType { get { self.getWsType() } }
@@ -35,9 +32,23 @@ struct WorkSpaceModel {
         self.wsData = WorkSpaceData(focusUid: uid)
         self.wsUnit = WorkSpaceUnit(focusUid: uid)
         
+        self.wsReservations = HOWsReservations(focusUid: uid)
+        
     }
     
-    mutating func updateWsData(to newWsData:WorkSpaceData) throws {
+    
+    mutating func updateWs<D:HOProStarterPack>(with newData:D,in path:WritableKeyPath<Self,D>) throws {
+        
+        guard newData.uid == self.uid else {
+            throw HOCustomError.erroreGenerico()
+        }
+        
+        self[keyPath: path] = newData
+       // self.wsData = newWsData
+        
+    }
+    
+   /* mutating func updateWsData(to newWsData:WorkSpaceData) throws {
         
         guard newWsData.uid == self.uid else {
             throw HOCustomError.erroreGenerico()
@@ -55,7 +66,7 @@ struct WorkSpaceModel {
         
         self.wsUnit = newWsUnit
         
-    }
+    } */
     
 }
 

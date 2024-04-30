@@ -15,7 +15,7 @@ struct HOUnitModel:HOProStarterPack, Hashable {
     var label:String
     var pax:Int?
     
-    var bedAvaible:[HOBedUnit.HOBedType]?
+   // var bedAvaible:[HOBedUnit.HOBedType]?
     var calendario:Calendar?
   
     /// label = "" • pax = nil
@@ -24,7 +24,7 @@ struct HOUnitModel:HOProStarterPack, Hashable {
         self.typeValue = type.rawValue
         self.label = ""
         self.pax = nil
-        self.bedAvaible = nil
+      //  self.bedAvaible = nil
     }
     
 }
@@ -40,8 +40,9 @@ extension HOUnitModel {
     
 }
 
-//extension HOUnitModel:Codable { }
+extension HOUnitModel:Codable { }
 
+/*
 extension HOUnitModel:HOProCDCPack {
     
     static var typeCode:HOTypeCDCcode = .unitModel
@@ -71,3 +72,5 @@ extension HOUnitModel:HOProCDCPack {
     }
     
 }
+
+*/

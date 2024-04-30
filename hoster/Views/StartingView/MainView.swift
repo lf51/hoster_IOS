@@ -26,7 +26,6 @@ struct MainView: View {
     var body: some View {
         
        switchView()
-            
             .environmentObject(viewModel)
             .csModifier(self.viewModel.mainLoadingCase != nil, transform: { view in
                 vbOverlayLoadingView(trasform: view)
@@ -88,7 +87,9 @@ struct MainView: View {
         
         switch self.viewModel.viewCase {
         case .main:
-            VStack {
+            MainTabView()
+            
+           /* VStack {
                 
                 let user = self.viewModel.db.currentUser
                 let ws = self.viewModel.db.currentWorkSpace
@@ -134,7 +135,7 @@ struct MainView: View {
                     Text("Erase WorkSpace")
                 }) // per test
  
-            }
+            } */
         case .setWorkSpace:
             HOViewSetWorkSpace(
                 authManager: self.authManager,

@@ -149,7 +149,8 @@ extension HOViewModel {
                 self.callOnMainQueque {
                     do {
     
-                        try self.db.currentWorkSpace?.updateWsData(to: workSpaceData)
+                        try self.db.currentWorkSpace?.updateWs(with: workSpaceData, in: \.wsData)
+                       // try self.db.currentWorkSpace?.updateWsData(to: workSpaceData)
                         
                     } catch let error {
                        // self.db.currentWorkSpace = nil
@@ -191,7 +192,8 @@ extension HOViewModel {
                         print("DocID from collection UnitModel:\(docId)")
                         
                         let newWsUnit = WorkSpaceUnit(focusUid: docId, allUnit: allUnit)
-                        try self.db.currentWorkSpace?.updateWsUnit(to: newWsUnit)
+                        try self.db.currentWorkSpace?.updateWs(with: newWsUnit, in: \.wsUnit)
+                       // try self.db.currentWorkSpace?.updateWsUnit(to: newWsUnit)
                         print("[END]_addWsUnitSubscriber")
                         
                     } catch let error {
@@ -203,4 +205,46 @@ extension HOViewModel {
                
             }.store(in: &cancellables)
     }
+    
+     func addWsBooksSubscriber() {
+       
+       self.dbManager
+           .workSpaceReservations
+           .publisher
+           .sink { _ in
+               
+           } receiveValue: { [weak self] docId,allReservations in
+               
+               print("[START]_addWsBooksSubscriber\n_docId\(docId ?? "noDoc")\n_allBooksCount:\(allReservations?.count ?? 999)")
+               
+               guard let self,
+                     let docId,
+                     let allReservations else {
+                   
+                   self?.callOnMainQueque {
+                             self?.logMessage = "[EPIC_FAIL]_Collegamento al database corrotto. Riavviare"
+                         }
+
+                   return
+               }
+               
+               self.callOnMainQueque {
+                   
+                   do {
+                       
+                       print("DocID from collection HOReservation:\(docId)")
+                       
+                       let newWsReservation = HOWsReservations(focusUid: docId,allReservation: allReservations) // WorkSpaceUnit(focusUid: docId, allUnit: allUnit)
+                       try self.db.currentWorkSpace?.updateWs(with: newWsReservation, in: \.wsReservations)//.updateWsUnit(to: newWsUnit)
+                       print("[END]_addWsReservationSubscriber")
+                       
+                   } catch let error {
+                      // self.db.currentWorkSpace = nil
+                       self.logMessage = "WsUnit Corrotto - \(error.localizedDescription)"
+                   }
+                   
+               }
+              
+           }.store(in: &cancellables)
+   }
 }

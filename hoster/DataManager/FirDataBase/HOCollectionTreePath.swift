@@ -13,4 +13,5 @@ enum HOCollectionTreePath:String {
     case workspace = "hoster_workspace"
 
     case allUnits = "all_units"
+    case allReservations = "all_reservations"
 }

@@ -18,6 +18,8 @@ public final class HOCloudDataManager {
     private(set) var workSpaceData:HOSyncroDocumentManager<WorkSpaceData>
     private(set) var workSpaceUnits:HOSyncroCollectionManager<HOUnitModel>
     
+    private(set) var workSpaceReservations: HOSyncroCollectionManager<HOReservation>
+    
     private(set) var loadingPublisher = PassthroughSubject<HOLoadingStatus?,Error>()
     
     public init(userAuthUID:String) {
@@ -27,7 +29,9 @@ public final class HOCloudDataManager {
         
         let wsTree = userTree.document(userAuthUID).collection(HOCollectionTreePath.workspace.rawValue)
         self.workSpaceData = HOSyncroDocumentManager(mainTree: wsTree)
+        
         self.workSpaceUnits = HOSyncroCollectionManager()
+        self.workSpaceReservations = HOSyncroCollectionManager()
     
     }
     
@@ -150,21 +154,27 @@ extension HOCloudDataManager {
         self.workSpaceData.listener?.remove()
         self.workSpaceUnits.listener?.remove()
         
+        self.workSpaceReservations.listener?.remove()
+        
         Task {
             // fetch WorkSpaceUnit
-           // self.loadingPublisher.send(true)
             
             try await fetchAndListenDocumentData(documentPath: wsFocusUID, syncro: \.workSpaceData)
+
+            // set path subCollection
+            let docPath = self.workSpaceData.mainTree?.document(wsFocusUID)
             
-           // self.workSpaceData.publisher.send(completion: .finished)
-            // set path unitsModel
-            let unitsCollRef = self.workSpaceData.mainTree?.document(wsFocusUID).collection(HOCollectionTreePath.allUnits.rawValue)
+            let unitsCollRef = docPath?.collection(HOCollectionTreePath.allUnits.rawValue)
             self.workSpaceUnits.setMainTree(to: unitsCollRef)
+            
+            let booksCollRef = docPath?.collection(HOCollectionTreePath.allReservations.rawValue)
+            self.workSpaceReservations.setMainTree(to: booksCollRef)
             
             // mettiamo un listener sull'intera collection
             try await fetchAndListenCollection(syncro: \.workSpaceUnits)
             
-           // self.loadingPublisher.send(nil)
+            try await fetchAndListenCollection(syncro: \.workSpaceReservations)
+            
         }
         
     }

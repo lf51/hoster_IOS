@@ -8,7 +8,7 @@
 import Foundation
 
 /// Contiene le unità che compongono un WorkSpace. Dati salvati in subcollection, dentro il documento, ma fuori il body del workspace
-struct WorkSpaceUnit {
+struct WorkSpaceUnit:HOProStarterPack {
     
     let uid:String
     

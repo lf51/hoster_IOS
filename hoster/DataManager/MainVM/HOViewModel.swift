@@ -9,6 +9,7 @@ import Foundation
 import Combine
 import SwiftUI
 import MyPackView
+import MyFilterPack
 
 
 final class HOViewModel:ObservableObject {
@@ -26,6 +27,14 @@ final class HOViewModel:ObservableObject {
     
     @Published var showAlert: Bool = false
     @Published var alertItem: AlertModel? {didSet {showAlert = true}} // deprecare
+    
+    @Published var homePath = NavigationPath()
+    @Published var reservationsPath = NavigationPath()
+    @Published var operationsPath = NavigationPath()
+    
+    @Published var currentPathSelection:HODestinationPath = .home
+    @Published var resetScroll:Bool = false
+    var showSpecificModel:String?
     
     var cancellables = Set<AnyCancellable>()
     
@@ -45,6 +54,7 @@ final class HOViewModel:ObservableObject {
         addUserDataSubscriber()
         addWsDataSubscriber()
         addWsUnitSubscriber()
+        addWsBooksSubscriber()
         
         spinSubscriberTrain(userUID: userUid)
         
@@ -202,6 +212,55 @@ extension HOViewModel {
             
             
             print("[Publish_Error]_\(error.localizedDescription)")
+        }
+        
+    }
+}
+
+extension HOViewModel {
+    
+    /// Azzera il path di riferimento e chiama il reset dello Scroll
+    func refreshPathAndScroll() -> Void {
+
+        self.showSpecificModel = nil
+        let path = self.currentPathSelection.vmPathAssociato()
+        
+        if self[keyPath: path].isEmpty { self.resetScroll.toggle() }
+        else { self[keyPath: path] = NavigationPath() }
+
+    }
+}
+
+
+extension HOViewModel:VM_FPC {
+    
+    func ricercaFiltra<M:Object_FPC>(containerPath: WritableKeyPath<HOViewModel, [M]>, coreFilter: CoreFilter<M>) -> [M] where HOViewModel == M.VM {
+        
+        let container = self[keyPath: containerPath]
+        // filtrare
+        // ordinare
+        // result
+        
+        return container
+    }
+    
+    
+}
+
+extension HOViewModel {
+    
+    /// Aggiunge una destinaziona al Path. Utile per aggiungere View tramite Bottone
+    func addToThePath(destinationPath:HODestinationPath, destinationView:HODestinationView) {
+        
+        switch destinationPath {
+            
+        case .home:
+            self.homePath.append(destinationView)
+        case .reservations:
+            self.reservationsPath.append(destinationView)
+        case .operations:
+            self.operationsPath.append(destinationView)
+      
         }
         
     }
