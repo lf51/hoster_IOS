@@ -7,9 +7,19 @@
 
 import Foundation
 
-struct HOOptClassification {
+/*struct HOOptClassification:Codable {
     
-    var movimento:HOOperationTypeClassification?
+    var area:HOOperationArea?
     var type:HOOperationType?
     
-}
+   /* func getTypeRelativeToMove(by flow:HOOperationFlow) -> [HOOperationType] {
+        
+        guard let movimento else { return [] }
+        
+        return movimento.getOperationType(by: flow)
+        
+    }*/
+    
+} */ // deprecata
+
+//extension HOOptClassification:Equatable {}

@@ -14,4 +14,5 @@ enum HOCollectionTreePath:String {
 
     case allUnits = "all_units"
     case allReservations = "all_reservations"
+    case allOperations = "all_accountant"
 }

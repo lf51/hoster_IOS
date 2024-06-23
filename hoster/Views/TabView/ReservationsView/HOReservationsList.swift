@@ -34,9 +34,7 @@ struct Test:Property_FPC_Mappable {
 struct HOReservationsList: View {
     
     @EnvironmentObject var viewModel:HOViewModel
-    let backgroundColorView: Color
-    
-   
+  // let backgroundColorView: Color
     
     @State private var mapTree:MapTree<HOReservation,Test>?
     @State private var filterCore:CoreFilter<HOReservation> = CoreFilter()
@@ -47,7 +45,7 @@ struct HOReservationsList: View {
             
             let container:[HOReservation] = {
                
-                guard let ws = self.viewModel.db.currentWorkSpace else { return [] }
+                guard let _ = self.viewModel.db.currentWorkSpace else { return [] }
                 
                 return self.viewModel.ricercaFiltra(containerPath: \.db.currentWorkSpace!.wsReservations.all, coreFilter: filterCore)
             }()
@@ -63,11 +61,11 @@ struct HOReservationsList: View {
             }()
             
         FiltrableContainerView(
-            backgroundColorView: backgroundColorView,
+            backgroundColorView: Color.hoBackGround,
             title: "All Books \(container.count)",
             filterCore: $filterCore,
             placeHolderBarraRicerca: "Cerca per nome guest, o data arrivo",
-            buttonColor: .seaTurtle_3,
+            buttonColor: Color.hoAccent,
             elementContainer: container,
             mapTree: mapTree,
             generalDisable: generalDisable,
@@ -88,12 +86,14 @@ struct HOReservationsList: View {
             } elementView: { reservation in
                 
                 Text(reservation.guestName ?? "noName")
+     
+                
                 
             } onRefreshAction: {
                 //
             }
             .navigationDestination(for: HODestinationView.self, destination: { destination in
-                destination.destinationAdress(backgroundColorView: backgroundColorView, destinationPath: .reservations, readOnlyViewModel: viewModel)
+                destination.destinationAdress(destinationPath: .reservations, readOnlyViewModel: viewModel)
             })
 
             
@@ -114,8 +114,10 @@ struct HOReservationsList: View {
             HStack {
                 Text("Add New")
                 Image(systemName: "circle")
+                   
                 
             }
+            .foregroundStyle(Color.hoAccent)
         }
         
        /* Menu {
@@ -168,5 +170,5 @@ struct HOReservationsList: View {
 }
 
 #Preview {
-    HOReservationsList(backgroundColorView: Color.orange)
+    HOReservationsList()
 }

@@ -11,13 +11,15 @@ import MyPackView
 struct HOHomeView: View {
     
     @EnvironmentObject var viewModel:HOViewModel
-    let backgroundColorView: Color
+   // let backgroundColorView: Color
     
     var body: some View {
         
         NavigationStack(path: $viewModel.homePath) {
             
-            CSZStackVB(title: "Home", backgroundColorView: backgroundColorView) {
+            CSZStackVB(
+                title: "Home",
+                backgroundColorView: Color.hoBackGround) {
                 VStack {
                     
                     let user = self.viewModel.db.currentUser
@@ -65,8 +67,9 @@ struct HOHomeView: View {
                     }) // per test
 
                 }
-            }
+                }
         }
+        
         
         
          
@@ -74,5 +77,8 @@ struct HOHomeView: View {
 }
 
 #Preview {
-    HOHomeView(backgroundColorView: Color.red)
+    HOHomeView()
 }
+
+
+

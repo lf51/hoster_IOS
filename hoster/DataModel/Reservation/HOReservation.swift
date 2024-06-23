@@ -12,19 +12,19 @@ struct HOReservation:HOProStarterPack {
     
     let uid:String
 
-    var refUnit:String?
+    var refUnit:String? //
     var refOperations:[String]? // operazioni associate // vendita servizio pernottamento, vendita servizio colazione transfer etc. Associabili in fase di creazione attraverso un default che possiamo fare impostare all'utente, con i servizi inclusi nella reservation, e possiamo associare in seguito ad esempio per il sopravvenire di regali e mance.
     
-    var dataArrivo:Date?
-    var guestName:String?
-    var guestType:HOGuestType?
-    var pax:Int?
-    var notti:Int?
-    var disposizione:[HOBedUnit]?
+    var dataArrivo:Date? //
+    var guestName:String? //
+    var guestType:HOGuestType? //
+    var pax:Int? //
+    var notti:Int? //
+    var disposizione:[HOBedUnit]? //
     
     var pernottamentiEsentiCityTax:Int? // ??
     
-    var note:String?
+    var note:String? //
     
     init() {
         self.uid = UUID().uuidString
@@ -34,11 +34,18 @@ struct HOReservation:HOProStarterPack {
 extension HOReservation:Hashable {
     
     static func == (lhs: HOReservation, rhs: HOReservation) -> Bool {
-        lhs.uid == rhs.uid
+        lhs.uid == rhs.uid &&
+        lhs.guestType == rhs.guestType &&
+        lhs.guestName == rhs.guestName &&
+        lhs.pax == rhs.pax &&
+        lhs.dataArrivo == rhs.dataArrivo &&
+        lhs.notti == rhs.notti &&
+        lhs.disposizione == rhs.disposizione &&
+        lhs.note == rhs.note
     }
     
     func hash(into hasher: inout Hasher) {
-        hasher.combine(uid)
+        hasher.combine(self.uid)
     }
     
     
@@ -46,9 +53,36 @@ extension HOReservation:Hashable {
 
 extension HOReservation {
     
-    var pernottamenti:Int? { (self.pax ?? 0) * (self.notti ?? 0) }
-    var pernottamentiTassati:Int? { (self.pernottamenti ?? 0) - (self.pernottamentiEsentiCityTax ?? 0) }
-    var checkOut:Date? { self.dataArrivo?.advanced(by: Double(self.notti ?? 0))}
+    var pernottamenti:Int { getPernottamenti() }
+    var pernottamentiTassati:Int? { (self.pernottamenti) - (self.pernottamentiEsentiCityTax ?? 0) } // forse inutile
+    var checkOut:Date { getCheckOut() }
+    
+    private func getPernottamenti() -> Int {
+        
+        guard let pax,
+              let notti else { return 0 }
+        
+        return pax * notti
+    }
+    
+    private func getCheckOut() -> Date {
+        
+        guard let dataArrivo else {
+            
+            let out = Date().addingTimeInterval(86400) // + one day
+            return out }
+        
+        guard let notti else {
+            
+            let out = dataArrivo.addingTimeInterval(86400)
+            return out
+        }
+        
+        let nightInterval = TimeInterval(86400 * notti)
+        
+        return dataArrivo.addingTimeInterval(nightInterval)
+            
+    }
     
 }
 
@@ -78,21 +112,17 @@ extension HOReservation:Object_FPC {
         return true
     }
     
-    
-    
-    
-    
     struct FilterProperty:SubFilterObject_FPC {
         
-        var unitRef:String?
         static func reportChange(old: HOReservation.FilterProperty, new: HOReservation.FilterProperty) -> Int {
             
             return 0
             
         }
         
-        
-        
+        var unitRef:String?
+      
+    
     }
     
     enum SortCondition:SubSortObject_FPC {
@@ -100,8 +130,6 @@ extension HOReservation:Object_FPC {
         static var defaultValue: HOReservation.SortCondition = .dataArrivo
         
         case dataArrivo
-        
-        
         
         func simpleDescription() -> String {
             return "no ready"
@@ -111,12 +139,43 @@ extension HOReservation:Object_FPC {
             return "circle"
         }
         
-        
-        
     }
    
+}
+
+extension HOReservation:HOProFocusField {
     
-   
+    enum FocusField:Int,Hashable {
+        
+        case refUnit = 0
+        
+        case arrivo
+        case guest
+        case guestType
+        
+        case pax
+        case notti
+        case disposizione
+        
+        case pernottEsenti
+        case note
+        
+    }
+}
+
+extension HOReservation {
     
-    
+    var labelModCompile:String { getLabelModCompile() }
+     
+    private func getLabelModCompile() -> String {
+         
+        guard let guestName else {
+            
+            return "Nuova Prenotazione"
+        }
+        
+        return guestName
+         
+         
+     }
 }

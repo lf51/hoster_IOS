@@ -6,12 +6,13 @@
 //
 
 import SwiftUI
+import MyPackView
 
 struct MainTabView: View {
     
     @EnvironmentObject var viewModel:HOViewModel
     
-    private let backgroundColorView: Color = Color.seaTurtle_1
+   // private let backgroundColorView: Color = Color.hoBackGround
     
     var body: some View {
         
@@ -22,22 +23,21 @@ struct MainTabView: View {
                 }
             }),content:  {
             
-                
                 Group {
                     
-                    HOHomeView(backgroundColorView: backgroundColorView)
+                    HOHomeView()
                         .tabItem {
                         Image(systemName: "house")
                         Text("Home")
                     }.tag(HODestinationPath.home)
                     
-                    HOReservationsList(backgroundColorView: backgroundColorView)
+                    HOReservationsList()
                         .tabItem { 
                             Image(systemName: "menucard")
                             Text("Books")
                         }.tag(HODestinationPath.reservations)
                     
-                    HOOperationsList(backgroundColorView: backgroundColorView)
+                    HOOperationsList()
                         .tabItem {
                             Image(systemName: "leaf")
                             Text("+/-")
@@ -45,12 +45,12 @@ struct MainTabView: View {
                     
                 }
                 .toolbarBackground(.visible, for: .tabBar)
-                .toolbarBackground(Color.yellow, for: .tabBar)
-                
-            
+                .toolbarBackground(Color.blueWood_p47, for: .tabBar)
                 
         })
-        .accentColor(.seaTurtle_2)
+        .accentColor(Color.hoAccent)
+        .csNavigationTitleColor(Color.hoNavTitle)
+        //.csAlertModifier(isPresented: $viewModel.showAlert, item: viewModel.alertMessage)
         
     }
 }

@@ -9,9 +9,9 @@ import Foundation
 
 struct HOWsReservations:HOProStarterPack {
    
-    let uid:String
+    let uid: String
     
-    var all:[HOReservation]
+    var all: [HOReservation]
     
     init(focusUid:String,allReservation:[HOReservation] = []) {
         

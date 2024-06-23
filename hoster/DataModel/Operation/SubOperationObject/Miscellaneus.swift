@@ -6,6 +6,27 @@
 //
 
 import Foundation
+import SwiftUI
+
+/// Protocollo per conformare ad una pickerView per filtrare il download delle WritingAccount
+protocol HOProWritingDownLoadFilter:Hashable {
+    
+    static var allCases:[Self] { get }
+    
+    func getRowLabel() -> String
+    func getImageAssociated() -> String
+    func getColorAssociated() -> Color
+    
+}
+
+/*protocol HOProImputationRelated {
+    
+    associatedtype V:CaseIterable
+    
+    func getSubRelatedObject(throw type:HOOperationType?) -> [V]?
+    func getImputationEnabling(throw type:HOOperationType?)
+    
+}*/
 
 enum HOAccWritingPosition {
     
@@ -13,31 +34,46 @@ enum HOAccWritingPosition {
     case avere
 }
 
-enum HOAccWritingSign {
+enum HOAccWritingSign:CaseIterable {
+    
     case plus
     case minus
-}
-
-
-enum HOOperationTypeClassification {
-    
-    case scorte
-    case corrente
-    case pluriennale
     
 }
 
-enum HOOperationType {
+/// Enumerazione per categorizzare tutte le struct conformi al protoccolo HOProAccountDoubleEntry, di modo da identificare dai codici salvati su firebase a quale tipo di account si riferiscono, e poi dall'index recuperare il caso specifico
+enum HODoubleEntryAccountIndex:String,CaseIterable {
     
-    case acquisto
-    case pagamento
-    case consumo
-    case resoPassivo
+    case areaAccount = "AA"
+    case imputationAccount = "IA"
+  //  case accountImputazione = "SP"
+  //  case accountCategoria = "CE"
     
-    case ammortamento //
+    static func getMainType(from idCode:String) -> (any HOProAccountDoubleEntry.Type)? {
+        
+        for eachAccount in Self.allCases {
+            
+            if eachAccount.rawValue == idCode.prefix(2) {
+                return eachAccount.getTypeObject() }
+            else { continue }
+            
+        }
+        return nil
+        
+    }
     
-    case vendita
-    case resoAttivo
-    case riscossione
-    case regaliEMance
+    private func getTypeObject() -> any HOProAccountDoubleEntry.Type {
+        
+        switch self {
+        case .areaAccount:
+            return HOAreaAccount.self
+        case .imputationAccount:
+            return HOImputationAccount.self
+        }
+        
+        
+    }
+    
 }
+
+

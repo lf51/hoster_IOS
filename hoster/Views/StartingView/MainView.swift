@@ -30,8 +30,9 @@ struct MainView: View {
             .csModifier(self.viewModel.mainLoadingCase != nil, transform: { view in
                 vbOverlayLoadingView(trasform: view)
             })
-            .csAlertModifier(isPresented: self.$viewModel.showAlert, item: self.viewModel.alertItem)
-            .csOverlayMessage($viewModel.logMessage)
+            .csAlertModifier(isPresented: self.$viewModel.showAlert, item: self.viewModel.alertMessage)
+            .csLogMessage($viewModel.logMessage)
+            .csPopMessage($viewModel.popMessage)
     }
     
     // ViewBuilder

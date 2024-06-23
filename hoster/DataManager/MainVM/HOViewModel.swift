@@ -11,7 +11,6 @@ import SwiftUI
 import MyPackView
 import MyFilterPack
 
-
 final class HOViewModel:ObservableObject {
     
     let authData:HOAuthData
@@ -21,12 +20,11 @@ final class HOViewModel:ObservableObject {
     
     @Published var loadStatus:[HOLoadingStatus]
     
-    @Published var logMessage:String? // sviluppare
-    @Published var popMessage:String? // sviluppare
-    @Published var alertMessage:AlertModel? // sviluppare
+    @Published var logMessage:HOSystemMessage?
+    @Published var popMessage:HOSystemMessage?
     
     @Published var showAlert: Bool = false
-    @Published var alertItem: AlertModel? {didSet {showAlert = true}} // deprecare
+    @Published private(set) var alertMessage: AlertModel? {didSet {showAlert = true}}
     
     @Published var homePath = NavigationPath()
     @Published var reservationsPath = NavigationPath()
@@ -49,15 +47,16 @@ final class HOViewModel:ObservableObject {
       // self.isLoading = []
         self.loadStatus = []
         // Subscriber Train
-        addLoadingSubscriber()
+      //  addLoadingSubscriber() // chiuso per test
         
-        addUserDataSubscriber()
-        addWsDataSubscriber()
-        addWsUnitSubscriber()
-        addWsBooksSubscriber()
+       // addUserDataSubscriber() // chiuso per test
+       // addWsDataSubscriber() // chiuso per test
+       // addWsUnitSubscriber() // chiuso per test
+       // addWsBooksSubscriber() // chiuso per test
+       // addWsOperationsSubscriber() // chiuso per test
         
-        spinSubscriberTrain(userUID: userUid)
-        
+      //  spinSubscriberTrain(userUID: userUid) // chiuso per test
+        self.db.currentWorkSpace = WorkSpaceModel() // aperto per test
         print("[INIT]_End ViewModel Init")
         
     }
@@ -100,7 +99,13 @@ extension HOViewModel {
               //  self.setLoading(to: .end) {
                 
                 self.callOnMainQueque {
-                    self.logMessage = "Configurare\(error.localizedDescription)"
+                    
+                    let message = HOSystemMessage(
+                        vector:.log,
+                        title: "Errore",
+                        body: .custom("Configurare \(error.localizedDescription)"))
+                    
+                    self.sendSystemMessage(message: message)
                 }
                    
                // }
@@ -179,11 +184,14 @@ extension HOViewModel {
             
             
         } catch let error {
+
+            let systMessage = HOSystemMessage(
+                vector:.log,
+                title: "[Registration_Fail]",
+                body: .custom(error.localizedDescription))
             
-           // self.setLoading(to: .end)
-            self.logMessage = "[Registration_Fail]_\(error.localizedDescription)"
-            
-            
+            self.sendSystemMessage(message: systMessage)
+   
         }
  
     }
@@ -198,7 +206,7 @@ extension HOViewModel {
         // implementare a fine corsa
     }
     
-    func publishData<Item:Codable&HOProStarterPack>(from itemData:Item,syncroDataPath:KeyPath<HOCloudDataManager,HOSyncroDocumentManager<Item>>) {
+    func publishData<Item:Codable&HOProStarterPack,Syncro:HOProSyncroManager>(from itemData:Item,syncroDataPath:KeyPath<HOCloudDataManager,Syncro>) {
         
         let collRef = self.dbManager[keyPath: syncroDataPath].mainTree
         
@@ -265,3 +273,200 @@ extension HOViewModel {
         
     }
 }
+
+/// workspace get data from
+extension HOViewModel {
+    
+    func getSubs() -> [HOUnitModel] {
+        
+        guard let ws = self.db.currentWorkSpace,
+              let subs = ws.wsUnit.subs else { return [] }
+        
+        return subs.sorted(by: {$0.label < $1.label})
+        
+    }
+    
+}
+///Info Message
+extension HOViewModel {
+    
+    func sendSystemMessage(message:HOSystemMessage) {
+        
+        switch message.vector {
+            
+        case .log: self.logMessage = message
+        case .pop: self.popMessage = message
+            
+        }
+
+    }
+    
+    func sendAlertMessage(alert:AlertModel) {
+        
+        self.alertMessage = alert
+    }
+    
+}
+
+/// retrieve wsData information
+extension HOViewModel {
+    
+    func getMaxNightIn() -> Int {
+        
+        guard let ws = self.db.currentWorkSpace,
+              let maxIn = ws.wsData.maxNightIn else {
+            return WorkSpaceData.defaultValue.maxNightIn!
+        }
+        
+        return maxIn 
+        
+    }
+    
+    func getBedTypeIn() -> [HOBedType] {
+        
+        guard let ws = self.db.currentWorkSpace,
+              let bedType = ws.wsData.bedTypeIn else {
+            return WorkSpaceData.defaultValue.bedTypeIn!
+        }
+        
+        return bedType
+    }
+    
+    func getCheckInTime() -> DateComponents {
+        
+        guard let ws = self.db.currentWorkSpace,
+              let checkInTime = ws.wsData.checkInTime else {
+            
+            return WorkSpaceData.defaultValue.checkInTime!
+        }
+        
+        return checkInTime
+    }
+    
+}
+
+
+// AREA TEST Magazzino
+let opt1:HOOperationUnit = {
+    
+    var x = HOOperationUnit()
+    x.writing = HOWritingAccount(
+        type: .acquisto,
+        dare: nil,
+        avere: "AA02",
+        oggetto: HOWritingObject(
+            category: .merci,
+            subCategory: .food,
+            specification: "Marmellate COOP"))
+    
+    x.amount = HOOperationAmount(quantity: 5, pricePerUnit: 1.5)
+    
+    return x
+}()
+
+let opt2:HOOperationUnit = {
+    
+    var x = HOOperationUnit()
+    x.writing = HOWritingAccount(
+        type: .acquisto,
+        dare: nil,
+        avere: "AA02",
+        oggetto: HOWritingObject(
+            category: .merci,
+            subCategory: .beverage,
+            specification: "CocaCola"))
+    
+    x.amount = HOOperationAmount(quantity: 15, pricePerUnit: 2.5)
+    
+    return x
+}()
+
+let opt3:HOOperationUnit = {
+    
+    var x = HOOperationUnit()
+    x.writing = HOWritingAccount(
+        type: .acquisto,
+        dare: nil,
+        avere: "AA02",
+        oggetto: HOWritingObject(
+            category: .merci,
+            subCategory: .altro,
+            specification: "Detersivo Piatti"))
+    
+    x.amount = HOOperationAmount(quantity: 10, pricePerUnit: 1.5)
+    
+    return x
+}()
+
+// Chiusa Area Test Magazzino
+
+// FRA MAGAZZINO E CORRENTE
+
+let consumo1:HOOperationUnit = {
+    
+    var x = HOOperationUnit()
+    x.writing = HOWritingAccount(
+        type: .consumo,
+        dare: "AA02",
+        avere: "IA011",
+        oggetto: HOWritingObject(
+            category: .merci,
+            subCategory: .altro,
+            specification: "Magnetini ricordo"))
+    
+    x.amount = HOOperationAmount(quantity: 7, pricePerUnit: 1.5)
+    
+    return x
+}()
+
+
+// AREA TEST CORRENTR
+
+let opt4:HOOperationUnit = {
+    
+    var x = HOOperationUnit()
+    x.writing = HOWritingAccount(
+        type: .acquisto,
+        dare: "AA01",
+        avere: "IA012",
+        oggetto: HOWritingObject(
+            category: .merci,
+            subCategory: .altro,
+            specification: "Magnetini ricordo"))
+    
+    x.amount = HOOperationAmount(quantity: 10, pricePerUnit: 1.5)
+    
+    return x
+}()
+
+let buy1:HOOperationUnit = {
+    
+    var x = HOOperationUnit()
+    x.writing = HOWritingAccount(
+        type: .vendita,
+        dare: "IA05",
+        avere: "AA01",
+        oggetto: HOWritingObject(
+            category: .servizi,
+            subCategory: .interno,
+            specification: "Colazione Continentale"))
+    
+    x.amount = HOOperationAmount(quantity:10, pricePerUnit: 1.5)
+    
+    return x
+}()
+
+
+
+// chiusa AREA TEST CORRENTE
+
+var testViewModel:HOViewModel = {
+    
+    var vm = HOViewModel(authData: HOAuthData())
+    var ws = WorkSpaceModel()
+    ws.wsOperations.all = [opt1,opt2,opt3,opt4,consumo1,buy1]
+    vm.db.currentWorkSpace? = ws
+    return vm
+}()  // test per Preview // da eliminare
+
+

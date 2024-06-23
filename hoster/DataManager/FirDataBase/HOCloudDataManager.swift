@@ -20,6 +20,8 @@ public final class HOCloudDataManager {
     
     private(set) var workSpaceReservations: HOSyncroCollectionManager<HOReservation>
     
+    private(set) var workSpaceOperations:HOSyncroCollectionManager<HOOperationUnit>
+    
     private(set) var loadingPublisher = PassthroughSubject<HOLoadingStatus?,Error>()
     
     public init(userAuthUID:String) {
@@ -33,6 +35,8 @@ public final class HOCloudDataManager {
         self.workSpaceUnits = HOSyncroCollectionManager()
         self.workSpaceReservations = HOSyncroCollectionManager()
     
+        self.workSpaceOperations = HOSyncroCollectionManager()
+        
     }
     
 }
@@ -155,6 +159,7 @@ extension HOCloudDataManager {
         self.workSpaceUnits.listener?.remove()
         
         self.workSpaceReservations.listener?.remove()
+        self.workSpaceOperations.listener?.remove()
         
         Task {
             // fetch WorkSpaceUnit
@@ -170,10 +175,12 @@ extension HOCloudDataManager {
             let booksCollRef = docPath?.collection(HOCollectionTreePath.allReservations.rawValue)
             self.workSpaceReservations.setMainTree(to: booksCollRef)
             
+            let optCollRef = docPath?.collection(HOCollectionTreePath.allOperations.rawValue)
+            self.workSpaceOperations.setMainTree(to: optCollRef)
             // mettiamo un listener sull'intera collection
             try await fetchAndListenCollection(syncro: \.workSpaceUnits)
-            
             try await fetchAndListenCollection(syncro: \.workSpaceReservations)
+            try await fetchAndListenCollection(syncro: \.workSpaceOperations)
             
         }
         
@@ -267,7 +274,7 @@ extension HOCloudDataManager {
                 return
                 
             }
-            
+
            // let source = querySnap.metadata.isFromCache
            // let pending = querySnap.metadata.hasPendingWrites
             

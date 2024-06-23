@@ -6,12 +6,13 @@
 //
 
 import Foundation
-
-enum HOImputationAccount:CaseIterable,HOProAccountDoubleEntry { // imputazione diretta
+import SwiftUI
+/// Risponde alla domanda; Per Cosa? per quale attività effettuiamo l'operazione
+enum HOImputationAccount:String,CaseIterable { // imputazione diretta
     // dare i ricavi // avere i costi
-    static let mainIDCode: String = "SP"
-    
+
     case pernottamento
+    
     case lavanderia
     case pulizia
     case accoglienza
@@ -20,24 +21,79 @@ enum HOImputationAccount:CaseIterable,HOProAccountDoubleEntry { // imputazione d
     case marketing
     
     case transfer
-    case meal
+   // case meal = "pasti"
     case experience
     case noleggio
+    case parcheggio
     
     case boutique
     case minibar
+    // conti intermedi da ribaltare
+   // case warehouse = "magazzino" // finale
+   // case fondoAmmortamenti = "f.do ammortamento" // finale
+    // conti imputazione finale
+  //  case vat = "iva" // finale
+  //  case cityTax = "tassa di soggiorno" // finale
+   // case tributi
     
-    case parcheggio
-    
-    case warehouse // finale
-    case fondoAmmortamenti // finale
-    
-    case vat // finale
-    case cityTax // finale
+    case diversi
     
     case mainUnit // finale diretto e/o indiretto
     case subUnit // label // finale diretto e/o indiretto
   //  case pernottamento // ribaltamento ultimo
+    
+    /// gli account vanno ordinati in ordine alfabetico. L'index sepra il case diversi per poterlo sottrarre all'ordine alfabetico ed elencarlo per ultimo
+    func getOrderIndex() -> Int {
+        
+        switch self {
+            
+        case .diversi: return 1
+            
+        default: return 0
+            
+            
+        }
+    }
+    
+    func getSubCategory() -> [HOSubsImputationAccount] {
+        
+        switch self {
+        case .pernottamento:
+            return [.booking,.airbnb,.direct]
+        case .pulizia:
+            return [.programmata,.ordinaria,.straordinaria]
+        case .marketing:
+            return [.ads,.sitoWeb,.agenzia]
+        case .transfer:
+            return [.aeroporto,.fuoriPorta]
+       // case .meal:
+         //   return [.pranzo,.cena]
+        case .noleggio:
+            return [.auto,.moto,.bici,.monopattino]
+        default: return []
+        }
+        
+    } // deprecabile ?? non in uso
+}
+
+extension HOImputationAccount:HOProAccountDoubleEntry {
+
+    static let typeCode: HODoubleEntryAccountIndex = .imputationAccount
+    
+    static func getCase(from idCode: String) throws -> HOImputationAccount {
+        
+        let caseIndex = idCode.dropFirst(2)
+        
+        for eachCase in Self.allCases {
+            
+            let index = eachCase.getCaseIndex()
+            if index == caseIndex { return eachCase }
+            else { continue }
+            
+        }
+        
+        throw HOCustomError.erroreGenerico(problem: "idCase conto imputazione non esistente", reason: nil, solution: nil)
+    }
     
     func getCaseIndex() -> String {
         
@@ -53,17 +109,19 @@ enum HOImputationAccount:CaseIterable,HOProAccountDoubleEntry { // imputazione d
         case .marketing: return "06"
             
         case .transfer: return "07"
-        case .meal: return "08"
+      //  case .meal: return "08"
         case .experience: return "09"
         case .noleggio: return "010"
         case .boutique: return "011"
         case .minibar: return "012"
     
-        case .warehouse: return "013"
-        case .fondoAmmortamenti: return "014"
+       // case .warehouse: return "013"
+       // case .fondoAmmortamenti: return "014"
             
-        case .vat: return "015"
-        case .cityTax: return "016"
+       // case .vat: return "015"
+       // case .cityTax: return "016"
+       // case .tributi: return "015"
+        case .diversi: return "015"
         case .mainUnit: return "017"
         case .subUnit: return "018"
             
@@ -71,10 +129,12 @@ enum HOImputationAccount:CaseIterable,HOProAccountDoubleEntry { // imputazione d
            
         }
         
-    }
+    } // deprecata in futuro
     
     func getIDCode() -> String {
-        return Self.mainIDCode + self.getCaseIndex()
+        return Self.typeCode.rawValue + self.getCaseIndex()
+       // let rawValue = self.rawValue.replacingOccurrences(of: " ", with: "")
+       // return Self.typeCode.rawValue + rawValue
     }
     
     func getAlgebricSign(from sign: HOAccWritingPosition) -> HOAccWritingSign {
@@ -87,23 +147,19 @@ enum HOImputationAccount:CaseIterable,HOProAccountDoubleEntry { // imputazione d
         }
     }
     
-    func getSubCategory() -> [HOImputationSubs] {
-        
-        switch self {
-        case .pernottamento:
-            return [.booking,.airbnb,.direct]
-        case .pulizia:
-            return [.programmata,.ordinaria,.straordinaria]
-        case .marketing:
-            return [.ads,.sitoWeb,.agenzia]
-        case .transfer:
-            return [.aeroporto,.fuoriPorta]
-        case .meal:
-            return [.pranzo,.cena]
-        case .noleggio:
-            return [.auto,.moto,.bici,.monopattino]
-        default: return []
-        }
-        
+}
+
+extension HOImputationAccount:HOProWritingDownLoadFilter {
+    
+    func getRowLabel() -> String {
+        return self.rawValue
+    }
+    
+    func getColorAssociated() -> Color {
+        return Color.yellow
+    }
+    
+    func getImageAssociated() -> String {
+        return "cursorarrow.click.2"
     }
 }

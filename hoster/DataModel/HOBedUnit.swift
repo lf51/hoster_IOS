@@ -16,30 +16,38 @@ struct HOBedUnit {
 
 extension HOBedUnit:Codable { }
 
+extension HOBedUnit:Equatable { }
+
 enum HOBedType:Codable {
     
-    static var allCases: [HOBedType] = [.single,.double,.king,.singlePlusHalf]
+    static var allCases: [HOBedType] = [.single,.double,.king,.singlePlusHalf,.culletta]
     
     case single
     case double
     case king
     case singlePlusHalf
+    case culletta
+    
+    // divanoletto
+    // brandina
     
     func getAsUnitOfMeasure() -> String {
         return "bed"
     }
     
-    func getCostLabel() -> String {
+    func getStringValue() -> String {
         
         switch self {
         case .single:
-            return "letto singolo"
+            return "singolo"
         case .double:
-            return "letto matrimoniale"
+            return "matrimoniale"
         case .king:
-            return "letto king size"
+            return "king size"
         case .singlePlusHalf:
-            return "letto una piazza e mezzo"
+            return "una piazza e mezzo"
+        case .culletta:
+            return "culletta"
         }
         
         

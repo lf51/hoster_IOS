@@ -5,64 +5,93 @@
 //  Created by Calogero Friscia on 23/03/24.
 //
 
-import Foundation
+import SwiftUI
 
-protocol HOProAccountDoubleEntry:Encodable {
-    
-    static var mainIDCode:String { get }
-    static var allCases:[Self] { get }
-    
-    /// indice stringa del case
-    func getCaseIndex() -> String
-    /// main code del type + indice stringa del case
-    func getIDCode() -> String
-    
-    func getAlgebricSign(from sign: HOAccWritingPosition) -> HOAccWritingSign
-}
+struct HOWritingAccount:Equatable,Codable {
 
-struct HOAccWritingInfo {
-    
-    var category:String? //HOOperationTypeObject?
-    var subCategory:String?//HOTypeObjectSubs? // non mandatory
-    
-    var specification:String? // [SubCategoria] - [Label]
-}
-
-struct HOWritingAccount {
+    var type:HOOperationType?
     
     var dare:String? //IDCode//HOProAccountDoubleEntry?
     var avere:String?//IDCode//HOProAccountDoubleEntry?
     
-    var info:HOAccWritingInfo?
+    var oggetto:HOWritingObject?
+
+}
+
+extension HOWritingAccount {
     
-    func getWritingRiclassificato(for account:HOProAccountDoubleEntry) -> HOAccWritingRiclassificato? {
+    var operationArea:HOAreaAccount? { self.getDoubleEntryAccount() }
+    
+    var imputationAccount:HOImputationAccount? { self.getDoubleEntryAccount() }
+    
+    private func getDoubleEntryAccount<E:HOProAccountDoubleEntry>() -> E? {
         
-        guard let dare,
-              let avere,
-              let info else { return nil }
+        for eachCase in E.allCases {
+            
+            let defaultIdCase = eachCase.getIDCode()
+            if defaultIdCase == dare ||
+                defaultIdCase == avere { return eachCase }
+            else { continue }
+            
+        }
+        
+        return nil // in teoria non viene mai eseguito. Si può fare meglio
+    }
+    
+}
+
+extension HOWritingAccount {
+    
+    func getWritingRiclassificato<Account:HOProAccountDoubleEntry>(for account:Account) -> HOAccWritingRiclassificato? {
+        
+        guard /*let dare,
+              let avere,*/
+              let oggetto else { return nil }
         
         let codeAccount = account.getIDCode()
         var algebricSign:HOAccWritingSign?
         
-        if dare == codeAccount {
+        if self.dare == codeAccount {
             
             algebricSign = account.getAlgebricSign(from: .dare)
             
-        } else if avere == codeAccount {
+        } else if self.avere == codeAccount {
             
             algebricSign = account.getAlgebricSign(from: .avere)
             
         } else { return nil }
         
         let wrt = HOAccWritingRiclassificato(
+            info: oggetto, 
             sign: algebricSign,
-            info: info,
             amount: nil)
         
         return wrt
 
     }
+}
 
+extension HOWritingAccount {
+    
+    /// Ritorna la descrizione della scrittura. Tipo: consumo scorte merci cocaCola per colazione
+    func getWritingDescription() -> String? {
+        
+        guard let type,
+              let operationArea,
+              let oggetto else { return nil }
+    
+        let areaValue = operationArea.getDescription(throw: type) ?? "no area"
+      
+        let oggettoValue = oggetto.getDescription(campi: \.specification)
+        
+        let imputationValue = imputationAccount == nil ? "\(operationArea.rawValue)" : "conto \(imputationAccount!.rawValue)"
+        
+        let preposition = type.getPrepositionAssociated()
+        
+        return "\(areaValue) (\(oggettoValue)) \(preposition) \(imputationValue)"
+        
+    }
+    
 }
 
 /*extension HOWritingAccount:Encodable {

@@ -72,7 +72,8 @@ extension HOViewModel {
                         let stringLog = self.authData.email == nil ? "NO Logged in" : "Logged as \(self.authData.email!)"
                         
                         let alert = AlertModel(title: stringLog, message: "Necessario registrare un WorkSpace")
-                        self.alertItem = alert
+                        
+                        self.sendAlertMessage(alert: alert)
                     }
  
                     return
@@ -114,7 +115,10 @@ extension HOViewModel {
                 } catch let error {
                     
                     self.callOnMainQueque {
-                        self.logMessage = error.localizedDescription
+                        
+                        let message = HOSystemMessage(vector:.log,title: "Error", body: .custom(error.localizedDescription))
+                        self.sendSystemMessage(message: message)
+                      //  self.logMessage = error.localizedDescription
                     }
 
                     return
@@ -140,7 +144,11 @@ extension HOViewModel {
                       let workSpaceData else {
                     
                     self?.callOnMainQueque {
-                              self?.logMessage = "[EPIC_FAIL]_Collegamento al database corrotto. Riavviare"
+                        
+                        let message = HOSystemMessage(vector:.log,title: "[EPIC_FAIL]", body: .custom("Collegamento al database corrotto. Riavviare"))
+                        
+                        self?.sendSystemMessage(message: message)
+                            //  self?.logMessage = "[EPIC_FAIL]_Collegamento al database corrotto. Riavviare"
                           }
  
                     return
@@ -154,7 +162,11 @@ extension HOViewModel {
                         
                     } catch let error {
                        // self.db.currentWorkSpace = nil
-                        self.logMessage = "WsDataCorrotto - \(error.localizedDescription)"
+                      //  self.logMessage = "WsDataCorrotto - \(error.localizedDescription)"
+                        let message = HOSystemMessage(vector:.log,title: "WsDataCorrotto", body: .custom(error.localizedDescription))
+                        
+                        self.sendSystemMessage(message: message)
+                        
                     }
                 }
                 
@@ -179,7 +191,11 @@ extension HOViewModel {
                       let allUnit else {
                     
                     self?.callOnMainQueque {
-                              self?.logMessage = "[EPIC_FAIL]_Collegamento al database corrotto. Riavviare"
+                           //  self?.logMessage = "[EPIC_FAIL]_Collegamento al database corrotto. Riavviare"
+                        
+                        let message = HOSystemMessage(vector:.log,title: "[EPIC_FAIL]", body: .custom("Collegamento al database corrotto. Riavviare"))
+                        self?.sendSystemMessage(message: message)
+                        
                           }
  
                     return
@@ -198,7 +214,10 @@ extension HOViewModel {
                         
                     } catch let error {
                        // self.db.currentWorkSpace = nil
-                        self.logMessage = "WsUnit Corrotto - \(error.localizedDescription)"
+                       // self.logMessage = "WsUnit Corrotto - \(error.localizedDescription)"
+                        let message = HOSystemMessage(vector:.log,title: "WsUnit Corrotto", body: .custom(error.localizedDescription))
+                        
+                        self.sendSystemMessage(message: message)
                     }
                     
                 }
@@ -222,7 +241,10 @@ extension HOViewModel {
                      let allReservations else {
                    
                    self?.callOnMainQueque {
-                             self?.logMessage = "[EPIC_FAIL]_Collegamento al database corrotto. Riavviare"
+                           //  self?.logMessage = "[EPIC_FAIL]_Collegamento al database corrotto. Riavviare"
+                       let message = HOSystemMessage(vector:.log,title: "[EPIC_FAIL]", body: .custom("Collegamento al database corrotto. Riavviare"))
+                       
+                       self?.sendSystemMessage(message: message)
                          }
 
                    return
@@ -240,11 +262,64 @@ extension HOViewModel {
                        
                    } catch let error {
                       // self.db.currentWorkSpace = nil
-                       self.logMessage = "WsUnit Corrotto - \(error.localizedDescription)"
+                      // self.logMessage = "WsUnit Corrotto - \(error.localizedDescription)"
+                       let message = HOSystemMessage(vector:.log,title: "WsReservations Corrotto", body: .custom(error.localizedDescription))
+                       
+                       self.sendSystemMessage(message: message)
+                       
                    }
                    
                }
               
            }.store(in: &cancellables)
    }
+    
+     func addWsOperationsSubscriber() {
+        
+        self.dbManager
+            .workSpaceOperations
+            .publisher
+            .sink { _ in
+                
+            } receiveValue: { [weak self] docId, allOperations in
+                
+                print("[START]_addWsOperationsSubscriber\n_docId\(docId ?? "noDoc")\n_allOperationsCount:\(allOperations?.count ?? 999)")
+                
+                guard let self,
+                        let docId,
+                        let allOperations else {
+                    
+                    self?.callOnMainQueque {
+                        
+                        let message = HOSystemMessage(vector:.log,title: "[EPIC_FAIL]", body: .custom("Collegamento al database Operations corrotto. Riavviare"))
+                        
+                        self?.sendSystemMessage(message: message)
+                            }
+
+                    return
+                }
+                
+                self.callOnMainQueque {
+                    
+                    do {
+                        
+                        print("DocID from collection HOOperations:\(docId)")
+                        
+                        let newWsOperations = HOWsOperations(focusUid: docId,allOperations: allOperations)
+                        
+                        try self.db.currentWorkSpace?.updateWs(with: newWsOperations, in: \.wsOperations)
+                        print("[END]_addWsOperationsSubscriber")
+                        
+                    } catch let error {
+                    
+                        let message = HOSystemMessage(vector:.log,title: "WsOperations Corrotto", body: .custom(error.localizedDescription))
+                        
+                        self.sendSystemMessage(message: message)
+                        
+                    }
+                    
+                }
+                
+            }.store(in: &cancellables)
+    }
 }

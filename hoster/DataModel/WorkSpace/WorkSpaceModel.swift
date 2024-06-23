@@ -13,7 +13,7 @@ struct WorkSpaceModel {
     var wsUnit:WorkSpaceUnit
     
     var wsReservations:HOWsReservations
-    var wsOperations:HOWsOperations = HOWsOperations()
+    var wsOperations:HOWsOperations
 
     var uid:String { self.wsData.uid }
 
@@ -33,6 +33,7 @@ struct WorkSpaceModel {
         self.wsUnit = WorkSpaceUnit(focusUid: uid)
         
         self.wsReservations = HOWsReservations(focusUid: uid)
+        self.wsOperations = HOWsOperations(focusUid: uid)
         
     }
     

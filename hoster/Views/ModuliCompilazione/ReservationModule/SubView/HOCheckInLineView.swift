@@ -1,0 +1,240 @@
+//
+//  HOCheckInLineView.swift
+//  hoster
+//
+//  Created by Calogero Friscia on 06/05/24.
+//
+
+import SwiftUI
+import MyPackView
+import MyTextFieldSinkPack
+
+struct HOCheckInLineView:View {
+    
+    @EnvironmentObject var viewModel:HOViewModel
+    
+    @Binding var reservation:HOReservation
+    
+    let generalErrorCheck:Bool
+    
+    var body: some View {
+        
+        VStack(alignment: .leading, spacing: 10) {
+           
+            CSLabel_conVB(
+                placeHolder: "Check-In",
+                placeHolderColor: Color.hoDefaultText,
+                imageNameOrEmojy: "calendar",
+                imageColor: Color.hoDefaultText,
+                backgroundColor: Color.hoBackGround,
+                backgroundOpacity: 0.4) {
+                    
+                    vbNightIn()
+                        .csWarningModifier(
+                            warningColor: Color.hoWarning,
+                            overlayAlign: .topTrailing,
+                            isPresented: self.generalErrorCheck) {
+                                errorIn()
+                            }
+                    
+            }
+            
+            VStack(alignment:.leading,spacing: 5) {
+                
+                let dataArrivo = Binding {
+                    self.reservation.dataArrivo ?? Date()
+                } set: { new in
+                    
+                    self.reservation.dataArrivo = new
+                }
+
+                HStack(alignment:.top) {
+
+                    DatePicker(selection: dataArrivo,
+                               displayedComponents: [.date,.hourAndMinute]) {
+                        vbDateLabel()
+                    }
+                    .colorMultiply(Color.black)
+                    .fixedSize()
+                    
+                   Text("orario previsto")
+                        .italic()
+                        .font(.caption)
+                        .foregroundStyle(Color.black)
+                    Spacer()
+                }
+                .padding(.horizontal,10)
+                .padding(.vertical,5)
+                .background {
+                    
+                    RoundedRectangle(cornerRadius: 10.0)
+                        .foregroundStyle(Color.scooter_p53)
+                        .opacity(0.8)
+                        .frame(maxWidth:.infinity)
+                       
+                }
+ 
+               vbArrivalDateExtended()
+                
+               HStack {
+                   
+                    vbCheckOutBox()
+                    vbPernottBox()
+                    Spacer()
+                }
+            }
+           
+            
+        }.onAppear { self.onAppearAction() }
+        
+    } // close body
+    
+    private func onAppearAction() {
+        
+        print("OnAppear HOCheckInLineView")
+        self.reservation.dataArrivo = getCurrentDate()
+        
+    }
+    
+    private func getCurrentDate() -> Date? {
+        
+        let calendar = Calendar.current
+        
+        var today = calendar.dateComponents([.day,.month,.year,.weekday], from: Date.now)
+        
+        let wsCheckInTime = self.viewModel.getCheckInTime()
+        
+        today.hour = wsCheckInTime.hour
+        today.minute = wsCheckInTime.minute
+        
+        guard let date = calendar.date(from: today) else { return nil }
+        return date
+    }
+    
+    private func errorIn() -> Bool {
+        
+        guard self.reservation.dataArrivo != nil,
+              let notti = self.reservation.notti,
+              notti > 0 else { return true }
+        return false
+        
+    }
+    
+    @ViewBuilder private func vbArrivalDateExtended() -> some View {
+        
+        let arrivalDate = csTimeFormatter().data.string(from: self.reservation.dataArrivo ?? Date.now)
+        
+        let arrivalTime = csTimeFormatter().ora.string(from: self.reservation.dataArrivo ?? Date.now)
+        
+        Text("\(arrivalDate) dalle ore: \(arrivalTime)")
+            .italic()
+            .font(.caption2)
+            .foregroundStyle(Color.hoDefaultText)
+            .opacity(0.8)
+    }
+    
+    @ViewBuilder private func vbDateLabel() -> some View {
+        
+            Text("Arrivo:")
+                .fontDesign(.monospaced)
+                .fontWeight(.semibold)
+                .font(.subheadline)
+              
+    }
+    
+    @ViewBuilder private func vbPernottBox() -> some View {
+        
+        VStack {
+            
+            Text("Pernottamenti")
+                .fontDesign(.monospaced)
+                .fontWeight(.semibold)
+                .font(.subheadline)
+                .foregroundStyle(Color.hoDefaultText)
+                
+            Text("\(self.reservation.pernottamenti)")
+                .fontWeight(.heavy)
+                .font(.body)
+                .foregroundStyle(Color.scooter_p53)
+        }
+        .padding(.horizontal,10)
+        .padding(.vertical,5)
+        .background {
+            
+            RoundedRectangle(cornerRadius: 10.0)
+                .foregroundStyle(Color.hoBackGround)
+                .frame(maxWidth:.infinity)
+               
+        }
+        
+    }
+    
+    @ViewBuilder private func vbCheckOutBox() -> some View {
+        
+       VStack {
+            
+            let checkOut = csTimeFormatter().data.string(from: self.reservation.checkOut)
+            
+            Text("Check-Out")
+                .fontDesign(.monospaced)
+                .fontWeight(.semibold)
+                .font(.subheadline)
+                .foregroundStyle(Color.hoDefaultText)
+                
+            Text(checkOut)
+                .italic()
+                .fontWeight(.light)
+                .font(.body)
+                .foregroundStyle(Color.malibu_p53)
+                .lineLimit(1)
+        }
+       
+        .padding(.horizontal,10)
+        .padding(.vertical,5)
+        .background {
+            
+            RoundedRectangle(cornerRadius: 10.0)
+                .foregroundStyle(Color.hoBackGround)
+                .frame(maxWidth:.infinity)
+               
+        }
+        
+    }
+    
+    @ViewBuilder private func vbNightIn() -> some View {
+
+        let maxIn = self.viewModel.getMaxNightIn()
+        
+        HStack {
+            
+            CSSinkStepper_1(
+                range:0...maxIn,
+               // label:"Notti",
+                image:"moon.zzz.fill",
+                imageColor:Color.hoAccent,
+                valueColor:Color.hoDefaultText,
+                numberWidth:35) { _, newValue in
+                
+                    self.reservation.notti = newValue
+
+            }
+            .fixedSize()
+            
+            let value = csSwitchSingolarePlurale(checkNumber: self.reservation.notti ?? 1, wordSingolare: "notte", wordPlurale: "notti")
+            
+            Text(value)
+                .italic()
+                .font(.caption)
+                .foregroundStyle(Color.hoDefaultText)
+                .lineLimit(1)
+                .opacity(0.8)
+            
+        }/*.csWarningModifier(
+            warningColor: Color.hoWarning,
+            overlayAlign: .topTrailing,
+            isPresented: self.generalErrorCheck) {
+                (self.reservation.notti ?? 0) == 0
+        }*/
+        
+    }
+}

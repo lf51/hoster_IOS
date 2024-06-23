@@ -31,4 +31,15 @@ struct HOAuthData {
         
     }
 
+    init() { // per Test con ViewModel Locale per Preview. Da eliminare
+        self.uid = UUID().uuidString
+        self.email = nil
+        self.userName = nil
+        self.photoUrl = nil
+    
+        self.dataRegistrazione = nil
+        self.lastSignIn = nil
+        self.providersID = []
+    }
+    
 }

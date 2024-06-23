@@ -8,6 +8,8 @@
 import Foundation
 import Combine
 import SwiftUI
+import MyPackView
+
 
 /*public struct CSSinkStepper_1:View {
     
@@ -188,3 +190,57 @@ public struct CSSinkTextField_4: View {
         .animation(Animation.easeInOut, value: self.textVM.text)
     }
 }*/ // ok
+
+struct TestView:View {
+    @State var value:Int = 0
+    @State var date:Date = Date()
+    var body: some View {
+        
+        ZStack {
+            
+            Rectangle()
+                .fill(Color.hoBackGround.gradient)
+                .edgesIgnoringSafeArea(.all)
+                .zIndex(0)
+            
+            VStack {
+                
+                DatePicker("dal", selection: $date)
+                    .colorMultiply(Color.black)
+                Stepper(value: $value) {
+                    Text("test")
+                }
+                .colorMultiply(.black)
+            }
+            .zIndex(1)
+            .background {
+                
+                RoundedRectangle(cornerRadius: 10.0)
+                    .foregroundStyle(Color.scooter_p53)
+                    .opacity(0.8)
+                    .frame(maxWidth:.infinity)
+                   
+            }
+            .csWarningModifier(warningColor: Color.hoWarning, overlayAlign: .top, isPresented: true) {
+                true
+            }
+            .csWarningModifier(warningColor: Color.hoAccent, overlayAlign: .bottom, isPresented: true) {
+                true
+            }
+            
+        }
+        .navigationTitle(
+            Text("Reservation")
+                
+        )
+        
+    }
+}
+
+#Preview(body: {
+    NavigationStack {
+        TestView()
+    }
+})
+
+

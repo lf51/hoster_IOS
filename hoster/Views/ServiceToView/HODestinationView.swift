@@ -11,19 +11,25 @@ import SwiftUI
 enum HODestinationView:Hashable {
     
     case reservation(_ book:HOReservation)
+    case operation(_ opt:HOOperationUnit)
     
 }
 
 extension HODestinationView {
     
-    @ViewBuilder func destinationAdress(backgroundColorView: Color, destinationPath: HODestinationPath, readOnlyViewModel:HOViewModel) -> some View {
+    @ViewBuilder func destinationAdress(destinationPath: HODestinationPath, readOnlyViewModel:HOViewModel) -> some View {
         
         switch self {
         case .reservation(let book):
             
             HONewReservationMainModule(
-                newModule: book,
-                backgroundColorView: backgroundColorView,
+                reservation: book,
+                destinationPath: destinationPath)
+            
+        case .operation(let opt):
+            
+            HONewOperationMainModule(
+                operation: opt,
                 destinationPath: destinationPath)
             
         }

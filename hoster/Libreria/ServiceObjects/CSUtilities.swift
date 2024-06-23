@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 import AuthenticationServices
-
+// Necessaria nel processo di autentica
 final class CSUtilities {
     
     static let shared = CSUtilities()

@@ -16,5 +16,5 @@ struct HOWarehouseModel {
         self.all = all
     }
 
-}
+} // deprecato
 
