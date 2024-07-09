@@ -80,15 +80,25 @@ extension HOWritingAccount {
               let operationArea,
               let oggetto else { return nil }
     
-        let areaValue = operationArea.getDescription(throw: type) ?? "no area"
+        let areaValue = operationArea.getDescription(throw: type) ?? "[no area]"
       
-        let oggettoValue = oggetto.getDescription(campi: \.specification)
+        let oggettoValue = oggetto.getDescription(campi:\.subCategory, \.specification)
         
         let imputationValue = imputationAccount == nil ? "\(operationArea.rawValue)" : "conto \(imputationAccount!.rawValue)"
         
         let preposition = type.getPrepositionAssociated()
         
-        return "\(areaValue) (\(oggettoValue)) \(preposition) \(imputationValue)"
+        return "\(areaValue.csCapitalizeFirst()) (\(oggettoValue)) \(preposition) \(imputationValue)."
+        
+    }
+ 
+    func getWritingLabel() -> String {
+        
+        guard let type,
+              let operationArea,
+              let areaValue = operationArea.getDescription(throw: type) else { return "nuova scrittura" }
+        
+       return areaValue
         
     }
     

@@ -6,7 +6,7 @@
 //
 import SwiftUI
 
-struct HOWritingObject:Equatable,Codable { // modificare in HoOperationInfo
+struct HOWritingObject:Equatable { // modificare in HoOperationInfo
     //private(set) var id:String
     
     private(set) var category:String? //HOObjectCategory
@@ -143,4 +143,43 @@ extension HOWritingObject:HOProWritingDownLoadFilter {
     }
     
     
+}
+
+extension HOWritingObject:Decodable { 
+    
+     enum CodingKeys:String,CodingKey {
+        
+        case category
+        case subCategory //= "sub_category"
+        case specification
+        
+    }
+    
+    init(from decoder: any Decoder) throws {
+        
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.category = try container.decodeIfPresent(String.self, forKey: .category)
+            
+        self.subCategory = try container.decodeIfPresent(String.self, forKey: .subCategory)
+        
+        self.specification = try container.decodeIfPresent(String.self, forKey: .specification)
+        
+        
+    }
+    
+}
+
+extension HOWritingObject:Encodable { 
+    
+    func encode(to encoder: any Encoder) throws {
+        
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encodeIfPresent(self.category, forKey: .category)
+        try container.encodeIfPresent(self.subCategory, forKey: .subCategory)
+        try container.encodeIfPresent(self.specification, forKey: .specification)
+        
+        
+    }
 }

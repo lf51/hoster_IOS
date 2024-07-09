@@ -16,7 +16,10 @@ struct HOGuestLineView:View {
     @Binding var reservation:HOReservation
     let generalErrorCheck:Bool
     
-    @State private var stateMessage:String = ""
+   // @State private var stateMessage:String = ""
+    
+    let focusEqualValue:HOReservation.FocusField?
+    @FocusState.Binding var focusField:HOReservation.FocusField?
     
     var body: some View {
         
@@ -38,24 +41,31 @@ struct HOGuestLineView:View {
             
             let placeHolder = self.reservation.guestName ?? "guest name on reservation"
             
-            VStack(alignment:.leading,spacing:5) {
+           // VStack(alignment:.leading,spacing:5) {
                 
-                CSSyncTextField_4b(placeHolder: placeHolder) {
+                CSSyncTextField_4b(
+                    placeHolder: placeHolder,
+                    focusValue:focusEqualValue,
+                    focusField:$focusField) {
                         
                         vbInlineTextFieldContent()
                         
+                    } disableLogic: { value in
+                        self.disableLogic(value: value)
+                    } keyboardMiddleContent: { value in
+                        self.vbMidlleKeyboard(value: value)
                     } syncroAction: { value in
                         self.guestNameSubmit(new: value)
                     }
 
-                    Text(stateMessage)
+                   /* Text(stateMessage)
                         .italic()
                         .font(.caption2)
                         .foregroundStyle(Color.hoDefaultText)
-                        .opacity(0.8)
-            }
+                        .opacity(0.8) */
+          // }
 
-        }.onChange(of: self.generalErrorCheck) { _, newValue in
+        }/*.onChange(of: self.generalErrorCheck) { _, newValue in
             
             if newValue {
                 
@@ -65,10 +75,10 @@ struct HOGuestLineView:View {
                 }
                 
             }
-        }
-        .onAppear {
+        }*/
+       /* .onAppear {
             self.stateMessage = getDefaultStateMessage()
-        }
+        }*/
     }
     
     @ViewBuilder private func vbInlineTextFieldContent() -> some View {
@@ -104,24 +114,51 @@ struct HOGuestLineView:View {
     
     private func guestNameSubmit(new:String) {
         
-        let newValue = new.replacingOccurrences(of: " ", with: "")
+       /* let newValue = new.replacingOccurrences(of: " ", with: "")
         
         guard newValue.count > 5 else {
             
             self.stateMessage = "Value can't be updated. Min 5 characters"
             return }
         
-        self.stateMessage = getDefaultStateMessage()
-        self.reservation.guestName = newValue
+        self.stateMessage = getDefaultStateMessage()*/
+        
+        let forbidden:CharacterSet = .punctuationCharacters.union(.whitespacesAndNewlines).union(.symbols).union(.decimalDigits)
+        
+        let cleanString = csStringCleaner(value:new, byCharacter:forbidden)
+        self.reservation.guestName = cleanString.capitalized
         
     }
     
-    private func getDefaultStateMessage() -> String {
+   /* private func getDefaultStateMessage() -> String {
         
         "Press Enter to update value. Min 5 characters"
         
+    }*/
+    
+    /// guest name minimo 3 character max 4 words. No punteggiatura
+    private func disableLogic(value:String) -> Bool {
+        
+        let forbidden:CharacterSet = .punctuationCharacters.union(.whitespacesAndNewlines).union(.symbols).union(.decimalDigits)
+        
+        let cleanString = csStringCleaner(value:value, byCharacter:forbidden)
+        
+        guard cleanString.count > 3 else { return true }
+        
+        let wordCount = cleanString.components(separatedBy: " ").count
+        
+        return wordCount > 4
+        
+        
     }
     
+    @ViewBuilder private func vbMidlleKeyboard(value:String) -> some View {
+        
+        Text("min 3 caratteri - max 4 parole")
+            .font(.caption2)
+            .italic()
+        
+    }
     
 }
 

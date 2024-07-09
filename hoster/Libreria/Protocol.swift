@@ -18,6 +18,11 @@ protocol HOProFocusField {
     associatedtype FocusField:RawRepresentable,Hashable where FocusField.RawValue == Int 
 }
 
+protocol HOProNoteField {
+    
+    var note:String? { get set }
+}
+
 protocol HOProAccountDoubleEntry:RawRepresentable,Encodable where RawValue == String {
     
     static var typeCode:HODoubleEntryAccountIndex { get }

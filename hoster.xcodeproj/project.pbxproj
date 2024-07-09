@@ -24,6 +24,8 @@
 		3F2144E82BB75DC800839157 /* HOCalendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2144E72BB75DC800839157 /* HOCalendar.swift */; };
 		3F2F867A2C21B98E00C4C248 /* HONewOperationBuilderVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2F86792C21B98E00C4C248 /* HONewOperationBuilderVM.swift */; };
 		3F2FD7B52BE7CEF200D7A1B1 /* HOGuestLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F2FD7B42BE7CEF200D7A1B1 /* HOGuestLineView.swift */; };
+		3F3509652C3594C80080B094 /* HOGenericNoteLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F3509642C3594C80080B094 /* HOGenericNoteLineView.swift */; };
+		3F3509682C3595910080B094 /* HOAmountLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F3509672C3595910080B094 /* HOAmountLineView.swift */; };
 		3F35B9442BDE9B9C00837892 /* HOOperationAmount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F35B9432BDE9B9C00837892 /* HOOperationAmount.swift */; };
 		3F35B9462BDE9BB900837892 /* HOOptClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F35B9452BDE9BB900837892 /* HOOptClassification.swift */; };
 		3F36C8B62C0A0DBB00361118 /* HOLockModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F36C8B52C0A0DBB00361118 /* HOLockModifier.swift */; };
@@ -74,7 +76,6 @@
 		3FBCB93F2B90CE4A0043B0B4 /* MyPackView in Frameworks */ = {isa = PBXBuildFile; productRef = 3FBCB93E2B90CE4A0043B0B4 /* MyPackView */; };
 		3FBFDDC52BF78CF700C9EC17 /* HOTimeImputation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBFDDC42BF78CF700C9EC17 /* HOTimeImputation.swift */; };
 		3FC01D4B2BF20988002FA43D /* HORegolamentoLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FC01D4A2BF20988002FA43D /* HORegolamentoLineView.swift */; };
-		3FCAA7262BEA9B54002E78D2 /* HONoteLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FCAA7252BEA9B54002E78D2 /* HONoteLineView.swift */; };
 		3FD2C0B22BE11D4C005B3D13 /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FD2C0B12BE11D4C005B3D13 /* MainTabView.swift */; };
 		3FD2C0B52BE11E77005B3D13 /* HODestinationPath.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FD2C0B42BE11E77005B3D13 /* HODestinationPath.swift */; };
 		3FD2C0BA2BE122B5005B3D13 /* HOHomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FD2C0B92BE122B5005B3D13 /* HOHomeView.swift */; };
@@ -83,7 +84,6 @@
 		3FDFE61C2C0B539C0046B642 /* HOWritingAccountLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDFE61B2C0B539C0046B642 /* HOWritingAccountLineView.swift */; };
 		3FDFE61F2C0B53FD0046B642 /* HOWritingAccountBuilderVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDFE61E2C0B53FD0046B642 /* HOWritingAccountBuilderVM.swift */; };
 		3FDFE6212C0B5A250046B642 /* HOWritingObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDFE6202C0B5A250046B642 /* HOWritingObject.swift */; };
-		3FDFE6242C0B71830046B642 /* HOTimeAmountBuilderVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FDFE6232C0B71830046B642 /* HOTimeAmountBuilderVM.swift */; };
 		3FE20C6C2BA89B7000ECCB88 /* HOCustomError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE20C6B2BA89B7000ECCB88 /* HOCustomError.swift */; };
 		3FE2AE9A2B8F76B000A7B350 /* hosterApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE2AE992B8F76B000A7B350 /* hosterApp.swift */; };
 		3FE2AE9C2B8F76B000A7B350 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FE2AE9B2B8F76B000A7B350 /* ContentView.swift */; };
@@ -115,10 +115,13 @@
 		3F2144E72BB75DC800839157 /* HOCalendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOCalendar.swift; sourceTree = "<group>"; };
 		3F2F86792C21B98E00C4C248 /* HONewOperationBuilderVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HONewOperationBuilderVM.swift; sourceTree = "<group>"; };
 		3F2FD7B42BE7CEF200D7A1B1 /* HOGuestLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOGuestLineView.swift; sourceTree = "<group>"; };
+		3F3509642C3594C80080B094 /* HOGenericNoteLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOGenericNoteLineView.swift; sourceTree = "<group>"; };
+		3F3509672C3595910080B094 /* HOAmountLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOAmountLineView.swift; sourceTree = "<group>"; };
 		3F35B9432BDE9B9C00837892 /* HOOperationAmount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOOperationAmount.swift; sourceTree = "<group>"; };
 		3F35B9452BDE9BB900837892 /* HOOptClassification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOOptClassification.swift; sourceTree = "<group>"; };
 		3F36C8B52C0A0DBB00361118 /* HOLockModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOLockModifier.swift; sourceTree = "<group>"; };
 		3F4F0F3A2BA4B20D00C8BB44 /* Protocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocol.swift; sourceTree = "<group>"; };
+		3F591DF42C3048B400F3C36E /* ReadMe_TimeImputation.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ReadMe_TimeImputation.md; sourceTree = "<group>"; };
 		3F5F857E2BCAC744006AA2E6 /* HOWsOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOWsOperations.swift; sourceTree = "<group>"; };
 		3F5F85812BCBD6D6006AA2E6 /* HOWarehouse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOWarehouse.swift; sourceTree = "<group>"; };
 		3F645C542C24950A0008C68C /* HOOperationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOOperationType.swift; sourceTree = "<group>"; };
@@ -167,7 +170,6 @@
 		3FB98CCB2BF50190009DC123 /* ReadMe_Operation.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ReadMe_Operation.md; sourceTree = "<group>"; };
 		3FBFDDC42BF78CF700C9EC17 /* HOTimeImputation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOTimeImputation.swift; sourceTree = "<group>"; };
 		3FC01D4A2BF20988002FA43D /* HORegolamentoLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HORegolamentoLineView.swift; sourceTree = "<group>"; };
-		3FCAA7252BEA9B54002E78D2 /* HONoteLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HONoteLineView.swift; sourceTree = "<group>"; };
 		3FD2C0B12BE11D4C005B3D13 /* MainTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		3FD2C0B42BE11E77005B3D13 /* HODestinationPath.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HODestinationPath.swift; sourceTree = "<group>"; };
 		3FD2C0B92BE122B5005B3D13 /* HOHomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOHomeView.swift; sourceTree = "<group>"; };
@@ -176,7 +178,6 @@
 		3FDFE61B2C0B539C0046B642 /* HOWritingAccountLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOWritingAccountLineView.swift; sourceTree = "<group>"; };
 		3FDFE61E2C0B53FD0046B642 /* HOWritingAccountBuilderVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOWritingAccountBuilderVM.swift; sourceTree = "<group>"; };
 		3FDFE6202C0B5A250046B642 /* HOWritingObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOWritingObject.swift; sourceTree = "<group>"; };
-		3FDFE6232C0B71830046B642 /* HOTimeAmountBuilderVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOTimeAmountBuilderVM.swift; sourceTree = "<group>"; };
 		3FE20C6B2BA89B7000ECCB88 /* HOCustomError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOCustomError.swift; sourceTree = "<group>"; };
 		3FE2AE962B8F76B000A7B350 /* hoster.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = hoster.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3FE2AE992B8F76B000A7B350 /* hosterApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = hosterApp.swift; sourceTree = "<group>"; };
@@ -241,6 +242,7 @@
 			children = (
 				3F0D61A92BECDEAF00A25A9A /* OperationModule */,
 				3F999A332BE63C0F0049AC83 /* ReservationModule */,
+				3F3509662C3594F40080B094 /* Common_subView */,
 			);
 			path = ModuliCompilazione;
 			sourceTree = "<group>";
@@ -251,6 +253,14 @@
 				3F2144E72BB75DC800839157 /* HOCalendar.swift */,
 			);
 			path = Calendario;
+			sourceTree = "<group>";
+		};
+		3F3509662C3594F40080B094 /* Common_subView */ = {
+			isa = PBXGroup;
+			children = (
+				3F3509642C3594C80080B094 /* HOGenericNoteLineView.swift */,
+			);
+			path = Common_subView;
 			sourceTree = "<group>";
 		};
 		3F5F85802BCBD6C2006AA2E6 /* Warehouse */ = {
@@ -283,6 +293,7 @@
 				3F84D7A62C07274200926707 /* HOAreaAccount.swift */,
 				3FDFE6202C0B5A250046B642 /* HOWritingObject.swift */,
 				3F645C542C24950A0008C68C /* HOOperationType.swift */,
+				3F591DF42C3048B400F3C36E /* ReadMe_TimeImputation.md */,
 			);
 			path = SubOperationObject;
 			sourceTree = "<group>";
@@ -475,7 +486,6 @@
 				3F2FD7B42BE7CEF200D7A1B1 /* HOGuestLineView.swift */,
 				3F0739282BE9207200B34435 /* HOCheckInLineView.swift */,
 				3F07392A2BE9474000B34435 /* HOBedDispoLineView.swift */,
-				3FCAA7252BEA9B54002E78D2 /* HONoteLineView.swift */,
 			);
 			path = SubView;
 			sourceTree = "<group>";
@@ -509,8 +519,9 @@
 			children = (
 				3F0D61AA2BED08C500A25A9A /* HOFilterPickerView.swift */,
 				3FC01D4A2BF20988002FA43D /* HORegolamentoLineView.swift */,
-				3FDFE6222C0B715B0046B642 /* TimeImputationBuilder */,
+				3FB98CC52BF4BCF0009DC123 /* HOTimeImputationLineView.swift */,
 				3FDFE61D2C0B53EA0046B642 /* WritingAccountBuilder */,
+				3F3509672C3595910080B094 /* HOAmountLineView.swift */,
 			);
 			path = SubViewLine;
 			sourceTree = "<group>";
@@ -566,15 +577,6 @@
 				3FDFE61E2C0B53FD0046B642 /* HOWritingAccountBuilderVM.swift */,
 			);
 			path = WritingAccountBuilder;
-			sourceTree = "<group>";
-		};
-		3FDFE6222C0B715B0046B642 /* TimeImputationBuilder */ = {
-			isa = PBXGroup;
-			children = (
-				3FB98CC52BF4BCF0009DC123 /* HOTimeImputationLineView.swift */,
-				3FDFE6232C0B71830046B642 /* HOTimeAmountBuilderVM.swift */,
-			);
-			path = TimeImputationBuilder;
 			sourceTree = "<group>";
 		};
 		3FE2AE8D2B8F76B000A7B350 = {
@@ -741,6 +743,7 @@
 				3F71C2642B99243700837F9F /* WorkSpaceModel.swift in Sources */,
 				3F859ABE2BAC8BD800297E13 /* HOSyncroDocManager.swift in Sources */,
 				3F859AA82BAC850600297E13 /* WorkSpaceType.swift in Sources */,
+				3F3509682C3595910080B094 /* HOAmountLineView.swift in Sources */,
 				3F859ABC2BAC8B1F00297E13 /* SubScribers.swift in Sources */,
 				3F71C2602B98E6D000837F9F /* MainView.swift in Sources */,
 				3F71C25E2B98B50100837F9F /* HOViewModel.swift in Sources */,
@@ -793,17 +796,16 @@
 				3F8FEA302B8FA3BB00A2BC34 /* HOAuthManager.swift in Sources */,
 				3F07392B2BE9474000B34435 /* HOBedDispoLineView.swift in Sources */,
 				3F0AE8562BB079250026A1C2 /* HOBedUnit.swift in Sources */,
+				3F3509652C3594C80080B094 /* HOGenericNoteLineView.swift in Sources */,
 				3FB98CC62BF4BCF0009DC123 /* HOTimeImputationLineView.swift in Sources */,
 				3F0D61AB2BED08C500A25A9A /* HOFilterPickerView.swift in Sources */,
 				3F859A9E2BAC83BC00297E13 /* HOAuthData.swift in Sources */,
-				3FDFE6242C0B71830046B642 /* HOTimeAmountBuilderVM.swift in Sources */,
 				3F859AB72BAC89D700297E13 /* HOViewCases.swift in Sources */,
 				3FBFDDC52BF78CF700C9EC17 /* HOTimeImputation.swift in Sources */,
 				3F999A382BE63E120049AC83 /* HOSystemMessages.swift in Sources */,
 				3F859AA22BAC844800297E13 /* WorkSpaceUnit.swift in Sources */,
 				3F9586782BAF2DAB00774733 /* HOOperationUnit.swift in Sources */,
 				3F35B9442BDE9B9C00837892 /* HOOperationAmount.swift in Sources */,
-				3FCAA7262BEA9B54002E78D2 /* HONoteLineView.swift in Sources */,
 				3F4F0F3B2BA4B20D00C8BB44 /* Protocol.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -934,7 +936,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = hoster/hoster.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"hoster/Preview Content\"";
 				DEVELOPMENT_TEAM = 2HR732K89Z;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -973,7 +975,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = hoster/hosterRelease.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 6;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_ASSET_PATHS = "\"hoster/Preview Content\"";
 				DEVELOPMENT_TEAM = 2HR732K89Z;
 				ENABLE_HARDENED_RUNTIME = YES;

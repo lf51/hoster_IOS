@@ -1,22 +1,22 @@
 //
-//  HONoteLineView.swift
+//  HOGenericNoteLineView.swift
 //  hoster
 //
-//  Created by Calogero Friscia on 07/05/24.
+//  Created by Calogero Friscia on 03/07/24.
 //
 
 import SwiftUI
 import MyPackView
 import MyTextFieldSinkPack
 
-struct HONoteLineView:View {
+struct HOGenericNoteLineView<Object:HOProFocusField&HOProNoteField>:View {
     
-    @Binding var reservation:HOReservation
+    @Binding var oggetto:Object
     
     @State private var addNote:Bool = false
     
-    let focusEqualValue:HOReservation.FocusField?
-    @FocusState.Binding var focusField:HOReservation.FocusField?
+    let focusEqualValue:Object.FocusField?
+    @FocusState.Binding var focusField:Object.FocusField?
     
     var body: some View {
         
@@ -48,7 +48,7 @@ struct HONoteLineView:View {
             if self.addNote {
 
                 CSSyncTextField_ExpandingBox(
-                    value: self.reservation.note,
+                    value: self.oggetto.note,
                     dismissButton: $addNote,
                     focusValue: focusEqualValue,
                     focusField: $focusField) { newValue in
@@ -59,7 +59,7 @@ struct HONoteLineView:View {
                                           
             } else {
                 
-                Text(reservation.note == nil ? "Nessuna nota inserita" : reservation.note!)
+                Text(self.oggetto.note == nil ? "Nessuna nota inserita" : self.oggetto.note!)
                     .italic()
                     .fontWeight(.light)
                     .foregroundStyle(Color.hoDefaultText)
@@ -73,10 +73,10 @@ struct HONoteLineView:View {
     private func addNote(newValue:String) {
         
         guard newValue != "" else {
-            self.reservation.note = nil
+            self.oggetto.note = nil
             return
         }
         
-        self.reservation.note = newValue
+        self.oggetto.note = newValue
     }
 }

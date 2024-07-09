@@ -15,6 +15,32 @@ enum HOCustomError:Error,LocalizedError {
     var errorDescription: String? {
         
         switch self {
+            
+        case .mainRefCorrotto:
+            return NSLocalizedString("Collezione di riferimento mancante. Fetch dei dati non possibile", comment: "Collegamento Database Corrotto")
+            
+        case .erroreGenerico(let problem,let reason,let solution):
+    
+            guard (problem != nil) ||
+                  (reason != nil) ||
+                  (solution != nil) else {
+                
+                return NSLocalizedString("ERRORE GENERICO", comment: "Errore non specificato")
+            }
+            
+            let problem = problem == nil ? "" : "[PROBLEMA]: \(problem!)"
+            let reason = reason == nil ? "" : "[MOTIVO]: \(reason!)"
+            let solution = solution == nil ? "" : "[SOLUZIONE]: \(solution!)"
+            
+            return NSLocalizedString("\(problem)\n\(reason)\n\(solution)", comment: "Errore Generico")
+       
+        }
+        
+    }
+    
+   /* var errorDescription: String? {
+        
+        switch self {
         case .mainRefCorrotto:
             return NSLocalizedString("Collezione di riferimento mancante. Fetch dei dati non possibile", comment: "Collegamento Database Corrotto")
             
@@ -39,6 +65,5 @@ enum HOCustomError:Error,LocalizedError {
        
         }
         
-    }
-    
+    }*/
 }

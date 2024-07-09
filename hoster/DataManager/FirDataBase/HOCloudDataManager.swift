@@ -24,6 +24,21 @@ public final class HOCloudDataManager {
     
     private(set) var loadingPublisher = PassthroughSubject<HOLoadingStatus?,Error>()
     
+    let localEncoder:Firestore.Encoder = {
+        
+        let localEncode = Firestore.Encoder()
+        localEncode.keyEncodingStrategy = .convertToSnakeCase
+        return localEncode
+    }()
+    
+    let localDecoder:Firestore.Decoder = {
+        
+        var localDecode = Firestore.Decoder()
+        localDecode.keyDecodingStrategy = .convertFromSnakeCase
+        return localDecode
+        
+    }()
+    
     public init(userAuthUID:String) {
         
         let userTree = self.db_base.collection(HOCollectionTreePath.main.rawValue)
@@ -44,7 +59,59 @@ public final class HOCloudDataManager {
 /// Managing Batch
 extension HOCloudDataManager {
     
-    func batchMultiObject(
+    func publishInBatch<Item:Codable&HOProStarterPack>(object:[HODataForPublishing<Item>]?) throws {
+        
+        let batch = self.db_base.batch()
+        
+        guard let object else {
+            
+            throw HOCustomError.erroreGenerico(problem: "Saving Fail", reason: "Non vi sono oggetti validi per il salvataggio", solution: "riprovare")
+        }
+        
+        try self.publishDocumentsBatch(from: object, in: batch)
+       
+        Task {
+            try await batch.commit()
+        }
+    }
+    
+    func batchMultiObject<A,B,C:Codable&HOProStarterPack>(
+        object_A:HODataForPublishing<A>?,
+        object_B:HODataForPublishing<B>?,
+        objects_C:[HODataForPublishing<C>]?) throws {
+        
+        let batch = self.db_base.batch()
+            //self.loadingPublisher.send(true)
+        
+            if let object_A {
+                
+               try self.publishSingleDocumentBatch(
+                    from: object_A,
+                    in: batch)
+                
+            }
+            
+            if let object_B {
+                
+                try self.publishSingleDocumentBatch(
+                    from: object_B,
+                    in: batch)
+            }
+            
+            if let objects_C {
+                
+                try self.publishDocumentsBatch(
+                    from: objects_C,
+                    in: batch)
+            }
+            
+            Task {
+                try await batch.commit()
+               // self.loadingPublisher.send(nil)
+            }
+    }
+    
+    /*func batchMultiObject(
         user:HODataForPublishing<HOUserDataModel>?,
         wsData:HODataForPublishing<WorkSpaceData>?,
         wsUnits:[HODataForPublishing<HOUnitModel>]?) throws {
@@ -78,10 +145,10 @@ extension HOCloudDataManager {
                 try await batch.commit()
                // self.loadingPublisher.send(nil)
             }
-    }
+    }*/ // backup per update a generic
     
    private func publishDocumentsBatch<Item:Codable&HOProStarterPack>(from items:[HODataForPublishing<Item>],in batch:WriteBatch) throws {
-        
+               
         for element in items {
             
             if let mainRef = element.collectionRef {
@@ -91,7 +158,8 @@ extension HOCloudDataManager {
                 try batch.setData(
                     from: element.model,
                     forDocument: doc,
-                    merge: true)
+                    merge: true, 
+                    encoder: localEncoder)
             }
 
         }
@@ -106,7 +174,8 @@ extension HOCloudDataManager {
             try batch.setData(
                 from: item.model,
                 forDocument: doc,
-                merge: true)
+                merge: true,
+                encoder: localEncoder)
         }
         
     }
@@ -123,7 +192,8 @@ extension HOCloudDataManager {
         
           try document.setData(
             from: itemData.model,
-                merge: true)
+            merge: true,
+            encoder: localEncoder)
         
     }
     
@@ -136,7 +206,7 @@ extension HOCloudDataManager {
         docReference
             .setData(element.path, merge: true)
     
-    }
+    } // verificare encoding.04.07.24 non in uso
     
     
     func deleteAllData() throws {
@@ -228,7 +298,7 @@ extension HOCloudDataManager {
                     return
                 }
             
-                let itemData = try? document.data(as: Item.self)
+                let itemData = try? document.data(as: Item.self,decoder:self.localDecoder )
                 
                 guard let itemData else {
                     print("[ItemData is NIL]")
@@ -298,7 +368,7 @@ extension HOCloudDataManager {
             
             let allUnit:[Item] = document.compactMap { snap -> Item? in
                 
-                let item = try? snap.data(as: Item.self)
+                let item = try? snap.data(as: Item.self,decoder: self.localDecoder)
                 return item
             }
 

@@ -66,17 +66,8 @@ extension HOOperationUnit {
 
 extension HOOperationUnit {
     
-    var writingLabel:String { self.getWritingLabel() }
+    var writingLabel:String { self.writing?.getWritingLabel() ?? "nuova scrittura" }
     
-    private func getWritingLabel() -> String {
-       
-      /*  guard let writing,
-              let label = writing.getWritingLabel() else { return "nuova scrittura" }
-        
-        return label */
-       return "Not Setted"
-    }
-        
 }
 
 extension HOOperationUnit:Codable { }
@@ -170,9 +161,14 @@ extension HOOperationUnit:HOProFocusField {
     
     enum FocusField:Int,Hashable {
         
-        case note = 0
+        case writing = 0
+        case amount
+        case note
+        
         
         
     }
     
 }
+
+extension HOOperationUnit:HOProNoteField { }

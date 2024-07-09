@@ -46,7 +46,10 @@ struct HONewReservationMainModule: View {
                             
                             HOGuestLineView(
                                 reservation:$reservation,
-                                generalErrorCheck: generalErrorCheck)
+                                generalErrorCheck: generalErrorCheck,
+                                focusEqualValue: .guest,
+                                focusField: $modelField)
+                            .focused($modelField, equals: .guest)
                             
                             HOCheckInLineView(
                                 reservation: $reservation,
@@ -56,8 +59,14 @@ struct HONewReservationMainModule: View {
                                 reservation: $reservation,
                                 generalErrorCheck: generalErrorCheck)
                             
-                            HONoteLineView(
+                           /* HOReservationNoteLineView(
                                 reservation: $reservation,
+                                focusEqualValue: .note,
+                                focusField: $modelField)
+                            .focused($modelField,equals: .note)*/
+                            
+                            HOGenericNoteLineView<HOReservation>(
+                                oggetto: $reservation,
                                 focusEqualValue: .note,
                                 focusField: $modelField)
                             .focused($modelField,equals: .note)

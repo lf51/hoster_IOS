@@ -23,13 +23,13 @@ extension HOAreaAccount {
     func getDescription(throw type:HOOperationType) -> String? {
         
         let typeValue = type.getDescriptionValue()
-        let associatedType = self.getOperationTypeAssociated()
+       // let associatedType = self.getOperationTypeAssociated()
         
-        if associatedType.contains(type) {
+       // if associatedType.contains(type) {
             
             return "\(typeValue) \(self.getGergalRawValue())"
             
-        } else { return nil }
+       // } else { return nil }
         
     }
  
@@ -43,7 +43,7 @@ extension HOAreaAccount {
         case .tributi:
             return "tributi"
         case .pluriennale:
-            return "bene ammortizzabile"
+            return "pluriennale"//"bene ammortizzabile"
         }
         
     }
@@ -207,7 +207,12 @@ extension HOAreaAccount:HOProWritingDownLoadFilter {
     
     func getRowLabel() -> String {
         
-        self.rawValue
+        switch self {
+        case .pluriennale:
+            return "bene pluriennale"
+        default: return self.rawValue
+        }
+        
     }
     
     func getImageAssociated() -> String {

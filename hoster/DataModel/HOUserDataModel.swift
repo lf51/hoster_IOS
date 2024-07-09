@@ -16,14 +16,15 @@ struct HOUserDataModel:HOProStarterPack {
     var wsFocusUnitRef:String?
         
 }
-     
-extension HOUserDataModel:Decodable {
+  
+extension HOUserDataModel:Codable { }
+/*extension HOUserDataModel:Decodable {
     
     enum CodingKeys:String,CodingKey {
         
         case uid
-        case isPremium = "is_premium"
-        case focusWorkSpace = "ws_focus_ref"
+        case isPremium //= "is_premium"
+        case wsFocusRef //= "ws_focus_ref"
         
     }
     
@@ -32,7 +33,7 @@ extension HOUserDataModel:Decodable {
         
         self.uid = try container.decode(String.self, forKey: .uid)
         self.isPremium = try container.decodeIfPresent(Bool.self, forKey: .isPremium)
-        self.wsFocusUnitRef = try container.decodeIfPresent(String.self, forKey: .focusWorkSpace)
+        self.wsFocusUnitRef = try container.decodeIfPresent(String.self, forKey: .wsFocusRef)
     }
 }
 
@@ -43,7 +44,7 @@ extension HOUserDataModel:Encodable {
         
         try container.encode(self.uid, forKey: .uid)
         try container.encodeIfPresent(self.isPremium, forKey: .isPremium)
-        try container.encodeIfPresent(self.wsFocusUnitRef, forKey: .focusWorkSpace)
+        try container.encodeIfPresent(self.wsFocusUnitRef, forKey: .wsFocusRef)
         
     }
-}
+}*/

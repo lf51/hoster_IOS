@@ -57,7 +57,82 @@ struct HOOperationsList: View {
                     vbSorterView()
                 } elementView: { operation in
                     
-                    Text(operation.uid)
+                    VStack(alignment:.leading) {
+                        
+                        Text(operation.writingLabel.uppercased())
+                            .bold()
+                        Text(operation.regolamento,format: .dateTime)
+                        
+                        if let writing = operation.writing {
+                            
+                            
+                            Text("area: \(writing.operationArea?.rawValue ?? "no area")")
+                            Text("type: \(writing.type?.rawValue ?? "no type")")
+                            Text("dare: \(writing.dare ?? "no dare")")
+                            Text("avere: \(writing.avere ?? "no avere")")
+                            
+                            if let oggetto = writing.oggetto {
+                                Text("categoria: \(oggetto.category ?? "no cat in")")
+                                Text("subCat: \(oggetto.subCategory ?? "no sub in")")
+                                Text("specification: \(oggetto.specification ?? "noSpecs")")
+                                
+                                
+                            } else {
+                                
+                                Text("no oggetto in")
+                            }
+                            
+                            
+                        } else {
+                            
+                            Text("no writing in")
+                        }
+                        
+                        if let amount = operation.amount {
+                            
+                            Text("q:\(amount.quantityStringValue ?? "no q")\n\(amount.pricePerUnitStringValue ?? "no pmc")")
+                        } else {
+                            
+                            Text("no amount in")
+                        }
+                        
+                       
+                        if let note = operation.note {
+                            
+                            Text(note)
+                            
+                        } else { Text("no note in")}
+                       
+                        Text("-----------")
+                        
+                        if let time = operation.timeImputation {
+                            
+                            Text("startYY: \(time.startYY ?? 1000)")
+                            Text("yearsOfImput: \(time.yyImputation ?? [1000,1001])")
+                            
+                            if let monthImputation = time.monthImputation {
+                                
+                                if let startMM = monthImputation.mmStart {
+                                    
+                                    Text("startMM: \(startMM )")
+                                } else { Text("startMM is Nil")}
+                                
+                                if let advancingMM = monthImputation.mmAdvancing {
+                                    Text("advancingMM: \(advancingMM)")
+                                } else { Text("advancin is nil ")}
+                                
+                            } else {
+                                Text("no month imputation")
+                            }
+                            
+                            
+                        } else {
+                            Text("time imputation is nil")
+                        }
+                        
+                        
+                        Divider()
+                    }
          
 
                 } onRefreshAction: {

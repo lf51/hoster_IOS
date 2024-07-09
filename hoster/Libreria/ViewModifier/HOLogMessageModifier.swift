@@ -22,17 +22,17 @@ import SwiftUI
                         VStack {
                             
                             Text(message.title)
-                                .font(.title2)
+                                .font(.title)
                             
                             Text(message.body.bodyValue())
                                 .font(.body)
                         }
-                            .padding(.horizontal,5)
+                           // .padding(.horizontal,5)
                             .padding(.vertical,10)
                             .frame(maxWidth:.infinity)
                             .background {
                                   RoundedRectangle(cornerRadius: 5.0)
-                                    .foregroundStyle(Color.yellow.opacity(0.4))
+                                    .foregroundStyle(Color.gray.opacity(0.9))
                               }
                             .padding(.horizontal)
                             .padding(.bottom,150)

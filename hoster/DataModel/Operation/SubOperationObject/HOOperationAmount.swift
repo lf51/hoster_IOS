@@ -49,7 +49,7 @@ enum HOAmountUnitMisure:String {
     
 }
 
-struct HOOperationAmount:Equatable,Hashable,Codable {
+struct HOOperationAmount:Equatable,Hashable {
     
     var quantity:Double?
     var pricePerUnit:Double?
@@ -83,7 +83,7 @@ extension HOOperationAmount {
         guard let pricePerUnit else { return nil }
 
         let value = pricePerUnit.formatted(.currency(code:localCurrencyCode))
-        return "pmc: \(value)"
+        return "prezzo unitario: \(value)"
         
     }
     
@@ -127,3 +127,5 @@ extension HOOperationAmount {
 
     }
 }
+
+extension HOOperationAmount:Codable { }

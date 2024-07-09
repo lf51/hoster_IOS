@@ -48,6 +48,48 @@ enum HOObjectCategory:String,CaseIterable {
    // case quote
     case altro // potremmo associare label
 
+    /// il valore dei mesi di advancing ( il mese di partenza è da considerarsi incluso)
+    func getDefaultMonthAdvancedAssociated() -> Int? {
+        
+        switch self {
+    
+        case .utenze:
+            return 2 // ese: bimestre
+        case .tassePatrimoniali,.ads,.manutenzione:
+            return nil//12
+        case .edifici,.costruzioniLeggere,.arredi,.biancheria,.attrezzatura,.impiantiGenerici,.impiantiSpecifici,.elettronica,.veicoli:
+            
+            if let amm = self.getAnniAmmortamento() {
+                
+                return amm * 12
+            } else { return 24 /* un valore di default che porta cmq il period a pluriennale, in teoria non dovrebbe accadere */ }
+            
+        default: return 1
+ 
+        }
+        
+        
+    }
+    
+    func getPeriodsAssociated() -> [HOMonthImputation.HOMIPeriod]? {
+        
+        let standard:[HOMonthImputation.HOMIPeriod] = [.mensile,.bimestre,.trimestre,.quadrimestre,.semestre,.annuale,.intero]
+        
+        switch self {
+
+        case .tassePatrimoniali,.ads,.manutenzione:
+            return [.intero]
+        case .edifici,.costruzioniLeggere,.arredi,.biancheria,.attrezzatura,.impiantiGenerici,.impiantiSpecifici,.elettronica,.veicoli:
+            
+            return [.pluriennale]
+           // fallthrough
+        default: return standard
+ 
+        }
+        
+        
+    }
+    
     func getUnitMisureAssociated() -> HOAmountUnitMisure? {
         
         switch self {

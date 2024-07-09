@@ -10,18 +10,31 @@ import MyPackView
 import MyTextFieldSinkPack
 
 struct HOWritingAccountLineView:View {
-    
+    // vedi Nota init deInit 05.07.24 Vi è una inefficienza a mio modo di vedere da provare in futuro a risolvere
     @EnvironmentObject var viewModel:HOViewModel
     
     @Binding var operation:HOOperationUnit
+   // let operation:HOOperationUnit
     
-    @StateObject private var builderVM:HOWritingAccountBuilderVM
+    @StateObject private var wrBuilderVM:HOWritingAccountBuilderVM
     
-    init(operation: Binding<HOOperationUnit>, mainViewModel:HOViewModel) {
+    let focusEqualValue:HOOperationUnit.FocusField?
+    @FocusState.Binding var focusField:HOOperationUnit.FocusField?
+    
+   // let syncroAction:(_ :HOWritingAccount?) -> Void
+    
+    init(operation: Binding<HOOperationUnit>,
+         mainViewModel:HOViewModel,
+         focusEqualValue:HOOperationUnit.FocusField?,
+         focusField:FocusState<HOOperationUnit.FocusField?>.Binding) {
         
         _operation = operation
         let builder = HOWritingAccountBuilderVM(mainVM: mainViewModel,existingWriting: operation.wrappedValue.writing)
-        _builderVM = StateObject(wrappedValue: builder)
+        _wrBuilderVM = StateObject(wrappedValue: builder)
+        
+        self.focusEqualValue = focusEqualValue
+        _focusField = focusField
+       // self.syncroAction = syncroAction
     }
     
     var body: some View {
@@ -42,65 +55,65 @@ struct HOWritingAccountLineView:View {
             VStack(alignment:.leading,spacing:5) {
 
                 HOFilterPickerView(
-                    property: $builderVM.operationArea,
+                    property: $wrBuilderVM.operationArea,
                     nilImage: "pencil.tip.crop.circle",
                     nilPropertyLabel: "area",
-                    allCases: builderVM.operationAreaAvaible)
+                    allCases: wrBuilderVM.operationAreaAvaible)
                 //.disabled(builderVM.lockEditing ?? false)
-                .csLock(Color.gray, .trailing, .trailing, builderVM.lockEditing ?? false)
+                .csLock(Color.gray, .trailing, .trailing, wrBuilderVM.lockEditing ?? false)
 
-                if let operationTypeAvaible = builderVM.operationTypeAvaible {
+                if let operationTypeAvaible = wrBuilderVM.operationTypeAvaible {
                     
                     HOFilterPickerView(
-                        property: $builderVM.operationType,
+                        property: $wrBuilderVM.operationType,
                         nilImage: "plus.slash.minus",
                         nilPropertyLabel: "operazione",
                         allCases: operationTypeAvaible)
-                    .csLock(Color.gray, .trailing, .trailing, builderVM.lockEditing ?? false)
-                    .id(builderVM.operationArea)
+                    .csLock(Color.gray, .trailing, .trailing, wrBuilderVM.lockEditing ?? false)
+                    .id(wrBuilderVM.operationArea)
                     
                     
                 }
 
-                if let categoriesAccountAvaible = builderVM.categoriesAccountAvaible {
+                if let categoriesAccountAvaible = wrBuilderVM.categoriesAccountAvaible {
 
                     HOFilterPickerView(
-                        property: $builderVM.categoryAccount,
+                        property: $wrBuilderVM.categoryAccount,
                         nilImage: "list.bullet.clipboard",
                         nilPropertyLabel: "oggetto",
                         allCases: categoriesAccountAvaible)
-                    .csLock(Color.gray, .trailing, .trailing, builderVM.lockEditing ?? false)
-                    .id(builderVM.operationType) // nota 27.05.24
+                    .csLock(Color.gray, .trailing, .trailing, wrBuilderVM.lockEditing ?? false)
+                    .id(wrBuilderVM.operationType) // nota 27.05.24
 
                     }
 
-                if let subsCategories = builderVM.subCategoriesAccountAvaible {
+                if let subsCategories = wrBuilderVM.subCategoriesAccountAvaible {
                     
                     HOFilterPickerView(
-                        property: $builderVM.subCategoryAccount,
+                        property: $wrBuilderVM.subCategoryAccount,
                         nilImage: "list.bullet.indent",
                         nilPropertyLabel: "sub oggetto",
                         allCases: subsCategories)
-                    .csLock(Color.gray, .trailing, .trailing, builderVM.lockEditing ?? false)
-                    .id(builderVM.categoryAccount)
+                    .csLock(Color.gray, .trailing, .trailing, wrBuilderVM.lockEditing ?? false)
+                    .id(wrBuilderVM.categoryAccount)
      
                 }
                 
-                if let allOperationInfo = builderVM.writingObjectAvaible {
+                if let allOperationInfo = wrBuilderVM.writingObjectAvaible {
                     
                         HOFilterPickerView(
-                            property: $builderVM.writingObject,
+                            property: $wrBuilderVM.writingObject,
                             nilImage: "checklist.unchecked",
                             nilPropertyLabel: "da archivio",
                             allCases: allOperationInfo)
-                        .csLock(Color.gray, .trailing, .trailing, builderVM.lockEditing ?? false)
-                        .id(builderVM.categoryAccount)
+                        .csLock(Color.gray, .trailing, .trailing, wrBuilderVM.lockEditing ?? false)
+                        .id(wrBuilderVM.categoryAccount)
                     
                         //.id(allOperationInfo)
                     
                 }
                 
-                if let operationInfo = builderVM.writingObject,
+                if let operationInfo = wrBuilderVM.writingObject,
                     operationInfo.specification == nil {
                     
                     // se esiste un operationInfo e la specification è nil, vuol dire che è stata scelta una nuova etichetta. Se esiste l'info e la specification vuol dire che la si è caricata da archivio.
@@ -112,21 +125,21 @@ struct HOWritingAccountLineView:View {
                 }
                     
                 
-                if let imputationAccountsAvaible = builderVM.imputationAccountsAvaible {
+                if let imputationAccountsAvaible = wrBuilderVM.imputationAccountsAvaible {
                              
                      HOFilterPickerView(
-                         property: $builderVM.imputationAccount,
+                         property: $wrBuilderVM.imputationAccount,
                          nilImage: "cursorarrow.click.2",
                          nilPropertyLabel: "per attività",
                          allCases: imputationAccountsAvaible)
-                     .csLock(Color.gray, .trailing, .trailing, builderVM.lockEditing ?? false)
-                     .id(builderVM.specification)
+                     .csLock(Color.gray, .trailing, .trailing, wrBuilderVM.lockEditing ?? false)
+                     .id(wrBuilderVM.specification)
                      //.id(builderVM.writingObject)
                     // .id(builderVM.subCategoryAccount)
                      
                  }
                 
-            if let editingComplete = builderVM.editingComplete,
+            if let editingComplete = wrBuilderVM.editingComplete,
                        editingComplete {
 
                     HStack {
@@ -151,14 +164,7 @@ struct HOWritingAccountLineView:View {
                     
             } // chiusa vstack interno
             
-           /* Text("area: \(builderVM.operationArea?.rawValue ?? "noValue")")
-            Text("type: \(builderVM.operationType?.rawValue ?? "noValue")")
-            Text("category: \(builderVM.categoryAccount?.rawValue ?? "noValue")")
-            Text("Subcategory: \(builderVM.subCategoryAccount?.rawValue ?? "noValue")")
-            Text("oggetto: \(builderVM.writingObject?.getDescription(campi: \.category,\.specification, partialAmountPath: \.quantityStringValue) ?? "noValue")")
-            Text("imputazione: \(builderVM.imputationAccount?.rawValue ?? "novalue")") */
-            
-            if let writing = builderVM.existingWriting {
+            if let writing = wrBuilderVM.existingWriting {
                 
                 let label = writing.getWritingDescription() ?? "none anagrafica"
                 
@@ -175,41 +181,49 @@ struct HOWritingAccountLineView:View {
 
     @ViewBuilder private func vbSpecification() -> some View {
         
-        let categoryString = builderVM.categoryAccount?.rawValue ?? "Oggetto"
-        let sub = builderVM.subCategoryAccount?.rawValue ?? categoryString
+        let categoryString = wrBuilderVM.categoryAccount?.rawValue ?? "Oggetto"
+        let sub = wrBuilderVM.subCategoryAccount?.rawValue ?? categoryString
     
-        let specification = builderVM.specification
+        let specification = wrBuilderVM.specification
         let placeholder = specification ?? ("Etichetta \(sub)")
         
-        let value:(image:String,imageColor:Color,descriptionSpecification:String) = {
+        let value:(image:String,imageColor:Color/*,descriptionSpecification:String*/) = {
             
             guard specification != nil else {
-                return ("rectangle.and.pencil.and.ellipsis.rtl",Color.gray,"Nessuna etichetta specifica - min 5 caratteri" )
+                return ("rectangle.and.pencil.and.ellipsis.rtl",Color.gray/*"Nessuna etichetta specifica - min 5 caratteri"*/ )
             }
             
-            return ("list.bullet.indent",Color.seaTurtle_4,"Etichetta inserita correttamente")
+            return ("list.bullet.indent",Color.seaTurtle_4/*"Etichetta inserita correttamente"*/)
             
         }()
         
         CSSyncTextField_4b(
-            placeHolder: placeholder) {
-                
-                Image(systemName: value.image)
-                    .bold()
-                    .imageScale(.medium)
-                    .foregroundStyle(value.imageColor)
-                    .padding(.leading,5)
-                
-            } syncroAction: { value in
-                self.specificationSubmit(new: value)
-            }
-            .csLock(Color.gray, .trailing, .trailing, (builderVM.lockEditing ?? false), true)
+             placeHolder: placeholder,
+             focusValue:self.focusEqualValue,
+             focusField:self.$focusField) {
+                 
+                 Image(systemName: value.image)
+                     .bold()
+                     .imageScale(.medium)
+                     .foregroundStyle(value.imageColor)
+                     .padding(.leading,5)
+                 
+             } disableLogic: { value in
+                 self.disableLogic(check: value)
+                 
+             } keyboardMiddleContent: { value in
+                 self.vbVisualValidation(value: value)
+                 
+             } syncroAction: { value in
+                 self.specificationSubmit(new: value)
+             }
+             .csLock(Color.gray, .trailing, .trailing, (wrBuilderVM.lockEditing ?? false), true)
         
-        if builderVM.lockEditing == nil {
+       /* if wrBuilderVM.lockEditing == nil {
             
             HStack {
                 
-                if builderVM.specification == nil {
+                if wrBuilderVM.specification == nil {
                     
                     Image(systemName: "exclamationmark.triangle.fill")
                         .font(.caption2)
@@ -224,26 +238,69 @@ struct HOWritingAccountLineView:View {
                 
             }
                 
+        }*/
+    }
+    
+    @ViewBuilder private func vbVisualValidation(value:String) -> some View {
+        
+        let newValue = value.replacingOccurrences(of: " ", with: "")
+        
+        let image:(name:String,color:Color) = {
+            let count = newValue.count
+            if count < 5 { return ("x.circle",Color.gray)}
+            else { return ("checkmark.circle",Color.green)}
+        }()
+
+            
+        HStack {
+            
+            Text("min 3 lettere - max 7 parole")
+                .font(.caption2)
+                .italic()
+            
+            Image(systemName: image.name)
+                    .imageScale(.medium)
+                    .foregroundStyle(image.color)
         }
+            
+            
     }
     
     private func specificationSubmit(new:String) {
         
-        let newValue = new.replacingOccurrences(of: " ", with: "")
+       /* let newValue = new.replacingOccurrences(of: " ", with: "")
         
         guard newValue.count > 5 else {
-            self.builderVM.specification = nil
-            return }
+            self.wrBuilderVM.specification = nil
+            return }*/
         
-        self.builderVM.specification = new
+        let forbidden:CharacterSet = .punctuationCharacters.union(.whitespacesAndNewlines)
         
+        let cleanString = csStringCleaner(value: new, byCharacter: forbidden)
+        
+        self.wrBuilderVM.specification = cleanString
+        
+    }
+    
+    private func disableLogic(check stringValue:String) -> Bool {
+        
+        let forbidden:CharacterSet = .punctuationCharacters.union(.whitespacesAndNewlines)
+        
+        let cleanString = csStringCleaner(value: stringValue, byCharacter: forbidden)
+        
+        guard cleanString.count > 3 else { return true }
+        
+        let wordCount = cleanString.components(separatedBy: " ").count
+        
+        return wordCount > 7
+
     }
     
     private func goOnAction() {
         
-        self.builderVM.setWritingAccount()
+        self.wrBuilderVM.setWritingAccount()
         
-        guard let writingAccount = self.builderVM.existingWriting else { 
+        guard let writingAccount = self.wrBuilderVM.existingWriting else { 
             
             let alert = AlertModel(title: "Errore", message: "Scrittura non riuscita. Riprovare")
             viewModel.sendAlertMessage(alert: alert)
@@ -251,6 +308,7 @@ struct HOWritingAccountLineView:View {
             return }
         
         self.operation.writing = writingAccount
+       // self.syncroAction(writingAccount)
         
     }
 }

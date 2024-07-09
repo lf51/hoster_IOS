@@ -347,14 +347,16 @@ extension HOWritingAccountBuilderVM {
             let message = "In conto \(area.rawValue) non vi è \(category.rawValue) (\(sub?.rawValue ?? "")) \(type) "
             
             vm.sendSystemMessage(
-                message: HOSystemMessage(vector: .log, title: "Errore", body: .custom(message)))
+                message: HOSystemMessage(vector: .log, title: "Errore [allObjects]", body: .custom(message)))
             
             return nil }
         
-        let filteredByCategory = objects.filter({ $0.category == category.rawValue })
-        let subFilter = filteredByCategory.filter({$0.subCategory == sub?.rawValue})
+        let filtered = objects.filter({
+            $0.category == category.rawValue &&
+            $0.subCategory == sub?.rawValue })
+       // let subFilter = filteredByCategory.filter({$0.subCategory == sub?.rawValue})
         
-        let noZeroObject = subFilter.filter({
+        let noZeroObject = filtered.filter({
             
             if let amount = $0.partialAmount,
                let q = amount.quantity {
@@ -368,7 +370,7 @@ extension HOWritingAccountBuilderVM {
             let message = "In conto \(area.rawValue) non vi è \(category.rawValue) (\(sub?.rawValue ?? "")) \(type) "
             
             vm.sendSystemMessage(
-                message: HOSystemMessage(vector: .log, title: "Errore", body: .custom(message)))
+                message: HOSystemMessage(vector: .log, title: "Errore [noZeroObjects]", body: .custom(message)))
             
             return nil
             
@@ -395,15 +397,23 @@ extension HOWritingAccountBuilderVM {
             specification: nil)
         
         let account = ws.wsOperations.getNastrinoAccount(for: area)
-        
+    
         guard let all = account.allObjectInNoPartialAmount else { return [newOne] }
-        
+       
         let categoryFilter = category.rawValue
         
-        let filtered = all.filter({$0.category == categoryFilter})
-        let subFilter = filtered.filter({$0.subCategory == sub?.rawValue})
+        //let filtered = all.filter({ $0.category == categoryFilter })
+        let filtered = all.filter({ 
+            $0.category == categoryFilter &&
+            $0.subCategory == sub?.rawValue
+           
+        })
         
-        return [newOne] + subFilter
+        return [newOne] + filtered
+        
+        /*let subFilter = filtered.filter({$0.subCategory == sub?.rawValue})
+        print("category is: \(categoryFilter)\nsubCategory is:\(sub?.rawValue ?? "no rawValue")")
+        return [newOne] + subFilter*/
 
         
     } // IN USO: Magazzino, c/c current

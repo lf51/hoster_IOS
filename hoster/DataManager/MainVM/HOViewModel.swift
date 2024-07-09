@@ -47,16 +47,16 @@ final class HOViewModel:ObservableObject {
       // self.isLoading = []
         self.loadStatus = []
         // Subscriber Train
-      //  addLoadingSubscriber() // chiuso per test
+        addLoadingSubscriber() // chiuso per test
         
-       // addUserDataSubscriber() // chiuso per test
-       // addWsDataSubscriber() // chiuso per test
-       // addWsUnitSubscriber() // chiuso per test
-       // addWsBooksSubscriber() // chiuso per test
-       // addWsOperationsSubscriber() // chiuso per test
+        addUserDataSubscriber() // chiuso per test
+        addWsDataSubscriber() // chiuso per test
+        addWsUnitSubscriber() // chiuso per test
+        addWsBooksSubscriber() // chiuso per test
+        addWsOperationsSubscriber() // chiuso per test
         
-      //  spinSubscriberTrain(userUID: userUid) // chiuso per test
-        self.db.currentWorkSpace = WorkSpaceModel() // aperto per test
+        spinSubscriberTrain(userUID: userUid) // chiuso per test
+      //  self.db.currentWorkSpace = WorkSpaceModel() // aperto per test
         print("[INIT]_End ViewModel Init")
         
     }
@@ -177,10 +177,14 @@ extension HOViewModel {
                 
             })
             
-            try self.dbManager.batchMultiObject(
+            /*try self.dbManager.batchMultiObject(
                 user: userForBatch,
                 wsData: wsForBatch,
-                wsUnits: unitsForBatch)
+                wsUnits: unitsForBatch)*/
+            try self.dbManager.batchMultiObject(
+                object_A: userForBatch,
+                object_B: wsForBatch,
+                objects_C: unitsForBatch)
             
             
         } catch let error {
@@ -206,7 +210,34 @@ extension HOViewModel {
         // implementare a fine corsa
     }
     
-    func publishData<Item:Codable&HOProStarterPack,Syncro:HOProSyncroManager>(from itemData:Item,syncroDataPath:KeyPath<HOCloudDataManager,Syncro>) {
+    func publishBatch<Item:Codable&HOProStarterPack,Syncro:HOProSyncroManager>(
+        from itemData:Item?...,
+        syncroDataPath:KeyPath<HOCloudDataManager,Syncro>,
+        refreshVMPath:HODestinationPath? = nil) {
+        
+            let collRef = self.dbManager[keyPath: syncroDataPath].mainTree
+            
+            let dataForPublishing:[HODataForPublishing<Item>] = itemData.compactMap({
+                guard let value = $0 else { return nil }
+                return HODataForPublishing(collectionRef: collRef, model: value)
+            })
+            
+            do {
+                
+                try self.dbManager.publishInBatch(object: dataForPublishing)
+                
+                self.callOnMainQueque {
+                    self.refreshPath(destinationPath: refreshVMPath)
+                }
+                
+            } catch let error {
+                
+                print("[PublishInBatch_Error]_\(error.localizedDescription)")
+            }
+            
+    }
+    
+    func publishData<Item:Codable&HOProStarterPack,Syncro:HOProSyncroManager>(from itemData:Item,syncroDataPath:KeyPath<HOCloudDataManager,Syncro>,refreshVMPath:HODestinationPath? = nil) {
         
         let collRef = self.dbManager[keyPath: syncroDataPath].mainTree
         
@@ -216,26 +247,15 @@ extension HOViewModel {
             
             try self.dbManager.publishDocumentData(from: data)
             
-        } catch let error {
+            self.callOnMainQueque {
+                self.refreshPath(destinationPath: refreshVMPath)
+            }
             
+        } catch let error {
             
             print("[Publish_Error]_\(error.localizedDescription)")
         }
         
-    }
-}
-
-extension HOViewModel {
-    
-    /// Azzera il path di riferimento e chiama il reset dello Scroll
-    func refreshPathAndScroll() -> Void {
-
-        self.showSpecificModel = nil
-        let path = self.currentPathSelection.vmPathAssociato()
-        
-        if self[keyPath: path].isEmpty { self.resetScroll.toggle() }
-        else { self[keyPath: path] = NavigationPath() }
-
     }
 }
 
@@ -271,6 +291,28 @@ extension HOViewModel {
       
         }
         
+    }
+    
+    /// azzera il path di riferimento Passato
+    func refreshPath(destinationPath: HODestinationPath?) {
+        
+        guard let destinationPath else { return }
+        
+        let path = destinationPath.vmPathAssociato()
+        
+        self[keyPath: path].removeLast()
+
+    }
+    
+    /// Azzera il path di riferimento e chiama il reset dello Scroll
+    func refreshPathAndScroll() -> Void {
+
+        self.showSpecificModel = nil
+        let path = self.currentPathSelection.vmPathAssociato()
+        
+        if self[keyPath: path].isEmpty { self.resetScroll.toggle() }
+        else { self[keyPath: path] = NavigationPath() }
+
     }
 }
 
@@ -346,8 +388,7 @@ extension HOViewModel {
 }
 
 
-// AREA TEST Magazzino
-let opt1:HOOperationUnit = {
+let buy1:HOOperationUnit = {
     
     var x = HOOperationUnit()
     x.writing = HOWritingAccount(
@@ -357,98 +398,6 @@ let opt1:HOOperationUnit = {
         oggetto: HOWritingObject(
             category: .merci,
             subCategory: .food,
-            specification: "Marmellate COOP"))
-    
-    x.amount = HOOperationAmount(quantity: 5, pricePerUnit: 1.5)
-    
-    return x
-}()
-
-let opt2:HOOperationUnit = {
-    
-    var x = HOOperationUnit()
-    x.writing = HOWritingAccount(
-        type: .acquisto,
-        dare: nil,
-        avere: "AA02",
-        oggetto: HOWritingObject(
-            category: .merci,
-            subCategory: .beverage,
-            specification: "CocaCola"))
-    
-    x.amount = HOOperationAmount(quantity: 15, pricePerUnit: 2.5)
-    
-    return x
-}()
-
-let opt3:HOOperationUnit = {
-    
-    var x = HOOperationUnit()
-    x.writing = HOWritingAccount(
-        type: .acquisto,
-        dare: nil,
-        avere: "AA02",
-        oggetto: HOWritingObject(
-            category: .merci,
-            subCategory: .altro,
-            specification: "Detersivo Piatti"))
-    
-    x.amount = HOOperationAmount(quantity: 10, pricePerUnit: 1.5)
-    
-    return x
-}()
-
-// Chiusa Area Test Magazzino
-
-// FRA MAGAZZINO E CORRENTE
-
-let consumo1:HOOperationUnit = {
-    
-    var x = HOOperationUnit()
-    x.writing = HOWritingAccount(
-        type: .consumo,
-        dare: "AA02",
-        avere: "IA011",
-        oggetto: HOWritingObject(
-            category: .merci,
-            subCategory: .altro,
-            specification: "Magnetini ricordo"))
-    
-    x.amount = HOOperationAmount(quantity: 7, pricePerUnit: 1.5)
-    
-    return x
-}()
-
-
-// AREA TEST CORRENTR
-
-let opt4:HOOperationUnit = {
-    
-    var x = HOOperationUnit()
-    x.writing = HOWritingAccount(
-        type: .acquisto,
-        dare: "AA01",
-        avere: "IA012",
-        oggetto: HOWritingObject(
-            category: .merci,
-            subCategory: .altro,
-            specification: "Magnetini ricordo"))
-    
-    x.amount = HOOperationAmount(quantity: 10, pricePerUnit: 1.5)
-    
-    return x
-}()
-
-let buy1:HOOperationUnit = {
-    
-    var x = HOOperationUnit()
-    x.writing = HOWritingAccount(
-        type: .vendita,
-        dare: "IA05",
-        avere: "AA01",
-        oggetto: HOWritingObject(
-            category: .servizi,
-            subCategory: .interno,
             specification: "Colazione Continentale"))
     
     x.amount = HOOperationAmount(quantity:10, pricePerUnit: 1.5)
@@ -464,7 +413,7 @@ var testViewModel:HOViewModel = {
     
     var vm = HOViewModel(authData: HOAuthData())
     var ws = WorkSpaceModel()
-    ws.wsOperations.all = [opt1,opt2,opt3,opt4,consumo1,buy1]
+    ws.wsOperations.all = [buy1]
     vm.db.currentWorkSpace? = ws
     return vm
 }()  // test per Preview // da eliminare

@@ -46,3 +46,19 @@ extension View {
         return self
     }
 }
+
+extension String {
+    
+    func csCapitalizeFirst() -> String {
+        
+        var allWords = self.components(separatedBy: " ")
+        
+        guard allWords.count > 1 else { return self.capitalized}
+        
+        let first = allWords.removeFirst().capitalized
+        allWords.insert(first, at: 0)
+
+        return allWords.joined(separator: " ")
+    }
+    
+}

@@ -163,6 +163,8 @@ extension HOReservation:HOProFocusField {
     }
 }
 
+extension HOReservation:HOProNoteField { }
+
 extension HOReservation {
     
     var labelModCompile:String { getLabelModCompile() }

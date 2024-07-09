@@ -14,7 +14,7 @@ struct HONewOperationMainModule: View {
     
     @StateObject var builderVM:HONewOperationBuilderVM
     
-    @State private var generalErrorCheck: Bool = true
+    @State private var generalErrorCheck: Bool = false
     @FocusState private var modelField:HOOperationUnit.FocusField?
     
     let destinationPath: HODestinationPath
@@ -29,8 +29,10 @@ struct HONewOperationMainModule: View {
     
     var body: some View {
         
+        let label = self.builderVM.operation.writingLabel.capitalized
+        
         CSZStackVB(
-            title: "self.operation.writingLabel.capitalized",
+            title: label,
             backgroundColorView: Color.hoBackGround) {
                 
                 VStack(alignment:.leading) {
@@ -45,41 +47,42 @@ struct HONewOperationMainModule: View {
                             
                             HOWritingAccountLineView(
                                 operation: $builderVM.operation,
-                                mainViewModel: viewModel)
+                                mainViewModel: viewModel,
+                                focusEqualValue: .writing,
+                                focusField: $modelField)
+                            .focused($modelField,equals: .writing)
                             
                             if builderVM.operation.writing != nil {
-                               
+
+                                HOAmountLineView(
+                                        builderVM: builderVM,
+                                        generalErrorCheck: generalErrorCheck,focusEqualValue: .amount,focusField: $modelField)
+                                .focused($modelField, equals: .amount)
+             
+                                HOTimeImputationLineView(
+                                        builderVM: builderVM,
+                                        generalErrorCheck: generalErrorCheck)
+
+                                HOGenericNoteLineView<HOOperationUnit>(oggetto: $builderVM.operation, focusEqualValue: .note, focusField:$modelField )
+                                    .focused($modelField,equals: .note)
                                 
-                                HOAmountLineView(builderVM: builderVM)
-                                
-                                            
-                                HOTimeImputationLineView(builderVM: builderVM)
-                                    
-                                
-                              //  HOTimeAmountBuilderView(operation: $operation)
-                                //    .id(operation.regolamento) // valutare se tenerlo o meno (id)
-                                
-                                
-                            }
+                                CSBottomDialogView() {
+                                    vbDescription()
+                                } disableConditions: {
+                                    disableCondition()
+                                } preDialogCheck: {
+                                   checkPreliminare()
+                                } primaryDialogAction: {
+                                    vbDialogButton()
+                                }
+                            } // chiusa 2° parte
                             
-                           /* if let ws = viewModel.db.currentWorkSpace {
-                                
-                                Text("wsOperationIn:\(ws.wsOperations.all.count)")
-                                
-                                
-                            } else {
-                                
-                                Text("NoWorkSpace")
-                                
-                            }*/
                             
-                            
- 
                         } // chiusa vstack interno
                         
                     } // chiusa Scroll
                     .scrollIndicators(.never)
-                    .scrollDismissesKeyboard(.immediately)
+                    .scrollDismissesKeyboard(.interactively)
                 } // chiusa VStack Madre
                 .padding(.horizontal,10)
             } // chiusa zStack
@@ -90,12 +93,79 @@ struct HONewOperationMainModule: View {
         
     } // chiusa body
     
-    // TEST
-    func addNew() {
-        /// TEST TEST TEST da verificare tutto il processo di pubblicazione
-        let newOpt = HOOperationUnit()
+    private func vbDescription() -> (Text,Text) {
+        
+        let short = self.shortDescription()
+        let long = "\(self.builderVM.operation.writing?.getWritingDescription() ?? "") \(short)"
+        return (Text(short).foregroundStyle(Color.malibu_p53),Text(long))
+    }
     
-        self.viewModel.publishData(from: newOpt, syncroDataPath: \.workSpaceOperations)
+    private func disableCondition() -> (Bool?,Bool,Bool?) {
+        
+       // let one = false //self.builderVM.isValidate
+        return (nil,false,nil)
+    }
+    
+    private func checkPreliminare() -> Bool {
+        
+        do {
+            try self.builderVM.checkValidation()
+            return true
+            
+        } catch let error {
+            
+            withAnimation {
+                self.generalErrorCheck = true
+                self.viewModel.sendSystemMessage(message: HOSystemMessage(vector: .log, title: "ATTENZIONE", body: .custom(error.localizedDescription)))
+            }
+            return false
+        }
+        
+    }
+    
+    @ViewBuilder private func vbDialogButton() -> some View {
+        
+        csBuilderDialogButton {
+            
+            DialogButtonElement(
+                label: .saveNew,
+                role: nil) {
+                    true
+                } action: {
+                    self.builderVM.publishOperation(mainVM: self.viewModel, refreshPath: nil)
+                }
+
+            DialogButtonElement(
+                label: .saveEsc) {
+                    true
+                } action: {
+                    self.builderVM.publishOperation(mainVM: self.viewModel, refreshPath: self.destinationPath)
+                }
+        }
+        
+    }
+    
+    private func shortDescription() -> String {
+        
+        guard let sharedTimeImputation = builderVM.sharedTimeImputation else {
+    
+            return "Questo tipo di operazione non viene imputata."}
+
+        let importo = self.builderVM.sharedAmount?.imponibile
+        
+        let importoString = self.builderVM.sharedAmount?.imponibileStringValue
+
+        let main = sharedTimeImputation.getImputationDescription(importo,asString: importoString)
+        
+        var additional:String?
+        
+        if let imputationAccount = self.builderVM.imputationAccountAssociated {
+
+                additional = ", per conto \(imputationAccount.rawValue)."
+
+        }
+        
+        return main + (additional ?? ".")
         
     }
     
@@ -107,11 +177,11 @@ struct HONewOperationMainModule: View {
         let operation:HOOperationUnit = {
            
             var opt = HOOperationUnit()
-         opt.writing = HOWritingAccount(
+        /* opt.writing = HOWritingAccount(
                 type: .acquisto,
                 dare: nil,
                 avere: "AA04",
-                oggetto: HOWritingObject(category: .veicoli, subCategory: .autovettura, specification: "Fiat 500 lounge 1.2"))
+                oggetto: HOWritingObject(category: .veicoli, subCategory: .autovettura, specification: "Fiat 500 lounge 1.2"))*/
             return opt
         }()
         
@@ -120,7 +190,4 @@ struct HONewOperationMainModule: View {
             .tint(Color.hoAccent)
     }
 }
-
-
-
 

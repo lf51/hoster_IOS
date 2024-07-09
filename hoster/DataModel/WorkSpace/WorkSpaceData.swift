@@ -8,7 +8,7 @@
 import Foundation
 
 /// Contiene i dati del workSpace. Il body del documento su Firebase
-struct WorkSpaceData:HOProStarterPack,Codable {
+struct WorkSpaceData:HOProStarterPack {
     
     static var defaultValue:WorkSpaceData { getDefaultValue() }
     
@@ -37,3 +37,5 @@ struct WorkSpaceData:HOProStarterPack,Codable {
         
     }
 }
+
+extension WorkSpaceData: Codable { }

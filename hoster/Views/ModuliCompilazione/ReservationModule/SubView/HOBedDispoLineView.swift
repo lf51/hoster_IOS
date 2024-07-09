@@ -31,6 +31,8 @@ struct HOBedDispoLineView:View {
                     
                     CS_ErrorMarkView(
                         warningColor: .hoWarning,
+                        scale: .medium,
+                        padding: (.trailing,0),
                         generalErrorCheck: generalErrorCheck,
                         localErrorCondition: errorIn())
                 }
