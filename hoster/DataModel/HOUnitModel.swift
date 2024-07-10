@@ -16,7 +16,7 @@ struct HOUnitModel:HOProStarterPack, Hashable {
     var pax:Int?
     
    // var bedAvaible:[HOBedUnit.HOBedType]?
-    var calendario:Calendar?
+    var calendario:Calendar? // ??
   
     /// label = "" • pax = nil
     init(type:UnitType) {

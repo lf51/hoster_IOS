@@ -27,7 +27,7 @@ enum HOGuestType:Int,CaseIterable {
         case .family:
             return "family"
         case .familyWithChild:
-            return "with child"
+            return "+ child"
         }
     }
     

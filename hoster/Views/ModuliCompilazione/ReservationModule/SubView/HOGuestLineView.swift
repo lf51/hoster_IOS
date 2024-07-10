@@ -11,12 +11,9 @@ import MyTextFieldSinkPack
 
 struct HOGuestLineView:View {
     
-    @EnvironmentObject var viewModel:HOViewModel
-    
-    @Binding var reservation:HOReservation
+   // @Binding var reservation:HOReservation
+    @ObservedObject var builderVM:HONewReservationBuilderVM
     let generalErrorCheck:Bool
-    
-   // @State private var stateMessage:String = ""
     
     let focusEqualValue:HOReservation.FocusField?
     @FocusState.Binding var focusField:HOReservation.FocusField?
@@ -34,12 +31,12 @@ struct HOGuestLineView:View {
                 backgroundOpacity: 0.4) {
 
                     HOGuestTypeLineView(
-                        reservation: $reservation,
+                        builderVM: builderVM,
                         generalErrorCheck: self.generalErrorCheck)
 
                 }
             
-            let placeHolder = self.reservation.guestName ?? "guest name on reservation"
+            let placeHolder = self.builderVM.reservation.guestName ?? "guest name on reservation"
             
            // VStack(alignment:.leading,spacing:5) {
                 
@@ -58,34 +55,16 @@ struct HOGuestLineView:View {
                         self.guestNameSubmit(new: value)
                     }
 
-                   /* Text(stateMessage)
-                        .italic()
-                        .font(.caption2)
-                        .foregroundStyle(Color.hoDefaultText)
-                        .opacity(0.8) */
-          // }
 
-        }/*.onChange(of: self.generalErrorCheck) { _, newValue in
-            
-            if newValue {
-                
-                if self.reservation.guestName == nil {
-                    
-                    self.stateMessage = "[Error]: Guest name missed"
-                }
-                
-            }
-        }*/
-       /* .onAppear {
-            self.stateMessage = getDefaultStateMessage()
-        }*/
+        }
     }
     
     @ViewBuilder private func vbInlineTextFieldContent() -> some View {
         
         let image:(color:Color,symbol:String) = {
             
-            if self.reservation.guestName != nil {
+            if let guestName = self.builderVM.reservation.guestName,
+               !guestName.isEmpty {
                 
                 return (Color.hoAccent,"person.fill")
                 
@@ -114,28 +93,13 @@ struct HOGuestLineView:View {
     
     private func guestNameSubmit(new:String) {
         
-       /* let newValue = new.replacingOccurrences(of: " ", with: "")
-        
-        guard newValue.count > 5 else {
-            
-            self.stateMessage = "Value can't be updated. Min 5 characters"
-            return }
-        
-        self.stateMessage = getDefaultStateMessage()*/
-        
         let forbidden:CharacterSet = .punctuationCharacters.union(.whitespacesAndNewlines).union(.symbols).union(.decimalDigits)
         
         let cleanString = csStringCleaner(value:new, byCharacter:forbidden)
-        self.reservation.guestName = cleanString.capitalized
+        self.builderVM.reservation.guestName = cleanString.capitalized
         
     }
-    
-   /* private func getDefaultStateMessage() -> String {
-        
-        "Press Enter to update value. Min 5 characters"
-        
-    }*/
-    
+
     /// guest name minimo 3 character max 4 words. No punteggiatura
     private func disableLogic(value:String) -> Bool {
         
@@ -164,8 +128,8 @@ struct HOGuestLineView:View {
 
 struct HOGuestTypeLineView:View {
     
-    @Binding var reservation:HOReservation
-    
+   // @Binding var reservation:HOReservation
+    @ObservedObject var builderVM:HONewReservationBuilderVM
     let generalErrorCheck:Bool
     
     var body: some View {
@@ -183,7 +147,7 @@ struct HOGuestTypeLineView:View {
     
     @ViewBuilder private func vbPaxIn() -> some View {
         
-        let paxRange = self.reservation.guestType?.getPaxRange() ?? 0...20
+        let paxRange = self.builderVM.reservation.guestType?.getPaxRange() ?? 0...20
         
         CSSinkStepper_1(
             range:paxRange,
@@ -192,7 +156,7 @@ struct HOGuestTypeLineView:View {
             valueColor:Color.hoDefaultText,
             numberWidth:35) { _, newValue in
             
-                self.reservation.pax = newValue
+                self.builderVM.reservation.pax = newValue
 
         }
         .fixedSize()
@@ -203,7 +167,7 @@ struct HOGuestTypeLineView:View {
             
         Group {
 
-            Picker(selection: self.$reservation.guestType) {
+            Picker(selection: self.$builderVM.reservation.guestType) {
                 
                 Text("type:")
                     .tag(nil as HOGuestType?)
@@ -223,15 +187,17 @@ struct HOGuestTypeLineView:View {
         }
         .csWarningModifier(
             warningColor: Color.hoWarning,
-            overlayAlign: .trailing,
+            overlayAlign: .topTrailing,
+           // padding: (.trailing,0),
+            offset: (0,-5),
             isPresented: self.generalErrorCheck) {
-
-                self.getGuestTypeError()
+                self.builderVM.checkGuestType()
+               // self.getGuestTypeError()
             }
             
         }
         
-    private func getGuestTypeError() -> Bool {
+   /* private func getGuestTypeError() -> Bool {
         
         guard let type = self.reservation.guestType else {
             return true
@@ -244,13 +210,13 @@ struct HOGuestTypeLineView:View {
         switch typePax.limit {
             
         case .exact:
-            let condition = pax == typePax.value
+            let condition = (pax == typePax.value)
             return !condition
             
         case .minimum:
-            let condition = pax >= typePax.value
+            let condition = (pax >= typePax.value)
             return !condition
             
         }
-    }
+    }*/
 }

@@ -11,19 +11,19 @@ import SwiftUI
  final class HONewOperationBuilderVM:ObservableObject {
     
     @Published var operation: HOOperationUnit
-    var storedOperation:HOOperationUnit
+    var storedOperation: HOOperationUnit
     
-    @Published var sharedAmount:HOOperationAmount?
-    @Published var syncedPriceValue:String?
-    @Published var amountCategory:HOAmountCategory = .piece
+    @Published var sharedAmount: HOOperationAmount?
+    @Published var syncedPriceValue: String?
+    @Published var amountCategory: HOAmountCategory = .piece
      
-    @Published var sharedTimeImputation:HOTimeImputation?
-    var periodsAssociated:[HOMonthImputation.HOMIPeriod]?
+    @Published var sharedTimeImputation: HOTimeImputation?
+    var periodsAssociated: [HOMonthImputation.HOMIPeriod]?
   
    // @Published var associatedOperation: HOOperationUnit?
-    private var associatedWriting:HOWritingAccount?
-    @Published var imputationAccountAssociated:HOImputationAccount? // per gli ammortamenti eventuali
-    var imputationAccountAvaible:[HOImputationAccount]?
+    private var associatedWriting: HOWritingAccount?
+    @Published var imputationAccountAssociated: HOImputationAccount? // per gli ammortamenti eventuali
+    var imputationAccountAvaible: [HOImputationAccount]?
      
     init(operation: HOOperationUnit) {
         

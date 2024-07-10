@@ -12,64 +12,87 @@ struct HONewReservationMainModule: View {
     
     @EnvironmentObject var viewModel: HOViewModel
     
-    @State private var reservation: HOReservation
-    @State private var storedReservation: HOReservation // per il reset
+    @StateObject var builderVM:HONewReservationBuilderVM
     
     @State private var generalErrorCheck: Bool = true
     @FocusState private var modelField:HOReservation.FocusField?
 
     let destinationPath: HODestinationPath
     
-    @State private var unitOnFocus:HOUnitModel?
-    
     init(reservation: HOReservation, destinationPath: HODestinationPath) {
      
-        self.reservation = reservation
-        self.storedReservation = reservation
-
+        let builder = HONewReservationBuilderVM(reservation:reservation)
+        _builderVM = StateObject(wrappedValue: builder)
+        
         self.destinationPath = destinationPath
+
     }
     
     var body: some View {
         
         CSZStackVB(
-            title: self.reservation.labelModCompile,
+            title: self.builderVM.reservation.labelModCompile,
             backgroundColorView: Color.hoBackGround) {
             
                 VStack {
                     
-                    vbUnitLine()
+                   // vbUnitLine()
+                    HOUnitLineView(
+                        builderVM: builderVM,
+                        generalErrorCheck: generalErrorCheck)
+                        /*.csWarningModifier(
+                            warningColor: Color.hoWarning,
+                            overlayAlign: .topTrailing,
+                            isPresented: generalErrorCheck) {
+                              
+                             builderVM.checkUnitValidation()
+                        }*/
                       
                     ScrollView {
                         
                         VStack(alignment:.leading,spacing:15) {
                             
                             HOGuestLineView(
-                                reservation:$reservation,
+                                builderVM:builderVM,
                                 generalErrorCheck: generalErrorCheck,
                                 focusEqualValue: .guest,
                                 focusField: $modelField)
                             .focused($modelField, equals: .guest)
                             
                             HOCheckInLineView(
-                                reservation: $reservation,
+                                builderVM: builderVM,
                                 generalErrorCheck: generalErrorCheck)
                             
                             HOBedDispoLineView(
-                                reservation: $reservation,
+                                builderVM: builderVM,
                                 generalErrorCheck: generalErrorCheck)
                             
-                           /* HOReservationNoteLineView(
-                                reservation: $reservation,
-                                focusEqualValue: .note,
-                                focusField: $modelField)
-                            .focused($modelField,equals: .note)*/
+                            // amount
+                            
+                            // tassa di soggiorno
+                            // commissionu
+                            // costi transazione
+                            
+                            
+                            
                             
                             HOGenericNoteLineView<HOReservation>(
-                                oggetto: $reservation,
+                                oggetto: $builderVM.reservation,
                                 focusEqualValue: .note,
                                 focusField: $modelField)
                             .focused($modelField,equals: .note)
+                            
+                            
+                            CSBottomDialogView() {
+                                vbDescription()
+                            } disableConditions: {
+                                disableCondition()
+                            } preDialogCheck: {
+                               checkPreliminare()
+                            } primaryDialogAction: {
+                                vbDialogButton()
+                            }
+                            
                         }
                     }
                     .scrollIndicators(.never)
@@ -78,79 +101,68 @@ struct HONewReservationMainModule: View {
                 }
                 .padding(.horizontal,10)
                 
-            }.onAppear(perform: {
-                addUnitOnAppear()
-            })
+            }/*.onAppear(perform: {
+                builderVM.addUnitOnAppear(vm: viewModel)
+            })*/
         
     } // close body
     
-    private func addUnitOnAppear() {
+    private func vbDescription() -> (Text,Text) {
         
-        guard let ws = self.viewModel.db.currentWorkSpace else {
-            
-            let alert = AlertModel(
-                title: "Errore",
-                message: "Current WorkSpace corrupted")
-            self.viewModel.sendAlertMessage(alert: alert)
-            return
-        }
+        let long = self.builderVM.longDescription()
         
-        switch ws.wsType {
-       
-        case .wholeUnit:
-            let main = ws.wsUnit.main
-            self.unitOnFocus = main
-        case .withSub:
-            self.unitOnFocus = nil
-        }
+        let short = self.builderVM.shortDescription()
         
+        return (Text("\(short)"),Text("\(long)"))
     }
     
-    @ViewBuilder private func vbUnitLine() -> some View {
+    private func disableCondition() -> (Bool?,Bool,Bool?) {
         
-        let ws = self.viewModel.db.currentWorkSpace
+       // let one = false //self.builderVM.isValidate
+        return (nil,false,nil)
+    }
+    
+    private func checkPreliminare() -> Bool {
         
-        HStack {
-            
-            Text(ws?.wsLabel ?? "error")
-                .font(.subheadline)
-                .bold()
-                .foregroundStyle(Color.hoDefaultText)
-            Spacer()
-            
-            switch ws?.wsType {
-                
-            case .withSub:
-                
-                HOUnitLineView(
-                    unit: $unitOnFocus)
-                .csWarningModifier(
-                    warningColor: Color.hoWarning,
-                    overlayAlign: .topTrailing,
-                    isPresented: generalErrorCheck) {
-                    self.unitOnFocus == nil
-                }
-               
-            default:
-                Text("entire unit")
-                    .italic()
-                    .font(.subheadline)
-                    .foregroundStyle(Color.hoDefaultText)
+        do {
+            try self.builderVM.checkValidation { value in
+                self.generalErrorCheck = value
             }
+            return true
             
-        }.padding(.horizontal,10)
+        } catch let error {
+            
+            withAnimation {
+                self.generalErrorCheck = true
+                self.viewModel.sendSystemMessage(message: HOSystemMessage(vector: .log, title: "ATTENZIONE", body: .custom(error.localizedDescription)))
+            }
+            return false
+        }
         
     }
     
-    // TEST
-    func addNew() {
-        /// TEST TEST TEST da verificare tutto il processo di pubblicazione
-        var newBook = HOReservation()
-        newBook.guestName = String(newBook.hashValue)
+    @ViewBuilder private func vbDialogButton() -> some View {
         
-        self.viewModel.publishData(from: newBook, syncroDataPath: \.workSpaceReservations)
+        csBuilderDialogButton {
+            
+            DialogButtonElement(
+                label: .saveNew,
+                role: nil) {
+                    true
+                } action: {
+                   // self.builderVM.publishOperation(mainVM: self.viewModel, refreshPath: nil)
+                }
+
+            DialogButtonElement(
+                label: .saveEsc) {
+                    true
+                } action: {
+                    self.builderVM.publishOperation(mainVM: self.viewModel, refreshPath: self.destinationPath)
+                }
+        }
         
     }
+ 
 }
 
 #Preview {

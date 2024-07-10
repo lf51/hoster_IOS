@@ -13,7 +13,8 @@ struct HOCheckInLineView:View {
     
     @EnvironmentObject var viewModel:HOViewModel
     
-    @Binding var reservation:HOReservation
+    @ObservedObject var builderVM:HONewReservationBuilderVM
+  //  @Binding var reservation:HOReservation
     
     let generalErrorCheck:Bool
     
@@ -34,7 +35,8 @@ struct HOCheckInLineView:View {
                             warningColor: Color.hoWarning,
                             overlayAlign: .topTrailing,
                             isPresented: self.generalErrorCheck) {
-                                errorIn()
+                               // errorIn()
+                                self.builderVM.errorCheckIn()
                             }
                     
             }
@@ -42,10 +44,10 @@ struct HOCheckInLineView:View {
             VStack(alignment:.leading,spacing: 5) {
                 
                 let dataArrivo = Binding {
-                    self.reservation.dataArrivo ?? Date()
+                    self.builderVM.reservation.dataArrivo ?? Date()
                 } set: { new in
                     
-                    self.reservation.dataArrivo = new
+                    self.builderVM.reservation.dataArrivo = new
                 }
 
                 HStack(alignment:.top) {
@@ -91,14 +93,14 @@ struct HOCheckInLineView:View {
     
     private func onAppearAction() {
         
-        print("OnAppear HOCheckInLineView")
-        self.reservation.dataArrivo = getCurrentDate()
+       // print("OnAppear HOCheckInLineView")
+        self.builderVM.reservation.dataArrivo = getCurrentDate()
         
     }
     
     private func getCurrentDate() -> Date? {
         
-        let calendar = Calendar.current
+        let calendar = Locale.current.calendar // Calendar.current
         
         var today = calendar.dateComponents([.day,.month,.year,.weekday], from: Date.now)
         
@@ -111,22 +113,22 @@ struct HOCheckInLineView:View {
         return date
     }
     
-    private func errorIn() -> Bool {
+   /*private func errorIn() -> Bool {
         
         guard self.reservation.dataArrivo != nil,
               let notti = self.reservation.notti,
               notti > 0 else { return true }
         return false
         
-    }
+    }*/
     
     @ViewBuilder private func vbArrivalDateExtended() -> some View {
         
-        let arrivalDate = csTimeFormatter().data.string(from: self.reservation.dataArrivo ?? Date.now)
+        let arrivalDate = csTimeFormatter(style: .short).data.string(from: self.builderVM.reservation.dataArrivo ?? Date.now)
         
-        let arrivalTime = csTimeFormatter().ora.string(from: self.reservation.dataArrivo ?? Date.now)
+        let arrivalTime = csTimeFormatter(style: .short).ora.string(from: self.builderVM.reservation.dataArrivo ?? Date.now)
         
-        Text("\(arrivalDate) dalle ore: \(arrivalTime)")
+        Text("Check-in –––> \(arrivalDate) dalle ore \(arrivalTime)")
             .italic()
             .font(.caption2)
             .foregroundStyle(Color.hoDefaultText)
@@ -152,7 +154,7 @@ struct HOCheckInLineView:View {
                 .font(.subheadline)
                 .foregroundStyle(Color.hoDefaultText)
                 
-            Text("\(self.reservation.pernottamenti)")
+            Text("\(self.builderVM.reservation.pernottamenti)")
                 .fontWeight(.heavy)
                 .font(.body)
                 .foregroundStyle(Color.scooter_p53)
@@ -173,7 +175,7 @@ struct HOCheckInLineView:View {
         
        VStack {
             
-            let checkOut = csTimeFormatter().data.string(from: self.reservation.checkOut)
+            let checkOut = csTimeFormatter().data.string(from: self.builderVM.reservation.checkOut)
             
             Text("Check-Out")
                 .fontDesign(.monospaced)
@@ -215,12 +217,12 @@ struct HOCheckInLineView:View {
                 valueColor:Color.hoDefaultText,
                 numberWidth:35) { _, newValue in
                 
-                    self.reservation.notti = newValue
+                    self.builderVM.reservation.notti = newValue
 
             }
             .fixedSize()
             
-            let value = csSwitchSingolarePlurale(checkNumber: self.reservation.notti ?? 1, wordSingolare: "notte", wordPlurale: "notti")
+            let value = csSwitchSingolarePlurale(checkNumber: self.builderVM.reservation.notti ?? 1, wordSingolare: "notte", wordPlurale: "notti")
             
             Text(value)
                 .italic()

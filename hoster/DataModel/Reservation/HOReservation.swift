@@ -31,6 +31,66 @@ struct HOReservation:HOProStarterPack {
     }
 }
 
+/// validation Logic
+extension HOReservation {
+    
+    func isBedDispoCoerentToPax() -> Bool {
+        
+        guard let pax,
+              let disposizione,
+              !disposizione.isEmpty else { return false }
+        
+        let maxPaxFromDispo:Int = {
+            
+            var max:Int = 0
+            
+            for eachBed in disposizione {
+                
+                let maxPax = eachBed.bedType?.getMaxCapability() ?? 0
+                
+                let value = maxPax * (eachBed.number ?? 0)
+                max += value
+            }
+            
+            return max
+            
+        }()
+        
+        return pax <= maxPaxFromDispo
+ 
+    }
+    
+    func isBedDispoCoerentToPaxThrowing() throws -> Bool {
+        
+        guard let pax,
+              let disposizione,
+              !disposizione.isEmpty else {
+            
+            throw HOCustomError.erroreGenerico(problem: "Disposizione letti e/o pax incompleta", reason: nil, solution: nil)
+            
+        }
+        
+        let maxPaxFromDispo:Int = {
+            
+            var max:Int = 0
+            
+            for eachBed in disposizione {
+                
+                let maxPax = eachBed.bedType?.getMaxCapability() ?? 0
+                
+                let value = maxPax * (eachBed.number ?? 0)
+                max += value
+            }
+            
+            return max
+            
+        }()
+        
+        return pax <= maxPaxFromDispo
+ 
+    }
+}
+
 extension HOReservation:Hashable {
     
     static func == (lhs: HOReservation, rhs: HOReservation) -> Bool {
@@ -51,6 +111,7 @@ extension HOReservation:Hashable {
     
 }
 
+/// logica pernottamento
 extension HOReservation {
     
     var pernottamenti:Int { getPernottamenti() }
@@ -165,6 +226,7 @@ extension HOReservation:HOProFocusField {
 
 extension HOReservation:HOProNoteField { }
 
+/// logica descrizion
 extension HOReservation {
     
     var labelModCompile:String { getLabelModCompile() }

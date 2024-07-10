@@ -72,6 +72,7 @@
 		3F999A382BE63E120049AC83 /* HOSystemMessages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F999A372BE63E120049AC83 /* HOSystemMessages.swift */; };
 		3F999A3E2BE66C9B0049AC83 /* HOLogMessageModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F999A3D2BE66C9B0049AC83 /* HOLogMessageModifier.swift */; };
 		3F999A402BE66EC30049AC83 /* HOPopMessageModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F999A3F2BE66EC30049AC83 /* HOPopMessageModifier.swift */; };
+		3F9B06D32C3D6AA600806B73 /* HONewReservationBuilderVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9B06D22C3D6AA600806B73 /* HONewReservationBuilderVM.swift */; };
 		3FB98CC62BF4BCF0009DC123 /* HOTimeImputationLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB98CC52BF4BCF0009DC123 /* HOTimeImputationLineView.swift */; };
 		3FBCB93F2B90CE4A0043B0B4 /* MyPackView in Frameworks */ = {isa = PBXBuildFile; productRef = 3FBCB93E2B90CE4A0043B0B4 /* MyPackView */; };
 		3FBFDDC52BF78CF700C9EC17 /* HOTimeImputation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBFDDC42BF78CF700C9EC17 /* HOTimeImputation.swift */; };
@@ -166,6 +167,7 @@
 		3F999A372BE63E120049AC83 /* HOSystemMessages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOSystemMessages.swift; sourceTree = "<group>"; };
 		3F999A3D2BE66C9B0049AC83 /* HOLogMessageModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOLogMessageModifier.swift; sourceTree = "<group>"; };
 		3F999A3F2BE66EC30049AC83 /* HOPopMessageModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOPopMessageModifier.swift; sourceTree = "<group>"; };
+		3F9B06D22C3D6AA600806B73 /* HONewReservationBuilderVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HONewReservationBuilderVM.swift; sourceTree = "<group>"; };
 		3FB98CC52BF4BCF0009DC123 /* HOTimeImputationLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOTimeImputationLineView.swift; sourceTree = "<group>"; };
 		3FB98CCB2BF50190009DC123 /* ReadMe_Operation.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ReadMe_Operation.md; sourceTree = "<group>"; };
 		3FBFDDC42BF78CF700C9EC17 /* HOTimeImputation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOTimeImputation.swift; sourceTree = "<group>"; };
@@ -475,6 +477,7 @@
 			children = (
 				3F999A342BE63C1E0049AC83 /* SubView */,
 				3F1D4A132BE13C0C004EFA05 /* HONewReservationMainModule.swift */,
+				3F9B06D22C3D6AA600806B73 /* HONewReservationBuilderVM.swift */,
 			);
 			path = ReservationModule;
 			sourceTree = "<group>";
@@ -783,6 +786,7 @@
 				3FEE44CB2B9F25D3008CFCAF /* SinkTextField.swift in Sources */,
 				3F859AC22BAC8C7800297E13 /* HODataForPublishing.swift in Sources */,
 				3F999A402BE66EC30049AC83 /* HOPopMessageModifier.swift in Sources */,
+				3F9B06D32C3D6AA600806B73 /* HONewReservationBuilderVM.swift in Sources */,
 				3F0739272BE9164B00B34435 /* Methods.swift in Sources */,
 				3FFC0CDD2B9CAB3F00287489 /* BedUnityBuilderView.swift in Sources */,
 				3F0739292BE9207200B34435 /* HOCheckInLineView.swift in Sources */,
@@ -936,7 +940,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = hoster/hoster.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"hoster/Preview Content\"";
 				DEVELOPMENT_TEAM = 2HR732K89Z;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -975,7 +979,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = hoster/hosterRelease.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 8;
 				DEVELOPMENT_ASSET_PATHS = "\"hoster/Preview Content\"";
 				DEVELOPMENT_TEAM = 2HR732K89Z;
 				ENABLE_HARDENED_RUNTIME = YES;

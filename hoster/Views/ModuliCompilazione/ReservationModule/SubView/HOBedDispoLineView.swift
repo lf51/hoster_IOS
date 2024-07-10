@@ -13,7 +13,8 @@ struct HOBedDispoLineView:View {
     
     @EnvironmentObject var viewModel:HOViewModel
     
-    @Binding var reservation:HOReservation
+   // @Binding var reservation:HOReservation
+    @ObservedObject var builderVM:HONewReservationBuilderVM
     
     let generalErrorCheck:Bool
     
@@ -22,7 +23,7 @@ struct HOBedDispoLineView:View {
         VStack(alignment:.leading,spacing: 10) {
             
             CSLabel_conVB(
-                placeHolder: "Disposizione (\(self.reservation.disposizione?.count ?? 0))",
+                placeHolder: "Disposizione (\(self.builderVM.reservation.disposizione?.count ?? 0))",
                 placeHolderColor: Color.hoDefaultText,
                 imageNameOrEmojy: "bed.double",
                 imageColor: Color.hoDefaultText,
@@ -34,7 +35,8 @@ struct HOBedDispoLineView:View {
                         scale: .medium,
                         padding: (.trailing,0),
                         generalErrorCheck: generalErrorCheck,
-                        localErrorCondition: errorIn())
+                        localErrorCondition: //!self.builderVM.isBedDispoOk())
+                        !self.builderVM.reservation.isBedDispoCoerentToPax())
                 }
             
             VStack(alignment:.leading) {
@@ -64,17 +66,17 @@ struct HOBedDispoLineView:View {
         }
     }
     
-    private func errorIn() -> Bool {
+   /* private func errorIn() -> Bool {
         
         guard let dispo = self.reservation.disposizione,
               !dispo.isEmpty else { return true }
         return false
         
-    }
+    }*/
     
     private func addBedUnit(type:HOBedType,q:Int) {
 
-        var bedUnits = self.reservation.disposizione ?? []
+        var bedUnits = self.builderVM.reservation.disposizione ?? []
         
         if bedUnits.first(where: {$0.bedType == type}) != nil {
             bedUnits.removeAll(where: {$0.bedType == type}) }
@@ -85,7 +87,7 @@ struct HOBedDispoLineView:View {
             bedUnits.append(newUnit)
         }
         
-        self.reservation.disposizione = bedUnits
+        self.builderVM.reservation.disposizione = bedUnits
 
         
     }

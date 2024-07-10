@@ -319,10 +319,10 @@ extension HOViewModel {
 /// workspace get data from
 extension HOViewModel {
     
-    func getSubs() -> [HOUnitModel] {
+    func getSubs() -> [HOUnitModel]? {
         
         guard let ws = self.db.currentWorkSpace,
-              let subs = ws.wsUnit.subs else { return [] }
+              let subs = ws.wsUnit.subs else { return nil }
         
         return subs.sorted(by: {$0.label < $1.label})
         
@@ -409,12 +409,47 @@ let buy1:HOOperationUnit = {
 
 // chiusa AREA TEST CORRENTE
 
+let testUnit:HOUnitModel = {
+    var curr = HOUnitModel(type: .main)
+    curr.label = "Casa mea"
+    //curr.pax = 3
+    return curr
+}()
+
+let testUnit2:HOUnitModel = {
+    var curr = HOUnitModel(type: .sub)
+    curr.label = "Camera due"
+    curr.pax = 3
+    return curr
+}()
+
+let testUnit1:HOUnitModel = {
+    var curr = HOUnitModel(type: .sub)
+    curr.label = "Camera Uno"
+    curr.pax = 5
+    return curr
+}()
+
+let testWorkSpace:WorkSpaceModel = {
+    
+    var ws = WorkSpaceModel()
+    ws.wsOperations.all = [buy1]
+    ws.wsUnit.all = [testUnit,testUnit1,testUnit2]
+    return ws
+}()
+
+
 var testViewModel:HOViewModel = {
     
     var vm = HOViewModel(authData: HOAuthData())
-    var ws = WorkSpaceModel()
-    ws.wsOperations.all = [buy1]
-    vm.db.currentWorkSpace? = ws
+   // var ws = WorkSpaceModel()
+   // var wd = WorkSpaceData(focusUid: "ujo")
+   // ws.wsOperations.all = [buy1]
+    
+   // ws.wsUnit.all = [unit]
+    vm.db.currentWorkSpace = WorkSpaceModel()
+    vm.db.currentWorkSpace! = testWorkSpace
+   
     return vm
 }()  // test per Preview // da eliminare
 

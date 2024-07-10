@@ -18,7 +18,7 @@ extension HOBedUnit:Codable { }
 
 extension HOBedUnit:Equatable { }
 
-enum HOBedType:Codable {
+enum HOBedType:String,Codable {
     
     static var allCases: [HOBedType] = [.single,.double,.king,.singlePlusHalf,.culletta]
     
@@ -50,6 +50,18 @@ enum HOBedType:Codable {
             return "culletta"
         }
         
+        
+    }
+    
+    func getMaxCapability() -> Int {
+        
+        switch self {
+        case .single,.singlePlusHalf,.culletta:
+            return 1
+        case .double,.king:
+            return 2
+       
+        }
         
     }
 }
