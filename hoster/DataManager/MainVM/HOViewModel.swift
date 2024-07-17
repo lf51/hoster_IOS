@@ -353,6 +353,27 @@ extension HOViewModel {
 /// retrieve wsData information
 extension HOViewModel {
     
+    func getCityTaxPerPerson() -> Double {
+        
+        guard let ws = self.db.currentWorkSpace,
+              let cityTax = ws.wsData.cityTaxPerPerson else {
+            return WorkSpaceData.defaultValue.cityTaxPerPerson!
+        }
+        
+        return cityTax
+        
+    }
+    
+    func getIvaSubject() -> Bool {
+        
+        guard let ws = self.db.currentWorkSpace,
+              let ivaSub = ws.wsData.ivaSubject else {
+            return WorkSpaceData.defaultValue.ivaSubject!
+        }
+        
+        return ivaSub
+    }
+    
     func getMaxNightIn() -> Int {
         
         guard let ws = self.db.currentWorkSpace,

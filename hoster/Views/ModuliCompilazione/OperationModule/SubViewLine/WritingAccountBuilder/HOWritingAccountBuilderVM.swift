@@ -39,10 +39,10 @@ final class HOWritingAccountBuilderVM:ObservableObject {
     @Published var lockEditing:Bool?
     var cancellables = Set<AnyCancellable>()
     
-    init(mainVM:HOViewModel,existingWriting:HOWritingAccount?) {
+    init(/*mainVM:HOViewModel,*/existingWriting:HOWritingAccount?) {
         print("[INIT]_builderVM")
         
-        self.mainVM = mainVM
+       // self.mainVM = mainVM
         self.existingWriting = existingWriting
         compileBuilder()
     }
@@ -50,6 +50,11 @@ final class HOWritingAccountBuilderVM:ObservableObject {
     deinit {
         cancellables.removeAll()
         print("[DE.INIT]_builderVM")
+    }
+    
+    func setMainVM(to vm:HOViewModel) {
+        
+        self.mainVM = vm
     }
     
     private func addAllSubScribers() {

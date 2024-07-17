@@ -7,13 +7,17 @@
 
 import Foundation
 import MyFilterPack
+import MyPackView
 
 struct HOReservation:HOProStarterPack {
     
     let uid:String
+    var regolamento:Date
 
     var refUnit:String? //
     var refOperations:[String]? // operazioni associate // vendita servizio pernottamento, vendita servizio colazione transfer etc. Associabili in fase di creazione attraverso un default che possiamo fare impostare all'utente, con i servizi inclusi nella reservation, e possiamo associare in seguito ad esempio per il sopravvenire di regali e mance.
+    
+    var portale:String? // ?
     
     var dataArrivo:Date? //
     var guestName:String? //
@@ -22,12 +26,13 @@ struct HOReservation:HOProStarterPack {
     var notti:Int? //
     var disposizione:[HOBedUnit]? //
     
-    var pernottamentiEsentiCityTax:Int? // ??
+   // var pernottamentiEsentiCityTax:Int? // ??
     
     var note:String? //
     
     init() {
         self.uid = UUID().uuidString
+        self.regolamento = Date()
     }
 }
 
@@ -95,12 +100,16 @@ extension HOReservation:Hashable {
     
     static func == (lhs: HOReservation, rhs: HOReservation) -> Bool {
         lhs.uid == rhs.uid &&
+        lhs.regolamento == rhs.regolamento &&
+        lhs.refUnit == rhs.refUnit &&
+        lhs.refOperations == rhs.refOperations &&
         lhs.guestType == rhs.guestType &&
         lhs.guestName == rhs.guestName &&
         lhs.pax == rhs.pax &&
         lhs.dataArrivo == rhs.dataArrivo &&
         lhs.notti == rhs.notti &&
         lhs.disposizione == rhs.disposizione &&
+        lhs.portale == rhs.portale &&
         lhs.note == rhs.note
     }
     
@@ -115,7 +124,7 @@ extension HOReservation:Hashable {
 extension HOReservation {
     
     var pernottamenti:Int { getPernottamenti() }
-    var pernottamentiTassati:Int? { (self.pernottamenti) - (self.pernottamentiEsentiCityTax ?? 0) } // forse inutile
+   // var pernottamentiTassati:Int? { (self.pernottamenti) - (self.pernottamentiEsentiCityTax ?? 0) } // forse inutile
     var checkOut:Date { getCheckOut() }
     
     private func getPernottamenti() -> Int {
@@ -209,7 +218,7 @@ extension HOReservation:HOProFocusField {
     enum FocusField:Int,Hashable {
         
         case refUnit = 0
-        
+        case refOperation
         case arrivo
         case guest
         case guestType
@@ -218,8 +227,17 @@ extension HOReservation:HOProFocusField {
         case notti
         case disposizione
         
-        case pernottEsenti
+      //  case pernottEsenti
         case note
+        
+        // focus su operazioni collegate
+        case commisionabile
+        case cityTax
+        case vatDebito
+        case vatCredito
+        case commissione
+        case transazione
+        
         
     }
 }
@@ -230,7 +248,8 @@ extension HOReservation:HOProNoteField { }
 extension HOReservation {
     
     var labelModCompile:String { getLabelModCompile() }
-     
+    var specificationLabel:String? { self.getSpecification() }
+    
     private func getLabelModCompile() -> String {
          
         guard let guestName else {
@@ -242,4 +261,13 @@ extension HOReservation {
          
          
      }
+    
+    private func getSpecification() -> String? {
+        
+        guard let guestName else { return nil }
+ 
+        return "\(guestName) #\(self.uid)"
+        
+        
+    }
 }

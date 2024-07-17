@@ -43,47 +43,9 @@ struct HOCheckInLineView:View {
             
             VStack(alignment:.leading,spacing: 5) {
                 
-                let dataArrivo = Binding {
-                    self.builderVM.reservation.dataArrivo ?? Date()
-                } set: { new in
-                    
-                    self.builderVM.reservation.dataArrivo = new
-                }
-
-                HStack(alignment:.top) {
-
-                    DatePicker(selection: dataArrivo,
-                               displayedComponents: [.date,.hourAndMinute]) {
-                        vbDateLabel()
-                    }
-                    .colorMultiply(Color.black)
-                    .fixedSize()
-                    
-                   Text("orario previsto")
-                        .italic()
-                        .font(.caption)
-                        .foregroundStyle(Color.black)
-                    Spacer()
-                }
-                .padding(.horizontal,10)
-                .padding(.vertical,5)
-                .background {
-                    
-                    RoundedRectangle(cornerRadius: 10.0)
-                        .foregroundStyle(Color.scooter_p53)
-                        .opacity(0.8)
-                        .frame(maxWidth:.infinity)
-                       
-                }
- 
-               vbArrivalDateExtended()
-                
-               HStack {
-                   
-                    vbCheckOutBox()
-                    vbPernottBox()
-                    Spacer()
-                }
+               vbArrivalBox()
+               vbCheckOutBox()
+          
             }
            
             
@@ -122,7 +84,7 @@ struct HOCheckInLineView:View {
         
     }*/
     
-    @ViewBuilder private func vbArrivalDateExtended() -> some View {
+   /* @ViewBuilder private func vbArrivalDateExtended() -> some View {
         
         let arrivalDate = csTimeFormatter(style: .short).data.string(from: self.builderVM.reservation.dataArrivo ?? Date.now)
         
@@ -133,18 +95,61 @@ struct HOCheckInLineView:View {
             .font(.caption2)
             .foregroundStyle(Color.hoDefaultText)
             .opacity(0.8)
-    }
+    }*/ // deprecated
     
-    @ViewBuilder private func vbDateLabel() -> some View {
+   /* @ViewBuilder private func vbDateLabel() -> some View {
         
-            Text("Arrivo:")
+            Text("Check-In:")
                 .fontDesign(.monospaced)
                 .fontWeight(.semibold)
                 .font(.subheadline)
               
+    }*/ // deprecated
+    
+    @ViewBuilder private func vbArrivalBox() -> some View {
+        
+        let dataArrivo = Binding {
+            self.builderVM.reservation.dataArrivo ?? Date()
+        } set: { new in
+            
+            self.builderVM.reservation.dataArrivo = new
+        }
+
+        HStack(alignment:.top) {
+
+            DatePicker(selection: dataArrivo,
+                       displayedComponents: [.date,.hourAndMinute]) {
+              
+                Text("Check-In:")
+                    .fontDesign(.monospaced)
+                    .fontWeight(.semibold)
+                    .font(.subheadline)
+                
+            }
+            .colorMultiply(Color.black)
+            .fixedSize()
+            
+           Text("orario previsto")
+                .italic()
+                .font(.caption2)
+                .foregroundStyle(Color.black)
+            Spacer()
+        }
+        .padding(.horizontal,10)
+        .padding(.vertical,5)
+        .background {
+            
+            RoundedRectangle(cornerRadius: 10.0)
+                .foregroundStyle(Color.scooter_p53)
+                .opacity(0.8)
+                .frame(maxWidth:.infinity)
+               
+        }
+        
+        
     }
     
-    @ViewBuilder private func vbPernottBox() -> some View {
+  /*  @ViewBuilder private func vbPernottBox() -> some View {
         
         VStack {
             
@@ -169,9 +174,42 @@ struct HOCheckInLineView:View {
                
         }
         
-    }
+    }*/ // deprecated
     
     @ViewBuilder private func vbCheckOutBox() -> some View {
+        
+       HStack {
+            
+           let checkOut = csTimeFormatter(style: .long).data.string(from: self.builderVM.reservation.checkOut)
+            
+            Text("Check-Out:")
+                .fontDesign(.monospaced)
+                .fontWeight(.semibold)
+                .font(.subheadline)
+                .foregroundStyle(Color.hoDefaultText)
+                
+            Text(checkOut)
+                .italic()
+                .fontWeight(.light)
+                .font(.body)
+                .foregroundStyle(Color.malibu_p53)
+               // .lineLimit(1)
+         //  Spacer()
+        }
+       
+        .padding(.horizontal,10)
+        .padding(.vertical,5)
+        .background {
+            
+            RoundedRectangle(cornerRadius: 10.0)
+                .foregroundStyle(Color.hoBackGround)
+               // .frame(maxWidth:.infinity)
+               
+        }
+        
+    }
+    
+    /*@ViewBuilder private func vbCheckOutBox() -> some View {
         
        VStack {
             
@@ -197,11 +235,11 @@ struct HOCheckInLineView:View {
             
             RoundedRectangle(cornerRadius: 10.0)
                 .foregroundStyle(Color.hoBackGround)
-                .frame(maxWidth:.infinity)
+               // .frame(maxWidth:.infinity)
                
         }
         
-    }
+    }*/ // deprecated
     
     @ViewBuilder private func vbNightIn() -> some View {
 

@@ -77,3 +77,26 @@ enum HODoubleEntryAccountIndex:String,CaseIterable {
 }
 
 
+enum HOReservationChannel:String,CaseIterable {
+    
+    static var allCases:[HOReservationChannel] = [.booking,.airbnb,.expedia,.direct]
+    
+    case booking
+    case airbnb
+    case expedia
+    case direct
+    
+   // case altro(_:String)
+    
+    func getExtendedRawValue() -> String {
+        
+        switch self {
+        case .booking:
+            return "booking.com"
+        case .airbnb,.expedia:
+            return self.rawValue
+        case .direct:
+            return "prenotazione diretta"
+        }
+    }
+}

@@ -47,7 +47,7 @@ struct HONewOperationMainModule: View {
                             
                             HOWritingAccountLineView(
                                 operation: $builderVM.operation,
-                                mainViewModel: viewModel,
+                               /* mainViewModel: viewModel,*/
                                 focusEqualValue: .writing,
                                 focusField: $modelField)
                             .focused($modelField,equals: .writing)

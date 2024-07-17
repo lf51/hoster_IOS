@@ -24,12 +24,12 @@ struct HOWritingAccountLineView:View {
    // let syncroAction:(_ :HOWritingAccount?) -> Void
     
     init(operation: Binding<HOOperationUnit>,
-         mainViewModel:HOViewModel,
+        // mainViewModel:HOViewModel,
          focusEqualValue:HOOperationUnit.FocusField?,
          focusField:FocusState<HOOperationUnit.FocusField?>.Binding) {
         
         _operation = operation
-        let builder = HOWritingAccountBuilderVM(mainVM: mainViewModel,existingWriting: operation.wrappedValue.writing)
+        let builder = HOWritingAccountBuilderVM(/*mainVM: mainViewModel,*/existingWriting: operation.wrappedValue.writing)
         _wrBuilderVM = StateObject(wrappedValue: builder)
         
         self.focusEqualValue = focusEqualValue
@@ -176,7 +176,7 @@ struct HOWritingAccountLineView:View {
             }
             
         } // chiusa vstack madre
-
+        .onAppear { wrBuilderVM.setMainVM(to: self.viewModel) }
     } // chiusa body
 
     @ViewBuilder private func vbSpecification() -> some View {

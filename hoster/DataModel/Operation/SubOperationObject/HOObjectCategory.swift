@@ -22,6 +22,7 @@ enum HOObjectCategory:String,CaseIterable {
     case abbonamentiQuoteCanoni = "abbonamento/quota/canone"
     
     case tassePatrimoniali = "tassa patrimoniale"
+    case cityTax = "tassa di soggiorno"
    // case imposte // non ha sub e serve per imputare cityTax e Iva
     
    // case vat

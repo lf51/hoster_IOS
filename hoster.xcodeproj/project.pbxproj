@@ -73,6 +73,7 @@
 		3F999A3E2BE66C9B0049AC83 /* HOLogMessageModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F999A3D2BE66C9B0049AC83 /* HOLogMessageModifier.swift */; };
 		3F999A402BE66EC30049AC83 /* HOPopMessageModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F999A3F2BE66EC30049AC83 /* HOPopMessageModifier.swift */; };
 		3F9B06D32C3D6AA600806B73 /* HONewReservationBuilderVM.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F9B06D22C3D6AA600806B73 /* HONewReservationBuilderVM.swift */; };
+		3FB6E9942C442FF2002BFF45 /* HOCityTaxLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB6E9932C442FF2002BFF45 /* HOCityTaxLineView.swift */; };
 		3FB98CC62BF4BCF0009DC123 /* HOTimeImputationLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FB98CC52BF4BCF0009DC123 /* HOTimeImputationLineView.swift */; };
 		3FBCB93F2B90CE4A0043B0B4 /* MyPackView in Frameworks */ = {isa = PBXBuildFile; productRef = 3FBCB93E2B90CE4A0043B0B4 /* MyPackView */; };
 		3FBFDDC52BF78CF700C9EC17 /* HOTimeImputation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FBFDDC42BF78CF700C9EC17 /* HOTimeImputation.swift */; };
@@ -168,6 +169,7 @@
 		3F999A3D2BE66C9B0049AC83 /* HOLogMessageModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOLogMessageModifier.swift; sourceTree = "<group>"; };
 		3F999A3F2BE66EC30049AC83 /* HOPopMessageModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOPopMessageModifier.swift; sourceTree = "<group>"; };
 		3F9B06D22C3D6AA600806B73 /* HONewReservationBuilderVM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HONewReservationBuilderVM.swift; sourceTree = "<group>"; };
+		3FB6E9932C442FF2002BFF45 /* HOCityTaxLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOCityTaxLineView.swift; sourceTree = "<group>"; };
 		3FB98CC52BF4BCF0009DC123 /* HOTimeImputationLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOTimeImputationLineView.swift; sourceTree = "<group>"; };
 		3FB98CCB2BF50190009DC123 /* ReadMe_Operation.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ReadMe_Operation.md; sourceTree = "<group>"; };
 		3FBFDDC42BF78CF700C9EC17 /* HOTimeImputation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOTimeImputation.swift; sourceTree = "<group>"; };
@@ -489,6 +491,7 @@
 				3F2FD7B42BE7CEF200D7A1B1 /* HOGuestLineView.swift */,
 				3F0739282BE9207200B34435 /* HOCheckInLineView.swift */,
 				3F07392A2BE9474000B34435 /* HOBedDispoLineView.swift */,
+				3FB6E9932C442FF2002BFF45 /* HOCityTaxLineView.swift */,
 			);
 			path = SubView;
 			sourceTree = "<group>";
@@ -732,6 +735,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				3FD2C0BE2BE12567005B3D13 /* HOOperationsList.swift in Sources */,
+				3FB6E9942C442FF2002BFF45 /* HOCityTaxLineView.swift in Sources */,
 				3F859AAE2BAC85DF00297E13 /* GoogleSignIn.swift in Sources */,
 				3F859ABA2BAC8ADE00297E13 /* HOLoadingStatus.swift in Sources */,
 				3F694CB52BDCEC59001F5989 /* HOSubsAccount.swift in Sources */,
@@ -940,7 +944,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = hoster/hoster.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_ASSET_PATHS = "\"hoster/Preview Content\"";
 				DEVELOPMENT_TEAM = 2HR732K89Z;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -979,7 +983,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = hoster/hosterRelease.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_ASSET_PATHS = "\"hoster/Preview Content\"";
 				DEVELOPMENT_TEAM = 2HR732K89Z;
 				ENABLE_HARDENED_RUNTIME = YES;

@@ -20,6 +20,9 @@ struct WorkSpaceData:HOProStarterPack {
     var bedTypeIn:[HOBedType]? // setup utente
     var checkInTime:DateComponents? // setup utente
     
+    var ivaSubject:Bool? // setup utente
+    var cityTaxPerPerson:Double? // setup utente
+    
     init(focusUid:String) {
         self.uid = focusUid
     }
@@ -32,6 +35,8 @@ struct WorkSpaceData:HOProStarterPack {
         defaultData.maxNightIn = 28
         defaultData.bedTypeIn = HOBedType.allCases 
         defaultData.checkInTime = DateComponents(hour:16,minute:0)
+        defaultData.ivaSubject = false 
+        defaultData.cityTaxPerPerson = 2.0//0.0
         
         return defaultData
         

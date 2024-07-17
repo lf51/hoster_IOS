@@ -75,7 +75,6 @@ struct HOUnitLineView:View {
             warningColor: Color.hoWarning,
             overlayAlign: .topTrailing,
             padding: (.trailing,10),
-          //  offset: (0,-10),
             isPresented: generalErrorCheck) {
               
              builderVM.checkUnitValidation()

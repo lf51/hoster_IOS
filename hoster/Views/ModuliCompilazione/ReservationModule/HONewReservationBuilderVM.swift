@@ -10,20 +10,62 @@ import MyPackView
 
 final class HONewReservationBuilderVM:ObservableObject {
     
+    private var mainVM:HOViewModel?
+    
     @Published var unitOnFocus:HOUnitModel?
     
     @Published var reservation: HOReservation
     var storedReservation: HOReservation
     
+    @Published var pernottamentiEsentiCityTax:Int?
+    @Published var commissionable:Double?
+    @Published var costoCommissione:Double?
     
     init(reservation:HOReservation) {
         
         self.reservation = reservation
         self.storedReservation = reservation
     }
-    
+
+    func setMainVM(to vm:HOViewModel) {
+        
+        self.mainVM = vm
+    }
 }
 
+/// logica commissionable
+extension HONewReservationBuilderVM {
+    
+    var pricePerNight:Double { self.getPricePerNight() }
+    
+    private func getPricePerNight() -> Double {
+        
+        guard let commissionable,
+              let night = self.reservation.notti else { return 0.0 }
+        
+        return commissionable / Double(night)
+    }
+}
+
+/// logica cityTax
+extension HONewReservationBuilderVM {
+    
+    var cityTax:Double {
+        self.mainVM?.getCityTaxPerPerson() ?? 0.0
+    }
+    
+    var pernottamentiTassati:Int {
+        
+        get { self.getPernottamentiTassati() }
+    } // salvato come q per la tassa di soggiorno
+    
+    
+   private func getPernottamentiTassati() -> Int {
+       self.reservation.pernottamenti - (self.pernottamentiEsentiCityTax ?? 0)
+    
+    }
+    
+}
 
 /// unitOnFocus Logic
 extension HONewReservationBuilderVM {
@@ -165,6 +207,99 @@ extension HONewReservationBuilderVM {
 
 /// logica salvataggio
 extension HONewReservationBuilderVM {
+    
+    func buildSideOperations() {
+        
+        guard let timeImputation = self.buildTimeImputation() else {
+            return
+        }
+        // riscossione cityTax
+        let cityTaxOPT:HOOperationUnit = {
+        
+           var current = HOOperationUnit()
+           
+            let dare = HOImputationAccount.pernottamento.getIDCode()
+            let avere = HOAreaAccount.tributi.getIDCode()
+            
+            current.regolamento = self.reservation.regolamento
+            current.timeImputation = timeImputation
+            current.amount = HOOperationAmount(
+                quantity: Double(self.pernottamentiTassati),
+                pricePerUnit: self.cityTax)
+            
+            let writingObject:HOWritingObject = HOWritingObject(category: .cityTax, subCategory: nil, specification: self.reservation.guestName)
+        
+            let writing:HOWritingAccount = HOWritingAccount(type: .riscossione, dare: dare, avere:avere, oggetto: writingObject)
+            
+            current.writing = writing
+            
+            return current
+        }()
+        // incasso al lordo
+        let commissionabile:HOOperationUnit = {
+            
+            var current = HOOperationUnit()
+            
+            let dare = HOImputationAccount.pernottamento.getIDCode()
+            let avere = HOAreaAccount.corrente.getIDCode()
+            
+            current.regolamento = self.reservation.regolamento
+            current.timeImputation = timeImputation
+            current.amount = HOOperationAmount(
+                quantity: Double(self.reservation.notti ?? 0),
+                pricePerUnit: self.pricePerNight)
+            
+            let writingObject:HOWritingObject = HOWritingObject(category: .servizi,subCategory:.interno, specification: self.reservation.specificationLabel)
+            
+            let writing:HOWritingAccount = HOWritingAccount(type: .vendita, dare: dare, avere: avere, oggetto: writingObject)
+            
+            current.writing = writing
+            
+            return current
+        }()
+        // pagamento commissioni
+        let commissione:HOOperationUnit = {
+        // da completare
+           var current = HOOperationUnit()
+           
+            let avere = HOImputationAccount.pernottamento.getIDCode()
+            let dare = HOAreaAccount.corrente.getIDCode()
+            
+            current.regolamento = self.reservation.regolamento
+            current.timeImputation = timeImputation
+            current.amount = HOOperationAmount(
+                quantity: 1,
+                pricePerUnit: self.costoCommissione)
+            
+            let writingObject:HOWritingObject = HOWritingObject(category: .commissioni,subCategory:nil, specification: self.reservation.specificationLabel)
+            
+            let writing:HOWritingAccount = HOWritingAccount(type: .pagamento, dare: dare, avere: avere, oggetto: writingObject)
+            
+            current.writing = writing
+            
+            return current
+        }()
+        
+        
+        
+        
+        
+    }
+    
+    private func buildTimeImputation() -> HOTimeImputation? {
+        
+        guard let checkIn = self.reservation.dataArrivo else {
+            return nil
+        }
+        
+        let imputationComponent = Locale.current.calendar.dateComponents([.month,.year], from: checkIn)
+        
+        let monthImputation = HOMonthImputation(startMM: imputationComponent.month, advancingMM: 1)
+        
+        let timeImputation = HOTimeImputation(startYY: imputationComponent.year, monthImputation: monthImputation)
+        
+        return timeImputation
+    }
     
     func publishOperation(mainVM:HOViewModel,refreshPath:HODestinationPath?) {
         
