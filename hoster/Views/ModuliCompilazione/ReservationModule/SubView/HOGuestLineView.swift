@@ -191,7 +191,7 @@ struct HOGuestTypeLineView:View {
            // padding: (.trailing,0),
             offset: (0,-5),
             isPresented: self.generalErrorCheck) {
-                self.builderVM.checkGuestType()
+                !self.builderVM.checkGuestType()
                // self.getGuestTypeError()
             }
             

@@ -75,7 +75,7 @@ extension HOCloudDataManager {
         }
     }
     
-    func batchMultiObject<A,B,C:Codable&HOProStarterPack>(
+    func batchMultiObject<A:Codable&HOProStarterPack,B:Codable&HOProStarterPack,C:Codable&HOProStarterPack>(
         object_A:HODataForPublishing<A>?,
         object_B:HODataForPublishing<B>?,
         objects_C:[HODataForPublishing<C>]?) throws {
@@ -98,6 +98,34 @@ extension HOCloudDataManager {
                     in: batch)
             }
             
+            if let objects_C {
+                
+                try self.publishDocumentsBatch(
+                    from: objects_C,
+                    in: batch)
+            }
+            
+            Task {
+                try await batch.commit()
+               // self.loadingPublisher.send(nil)
+            }
+    }
+    
+    func batchTwiceObject<A:Codable&HOProStarterPack,C:Codable&HOProStarterPack>(
+        object_A:HODataForPublishing<A>?,
+        objects_C:[HODataForPublishing<C>]?) throws {
+        
+        let batch = self.db_base.batch()
+            //self.loadingPublisher.send(true)
+        
+            if let object_A {
+                
+               try self.publishSingleDocumentBatch(
+                    from: object_A,
+                    in: batch)
+                
+            }
+
             if let objects_C {
                 
                 try self.publishDocumentsBatch(
@@ -204,10 +232,17 @@ extension HOCloudDataManager {
         }
          
         docReference
+          //  .setValue(nil, forKey: "schedule_cache")
             .setData(element.path, merge: true)
     
     } // verificare encoding.04.07.24 non in uso
     
+    
+ 
+    
+}
+/// Managing Delete
+extension HOCloudDataManager {
     
     func deleteAllData() throws {
         
@@ -217,7 +252,54 @@ extension HOCloudDataManager {
         
     }
     
+    func deleteDocData<Item:Codable&HOProStarterPack>(of itemData:HODataForPublishing<Item>) async throws {
+        
+        guard let collectionRef = itemData.collectionRef else { return }
+        
+        let document = collectionRef.document(itemData.model.uid)
+        
+        try await document.delete()
+        
+    }
+    
+    func deleteBatchTwiceObject<A:Codable&HOProStarterPack,B:Codable&HOProStarterPack>(
+        object_A:HODataForPublishing<A>?,
+        objects_B:[HODataForPublishing<B>]?) throws {
+        
+        let batch = self.db_base.batch()
+            //self.loadingPublisher.send(true)
+        
+            if let object_A {
+                
+               deleteSingleDocumentBatch(from: object_A, in: batch)
+                
+            }
+
+            if let objects_B {
+                
+                for eachDoc in objects_B {
+                    
+                    deleteSingleDocumentBatch(from: eachDoc, in: batch)
+                }
+            }
+            
+            Task {
+                try await batch.commit()
+            }
+    }
+    
+    private func deleteSingleDocumentBatch<Item:Codable&HOProStarterPack>(from item:HODataForPublishing<Item>,in batch:WriteBatch) {
+         
+         if let mainRef = item.collectionRef  {
+             
+             let doc = mainRef.document(item.model.uid)
+             
+              batch.deleteDocument(doc)
+         }
+         
+     }
 }
+
 ///Managing WorkSpace
 extension HOCloudDataManager {
     

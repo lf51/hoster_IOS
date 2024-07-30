@@ -81,9 +81,9 @@ extension HOAreaAccount {
         case .scorte:
             return [.acquisto,.consumo,.resoAttivo]
         case .corrente:
-            return [.acquisto,.pagamento/*,.resoAttivo*/,.resoPassivo,.regalie,.vendita]
+            return [.acquisto,.pagamento,.vendita/*,.resoAttivo*/,.resoPassivo,.regalie]
         case .tributi:
-            return [.pagamento]
+            return [.pagamento,.versamento]
         case .pluriennale:
             return [.acquisto/*,.ammortamento*/] // ammortamento va automatizzato
         }
@@ -97,7 +97,7 @@ extension HOAreaAccount {
         case .corrente:
             return [.acquisto,.pagamento,.resoPassivo,.regalie,.vendita]
         case .tributi:
-            return [.pagamento]
+            return [.pagamento,.versamento]
         case .pluriennale:
             return [.ammortamento]
         }
@@ -124,7 +124,7 @@ extension HOAreaAccount {
             case .resoPassivo:
                 return [.servizi]
             case .pagamento:
-                return [.abbonamentiQuoteCanoni,.commissioni,.costiTransazione,.manutenzione,.mod,.utenze,.altro]
+                return [.abbonamentiQuoteCanoni,.commissioni,.manutenzione,.mod,.utenze,.altro]
             case .resoAttivo:
                 return nil//[.merci]
             case .regalie:
@@ -134,8 +134,18 @@ extension HOAreaAccount {
             
         case .tributi:
             
-           if typeAssociated.contains(type) { return [.tassePatrimoniali]}
-            else { return nil }
+            switch type {
+            
+            case .pagamento:
+                return [.tassePatrimoniali]
+           
+            case .versamento:
+                return [.imposte]
+            default: return nil
+            }
+            
+           /* if typeAssociated.contains(type) { return [.tassePatrimoniali,.imposte]}
+            else { return nil }*/
             
         case .pluriennale:
 
@@ -209,7 +219,7 @@ extension HOAreaAccount:HOProWritingDownLoadFilter {
         
         switch self {
         case .pluriennale:
-            return "bene pluriennale"
+            return "costo pluriennale"
         default: return self.rawValue
         }
         

@@ -14,14 +14,16 @@ struct WorkSpaceData:HOProStarterPack {
     
     let uid: String
     
-    var refPortali:[String]? // ??
-    
+   // var refPortali:[String]? // ??
+    var otaChannels:[HOOTAChannel]? // setup utente
     var maxNightIn:Int? // setup utente
     var bedTypeIn:[HOBedType]? // setup utente
     var checkInTime:DateComponents? // setup utente
     
     var ivaSubject:Bool? // setup utente
     var cityTaxPerPerson:Double? // setup utente
+    
+    var costiTransazione:Double? // setup utente
     
     init(focusUid:String) {
         self.uid = focusUid
@@ -31,12 +33,13 @@ struct WorkSpaceData:HOProStarterPack {
         
         var defaultData = WorkSpaceData(focusUid: "Default_Value")
         
-        defaultData.refPortali = [] //??
+        defaultData.otaChannels = HOOTADefaultCase.getDefaultOTAChannel()
         defaultData.maxNightIn = 28
         defaultData.bedTypeIn = HOBedType.allCases 
         defaultData.checkInTime = DateComponents(hour:16,minute:0)
         defaultData.ivaSubject = false 
         defaultData.cityTaxPerPerson = 2.0//0.0
+        defaultData.costiTransazione = 1.3
         
         return defaultData
         

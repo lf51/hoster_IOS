@@ -34,8 +34,7 @@ struct Test:Property_FPC_Mappable {
 struct HOReservationsList: View {
     
     @EnvironmentObject var viewModel:HOViewModel
-  // let backgroundColorView: Color
-    
+
     @State private var mapTree:MapTree<HOReservation,Test>?
     @State private var filterCore:CoreFilter<HOReservation> = CoreFilter()
     
@@ -85,7 +84,8 @@ struct HOReservationsList: View {
                 vbSorterView()
             } elementView: { reservation in
                 
-                Text(reservation.guestName ?? "noName")
+                HOReservationRowView(
+                    reservation: reservation)
      
                 
                 
@@ -171,4 +171,5 @@ struct HOReservationsList: View {
 
 #Preview {
     HOReservationsList()
+        .environmentObject(testViewModel)
 }

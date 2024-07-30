@@ -188,8 +188,8 @@ struct HOAmountLineView:View {
                let currentValueToCheck = builderVM.currentValueToCheck,
               // let currentAmount = self.builderVM.operation.amount,
                let currentAmount = self.builderVM.sharedAmount,
-               let pmc = currentAmount.pricePerUnit,
-               let total = currentAmount.imponibile else {
+               let _ = currentAmount.pricePerUnit,
+               let _ = currentAmount.imponibile else {
           
              let value:(image:String,color:Color) = {
                  

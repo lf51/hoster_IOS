@@ -16,7 +16,9 @@ enum HOOperationType:String,CaseIterable,Codable {
     case resoPassivo = "reso passivo" // a nostro sfavore
     
     case ammortamento
+    // imposte
     case riscossione
+    case versamento
     
     case vendita
     case resoAttivo = "reso attivo" // a nostro favore
@@ -42,6 +44,8 @@ extension HOOperationType {
             return "ammortizzabile"
         case .riscossione:
             return "riscuotibile"
+        case .versamento:
+            return "versabile"
         case .vendita:
             return "vendibile"
         case .resoAttivo:
@@ -73,7 +77,7 @@ extension HOOperationType {
         case .acquisto,.pagamento,.consumo,.ammortamento,.riscossione,.regalie,.resoAttivo:
             return "per"
        
-        case .resoPassivo,.vendita:
+        case .resoPassivo,.vendita,.versamento:
             return "da"
     
         }
@@ -89,7 +93,7 @@ extension HOOperationType:HOProWritingDownLoadFilter {
     
     func getImageAssociated() -> String {
         switch self {
-        case .acquisto,.pagamento,.consumo,.ammortamento,.resoPassivo:
+        case .acquisto,.pagamento,.consumo,.ammortamento,.resoPassivo,.versamento:
             return "minus.circle"
        
         case .vendita,.resoAttivo,.regalie,.riscossione:
@@ -100,7 +104,7 @@ extension HOOperationType:HOProWritingDownLoadFilter {
     func getColorAssociated() -> Color {
        
         switch self {
-        case .acquisto,.pagamento,.consumo,.ammortamento,.resoPassivo:
+        case .acquisto,.pagamento,.consumo,.ammortamento,.resoPassivo,.versamento:
             return Color.faluRed_p52
        
         case .vendita,.resoAttivo,.regalie,.riscossione:
@@ -201,7 +205,7 @@ extension HOOperationType {
             switch self {
           
             case .regalie:
-                return [.accoglienza,.colazione,.experience,.pulizia,.transfer,.diversi]
+                return [.pernottamento/*.accoglienza,.colazione,.experience,.pulizia,.transfer,.diversi*/]
             default: return nil
             }
         case .ads:
@@ -255,7 +259,7 @@ extension HOOperationType {
             default: return nil
            
             }
-        case .altro,.costiTransazione,.commissioni:
+        case .altro,.commissioni:
             switch self {
            
             case .pagamento:
@@ -263,12 +267,12 @@ extension HOOperationType {
 
             default: return nil
             }
-        case .cityTax:
+        case .imposte:
             
             switch self {
             
-            case .pagamento:
-                return [.pernottamento]
+            case .versamento:
+                return [.cityTax]
             default: return nil
             }
             
@@ -407,9 +411,16 @@ extension HOOperationType {
                 return [.boutique]
             case .resoAttivo:
                 return [.boutique]
-            case .regalie,.riscossione:
+            case .regalie,.riscossione,.versamento:
                 return nil
             }
+            
+        case .agenzia:
+            return [.ota]
+        case .bancarie,.vat:
+            return [.diversi]
+        case .cityTax:
+            return [.cityTax]
             
         }
     }

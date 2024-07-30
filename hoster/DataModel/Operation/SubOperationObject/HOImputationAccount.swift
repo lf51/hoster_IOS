@@ -36,6 +36,11 @@ enum HOImputationAccount:String,CaseIterable { // imputazione diretta
   //  case cityTax = "tassa di soggiorno" // finale
    // case tributi
     
+    case cityTax
+   // case vat
+    case ota
+    
+    
     case diversi
     
     case mainUnit // finale diretto e/o indiretto
@@ -118,8 +123,9 @@ extension HOImputationAccount:HOProAccountDoubleEntry {
        // case .warehouse: return "013"
        // case .fondoAmmortamenti: return "014"
             
-       // case .vat: return "015"
-       // case .cityTax: return "016"
+        //case .vat: return "013"
+        case .cityTax: return "016"
+        case .ota: return "014"
        // case .tributi: return "015"
         case .diversi: return "015"
         case .mainUnit: return "017"

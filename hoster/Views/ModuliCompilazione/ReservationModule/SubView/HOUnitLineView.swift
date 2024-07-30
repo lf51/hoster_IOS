@@ -31,6 +31,20 @@ struct HOUnitLineView:View {
                 .foregroundStyle(Color.hoDefaultText)
             Spacer()
             
+            if !builderVM.paxIsConformToUnit {
+                
+                Button(action: {
+                    
+                    self.viewModel.sendAlertMessage(alert: AlertModel(title: "Attenzione", message: "Il numero di ospiti eccede il numero massimo per l'unità. Correggere o ignorare."))
+                    
+                }, label: {
+                    Image(systemName: "lightbulb.min.badge.exclamationmark.fill")
+                        .imageScale(.medium)
+                        .foregroundStyle(Color.yellow)
+                })
+                
+            }
+            
             if let subs = viewModel.getSubs() {
                 
                 Picker(selection: $builderVM.unitOnFocus) {
@@ -67,7 +81,8 @@ struct HOUnitLineView:View {
                     .italic()
                     .font(.subheadline)
                     .foregroundStyle(Color.hoDefaultText)
-
+                    .padding(.vertical,5)
+              
             }
 
         }
@@ -77,12 +92,13 @@ struct HOUnitLineView:View {
             padding: (.trailing,10),
             isPresented: generalErrorCheck) {
               
-             builderVM.checkUnitValidation()
+             !builderVM.checkUnitOnFocusValidation()
         }
-        .onAppear(perform: {
-            builderVM.initUnitOnFocus(vm: viewModel)
-        })
+        /*.onAppear(perform: {
+          //  builderVM.initUnitOnFocus(vm: viewModel)
+        })*/
         
     } // body close
     
+  
 }

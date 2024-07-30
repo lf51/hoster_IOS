@@ -36,7 +36,7 @@ struct HOCheckInLineView:View {
                             overlayAlign: .topTrailing,
                             isPresented: self.generalErrorCheck) {
                                // errorIn()
-                                self.builderVM.errorCheckIn()
+                                !self.builderVM.checkDateAndNight()
                             }
                     
             }

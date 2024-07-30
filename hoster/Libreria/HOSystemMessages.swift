@@ -43,7 +43,7 @@ enum HOInfoMessageVector {
     case log
 }
 
-/// Quando vogliamo un pulsante pigiabile con informazioni
+/// pulsante pigiabile per mostrare una guida e/o informazioni utili
 struct HOInfoMessageView: View {
     
     @EnvironmentObject var viewModel:HOViewModel
@@ -54,14 +54,15 @@ struct HOInfoMessageView: View {
     
     var body: some View {
         
-        Image(systemName: "info.circle.fill")
-            .imageScale(imageScale)
-            .bold()
-            .foregroundStyle(Color.white)
-            .onTapGesture {
-                
-                self.viewModel.sendSystemMessage(message: messageBody)
+        Button(action: {
+            
+            self.viewModel.sendSystemMessage(message: messageBody)
+        }, label: {
+            Image(systemName: "info.circle.fill")
+                .imageScale(imageScale)
+                .bold()
+                .foregroundStyle(Color.white)
+        })
 
-            }
     }
 }

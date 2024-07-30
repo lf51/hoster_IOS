@@ -17,7 +17,7 @@ struct HOReservation:HOProStarterPack {
     var refUnit:String? //
     var refOperations:[String]? // operazioni associate // vendita servizio pernottamento, vendita servizio colazione transfer etc. Associabili in fase di creazione attraverso un default che possiamo fare impostare all'utente, con i servizi inclusi nella reservation, e possiamo associare in seguito ad esempio per il sopravvenire di regali e mance.
     
-    var portale:String? // ?
+    var labelPortale:String? //
     
     var dataArrivo:Date? //
     var guestName:String? //
@@ -26,7 +26,8 @@ struct HOReservation:HOProStarterPack {
     var notti:Int? //
     var disposizione:[HOBedUnit]? //
     
-   // var pernottamentiEsentiCityTax:Int? // ??
+    var statoPagamento:HOReservationPayamentStatus?
+    var scheduleCache:Int? // salvato su firebase in caso di schedule forzatam// 0 manuale - nil è automatico
     
     var note:String? //
     
@@ -36,47 +37,52 @@ struct HOReservation:HOProStarterPack {
     }
 }
 
+/// schedule logic
+extension HOReservation {
+    
+    /// valore semiAutomatico
+    var statoSchedule:HOReservationSchedule? { self.getSchedulStatus() }
+    
+    private func getSchedulStatus() -> HOReservationSchedule? {
+        
+        if let scheduleCache,
+           scheduleCache == 0 { return .noShow }
+        
+        guard let dataArrivo else { return nil }
+        
+        let today = Date()
+        
+        let compareToArrivo = today.compare(dataArrivo)
+        
+        if compareToArrivo.rawValue == -1 { return .inArrivo }
+        
+        let compareToCheckOut = today.compare(self.checkOut)
+        
+        if compareToCheckOut.rawValue == -1 { return .inCorso }
+        else { return .completata }
+        
+        
+    }
+}
+
 /// validation Logic
 extension HOReservation {
     
     func isBedDispoCoerentToPax() -> Bool {
         
-        guard let pax,
-              let disposizione,
-              !disposizione.isEmpty else { return false }
-        
-        let maxPaxFromDispo:Int = {
-            
-            var max:Int = 0
-            
-            for eachBed in disposizione {
-                
-                let maxPax = eachBed.bedType?.getMaxCapability() ?? 0
-                
-                let value = maxPax * (eachBed.number ?? 0)
-                max += value
-            }
-            
-            return max
-            
-        }()
+        let maxPaxFromDispo = self.getMaxPaxFromDisposizione() ?? 0
+        let pax = self.pax ?? 0
         
         return pax <= maxPaxFromDispo
  
     }
     
-    func isBedDispoCoerentToPaxThrowing() throws -> Bool {
+    
+    private func getMaxPaxFromDisposizione() -> Int? {
         
-        guard let pax,
-              let disposizione,
-              !disposizione.isEmpty else {
-            
-            throw HOCustomError.erroreGenerico(problem: "Disposizione letti e/o pax incompleta", reason: nil, solution: nil)
-            
-        }
+        guard let disposizione,
+              !disposizione.isEmpty else { return nil }
         
-        let maxPaxFromDispo:Int = {
-            
             var max:Int = 0
             
             for eachBed in disposizione {
@@ -88,11 +94,7 @@ extension HOReservation {
             }
             
             return max
-            
-        }()
-        
-        return pax <= maxPaxFromDispo
- 
+
     }
 }
 
@@ -109,8 +111,10 @@ extension HOReservation:Hashable {
         lhs.dataArrivo == rhs.dataArrivo &&
         lhs.notti == rhs.notti &&
         lhs.disposizione == rhs.disposizione &&
-        lhs.portale == rhs.portale &&
-        lhs.note == rhs.note
+        lhs.labelPortale == rhs.labelPortale &&
+        lhs.note == rhs.note &&
+        lhs.statoPagamento == rhs.statoPagamento &&
+        lhs.scheduleCache == rhs.scheduleCache
     }
     
     func hash(into hasher: inout Hasher) {
@@ -247,7 +251,9 @@ extension HOReservation:HOProNoteField { }
 /// logica descrizion
 extension HOReservation {
     
+    /// ritorna il nome del guest se presente altrimenti -nuova prenotazione-
     var labelModCompile:String { getLabelModCompile() }
+    /// Contiene il nome del guest e l'uid preceduto da #
     var specificationLabel:String? { self.getSpecification() }
     
     private func getLabelModCompile() -> String {
@@ -259,7 +265,6 @@ extension HOReservation {
         
         return guestName
          
-         
      }
     
     private func getSpecification() -> String? {
@@ -270,4 +275,6 @@ extension HOReservation {
         
         
     }
+    
+
 }

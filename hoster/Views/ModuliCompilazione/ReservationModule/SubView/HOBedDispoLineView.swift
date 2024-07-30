@@ -18,6 +18,7 @@ struct HOBedDispoLineView:View {
     
     let generalErrorCheck:Bool
     
+    
     var body: some View {
         
         VStack(alignment:.leading,spacing: 10) {
@@ -30,13 +31,32 @@ struct HOBedDispoLineView:View {
                 backgroundColor: Color.hoBackGround,
                 backgroundOpacity: 0.4) {
                     
-                    CS_ErrorMarkView(
-                        warningColor: .hoWarning,
-                        scale: .medium,
-                        padding: (.trailing,0),
-                        generalErrorCheck: generalErrorCheck,
-                        localErrorCondition: //!self.builderVM.isBedDispoOk())
-                        !self.builderVM.reservation.isBedDispoCoerentToPax())
+                    HStack {
+                        
+                        CS_ErrorMarkView(
+                            warningColor: .hoWarning,
+                            scale: .medium,
+                            padding: (.trailing,0),
+                            generalErrorCheck: generalErrorCheck,
+                            localErrorCondition: !self.builderVM.checkDispo())
+                        
+                        Spacer()
+                        
+                        if !builderVM.paxIsConformToBeds {
+                            
+                            Button(action: {
+                                
+                                self.viewModel.sendAlertMessage(alert: AlertModel(title: "Attenzione", message: "Il numero di ospiti eccede il numero max per le unità letto. Correggere o ignorare."))
+                                
+                            }, label: {
+                                Image(systemName: "lightbulb.min.badge.exclamationmark.fill")
+                                    .imageScale(.medium)
+                                    .foregroundStyle(Color.yellow)
+                            })
+                            
+                        }
+                        
+                    }
                 }
             
             VStack(alignment:.leading) {
@@ -65,14 +85,6 @@ struct HOBedDispoLineView:View {
             }
         }
     }
-    
-   /* private func errorIn() -> Bool {
-        
-        guard let dispo = self.reservation.disposizione,
-              !dispo.isEmpty else { return true }
-        return false
-        
-    }*/
     
     private func addBedUnit(type:HOBedType,q:Int) {
 

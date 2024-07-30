@@ -37,6 +37,9 @@ enum HOObjectSubCategory:String,CaseIterable {
     case imu
     case tari
     
+    // imposte
+    case vat
+    case cityTax = "tassa di soggiorno"
     // costiPluriennali
   //  case edifici
     
@@ -81,6 +84,10 @@ enum HOObjectSubCategory:String,CaseIterable {
     
   //  case ads = "pubblicità"// pubblicità
     
+    // commissioni
+    case agenzia
+    case bancarie
+    
     // manutenzione
     case ordinaria
     case straordinaria
@@ -88,7 +95,7 @@ enum HOObjectSubCategory:String,CaseIterable {
     // quote
     case speseCondominiali = "condominio"
     
-    case altro = "generico" // potremmo associare label
+    case altro /*= "generico"*/ // potremmo associare label
    // case similare
     
 }

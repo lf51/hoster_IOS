@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3F06FCA82C4BC1FF00A2A930 /* HOReservationChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F06FCA72C4BC1FF00A2A930 /* HOReservationChannel.swift */; };
 		3F0739272BE9164B00B34435 /* Methods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0739262BE9164B00B34435 /* Methods.swift */; };
 		3F0739292BE9207200B34435 /* HOCheckInLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0739282BE9207200B34435 /* HOCheckInLineView.swift */; };
 		3F07392B2BE9474000B34435 /* HOBedDispoLineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F07392A2BE9474000B34435 /* HOBedDispoLineView.swift */; };
@@ -15,6 +16,7 @@
 		3F09E2932B91FBBC00B64783 /* CSUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F09E2922B91FBBC00B64783 /* CSUtilities.swift */; };
 		3F0AE8562BB079250026A1C2 /* HOBedUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0AE8552BB079250026A1C2 /* HOBedUnit.swift */; };
 		3F0D61AB2BED08C500A25A9A /* HOFilterPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F0D61AA2BED08C500A25A9A /* HOFilterPickerView.swift */; };
+		3F173BCC2C57EEAF009FA60B /* HOReservationRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F173BCB2C57EEAF009FA60B /* HOReservationRowView.swift */; };
 		3F1D4A0C2BE12875004EFA05 /* SystemExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1D4A0B2BE12875004EFA05 /* SystemExtension.swift */; };
 		3F1D4A0E2BE12937004EFA05 /* MyFilterPack in Frameworks */ = {isa = PBXBuildFile; productRef = 3F1D4A0D2BE12937004EFA05 /* MyFilterPack */; };
 		3F1D4A112BE13A19004EFA05 /* HODestinationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F1D4A102BE13A19004EFA05 /* HODestinationView.swift */; };
@@ -33,6 +35,7 @@
 		3F5F857F2BCAC744006AA2E6 /* HOWsOperations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F857E2BCAC744006AA2E6 /* HOWsOperations.swift */; };
 		3F5F85822BCBD6D6006AA2E6 /* HOWarehouse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F5F85812BCBD6D6006AA2E6 /* HOWarehouse.swift */; };
 		3F645C552C24950A0008C68C /* HOOperationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F645C542C24950A0008C68C /* HOOperationType.swift */; };
+		3F6908CA2C5928E9004BE04B /* HOReservationStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F6908C92C5928E9004BE04B /* HOReservationStatus.swift */; };
 		3F694CB12BDCEC12001F5989 /* HOImputationAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F694CB02BDCEC12001F5989 /* HOImputationAccount.swift */; };
 		3F694CB32BDCEC31001F5989 /* HOObjectCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F694CB22BDCEC31001F5989 /* HOObjectCategory.swift */; };
 		3F694CB52BDCEC59001F5989 /* HOSubsAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3F694CB42BDCEC59001F5989 /* HOSubsAccount.swift */; };
@@ -103,12 +106,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3F06FCA72C4BC1FF00A2A930 /* HOReservationChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOReservationChannel.swift; sourceTree = "<group>"; };
 		3F0739262BE9164B00B34435 /* Methods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Methods.swift; sourceTree = "<group>"; };
 		3F0739282BE9207200B34435 /* HOCheckInLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOCheckInLineView.swift; sourceTree = "<group>"; };
 		3F07392A2BE9474000B34435 /* HOBedDispoLineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOBedDispoLineView.swift; sourceTree = "<group>"; };
 		3F09E2922B91FBBC00B64783 /* CSUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSUtilities.swift; sourceTree = "<group>"; };
 		3F0AE8552BB079250026A1C2 /* HOBedUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOBedUnit.swift; sourceTree = "<group>"; };
 		3F0D61AA2BED08C500A25A9A /* HOFilterPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOFilterPickerView.swift; sourceTree = "<group>"; };
+		3F173BCB2C57EEAF009FA60B /* HOReservationRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOReservationRowView.swift; sourceTree = "<group>"; };
 		3F1D4A0B2BE12875004EFA05 /* SystemExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SystemExtension.swift; sourceTree = "<group>"; };
 		3F1D4A102BE13A19004EFA05 /* HODestinationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HODestinationView.swift; sourceTree = "<group>"; };
 		3F1D4A132BE13C0C004EFA05 /* HONewReservationMainModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HONewReservationMainModule.swift; sourceTree = "<group>"; };
@@ -127,6 +132,7 @@
 		3F5F857E2BCAC744006AA2E6 /* HOWsOperations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOWsOperations.swift; sourceTree = "<group>"; };
 		3F5F85812BCBD6D6006AA2E6 /* HOWarehouse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOWarehouse.swift; sourceTree = "<group>"; };
 		3F645C542C24950A0008C68C /* HOOperationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOOperationType.swift; sourceTree = "<group>"; };
+		3F6908C92C5928E9004BE04B /* HOReservationStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOReservationStatus.swift; sourceTree = "<group>"; };
 		3F694CB02BDCEC12001F5989 /* HOImputationAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOImputationAccount.swift; sourceTree = "<group>"; };
 		3F694CB22BDCEC31001F5989 /* HOObjectCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOObjectCategory.swift; sourceTree = "<group>"; };
 		3F694CB42BDCEC59001F5989 /* HOSubsAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HOSubsAccount.swift; sourceTree = "<group>"; };
@@ -237,6 +243,7 @@
 		3F1D4A0F2BE129E8004EFA05 /* RowViews */ = {
 			isa = PBXGroup;
 			children = (
+				3F173BCB2C57EEAF009FA60B /* HOReservationRowView.swift */,
 			);
 			path = RowViews;
 			sourceTree = "<group>";
@@ -461,6 +468,8 @@
 			children = (
 				3F9586702BADDF7400774733 /* HOReservation.swift */,
 				3F1D90AE2BC199B100A0086F /* HOGuestType.swift */,
+				3F06FCA72C4BC1FF00A2A930 /* HOReservationChannel.swift */,
+				3F6908C92C5928E9004BE04B /* HOReservationStatus.swift */,
 			);
 			path = Reservation;
 			sourceTree = "<group>";
@@ -772,6 +781,7 @@
 				3F8FEA292B8F8FD500A2BC34 /* HOCloudDataManager.swift in Sources */,
 				3F2144E82BB75DC800839157 /* HOCalendar.swift in Sources */,
 				3F36C8B62C0A0DBB00361118 /* HOLockModifier.swift in Sources */,
+				3F173BCC2C57EEAF009FA60B /* HOReservationRowView.swift in Sources */,
 				3F921E162BDAB5DB0081395A /* HONastrinoAccount.swift in Sources */,
 				3F999A362BE63C3D0049AC83 /* HOUnitLineView.swift in Sources */,
 				3F694CB12BDCEC12001F5989 /* HOImputationAccount.swift in Sources */,
@@ -813,6 +823,8 @@
 				3F999A382BE63E120049AC83 /* HOSystemMessages.swift in Sources */,
 				3F859AA22BAC844800297E13 /* WorkSpaceUnit.swift in Sources */,
 				3F9586782BAF2DAB00774733 /* HOOperationUnit.swift in Sources */,
+				3F06FCA82C4BC1FF00A2A930 /* HOReservationChannel.swift in Sources */,
+				3F6908CA2C5928E9004BE04B /* HOReservationStatus.swift in Sources */,
 				3F35B9442BDE9B9C00837892 /* HOOperationAmount.swift in Sources */,
 				3F4F0F3B2BA4B20D00C8BB44 /* Protocol.swift in Sources */,
 			);
@@ -944,7 +956,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = hoster/hoster.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "\"hoster/Preview Content\"";
 				DEVELOPMENT_TEAM = 2HR732K89Z;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -983,7 +995,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = hoster/hosterRelease.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 9;
+				CURRENT_PROJECT_VERSION = 10;
 				DEVELOPMENT_ASSET_PATHS = "\"hoster/Preview Content\"";
 				DEVELOPMENT_TEAM = 2HR732K89Z;
 				ENABLE_HARDENED_RUNTIME = YES;

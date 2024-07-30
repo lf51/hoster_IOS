@@ -68,6 +68,7 @@ final class HOViewModel:ObservableObject {
 }
 
 extension HOViewModel {
+    
     var viewCase:HOViewCases {
         
         if let _ = self.db.currentWorkSpace { .main }
@@ -147,6 +148,14 @@ extension HOViewModel {
 
 extension HOViewModel {
     
+    func eraseAllUserData() {
+        
+        // implementare extension su firebaseConsole
+        // costo 0.01 al mese anche se non si utilizza
+        // implementare a fine corsa
+    }
+    
+    
     func firstRegOnFirebaseAfterAuth(first workSpace:WorkSpaceModel) {
         
         let userDataModel = {
@@ -203,11 +212,81 @@ extension HOViewModel {
 
 extension HOViewModel {
     
-    func eraseAllUserData() {
+    func publishSingleField<Item:Codable&HOProStarterPack,Syncro:HOProSyncroManager>(
+        from itemData:Item,
+        syncroDataPath:KeyPath<HOCloudDataManager,Syncro>,
+        valuePath:[String:Any]) {
         
-        // implementare extension su firebaseConsole
-        // costo 0.01 al mese anche se non si utilizza
-        // implementare a fine corsa
+        let docRef = self.dbManager[keyPath: syncroDataPath].mainTree?.document(itemData.uid)
+        
+        let singleValuePublishing = HOSingleValuePublishig(docReference: docRef, path: valuePath)
+        
+            do {
+                
+                try self.dbManager.setSingleField(from: singleValuePublishing)
+                
+                self.callOnMainQueque {
+                    
+                    self.sendSystemMessage(message: HOSystemMessage(vector: .log, title: "Success", body: HOSystemBodyMessage.custom("Salvataggio dati riuscito")))
+                }
+                
+            } catch let error {
+                
+                sendAlertMessage(alert: AlertModel(title: "Errore Salvataggio", message: error.localizedDescription))
+                
+                
+            }
+            
+    }
+    
+    
+    func plublishBatchTwiceObject<A:Codable&HOProStarterPack,C:Codable&HOProStarterPack,SyncA:HOProSyncroManager,SyncC:HOProSyncroManager>(
+        object_A:(A,KeyPath<HOCloudDataManager,SyncA>)?,
+        objects_C:([C],KeyPath<HOCloudDataManager,SyncC>)?,
+        refreshVMPath:HODestinationPath? = nil) {
+        
+            var dataObjectA:HODataForPublishing<A>?
+            var dataObjectC:[HODataForPublishing<C>]?
+            
+            if let object_A {
+                
+                let item = object_A.0
+                let path = object_A.1
+                
+                let collRef = self.dbManager[keyPath: path].mainTree
+                
+                dataObjectA = HODataForPublishing(collectionRef: collRef, model: item)
+            }
+            
+            if let objects_C {
+                
+                let items = objects_C.0
+                let path = objects_C.1
+                
+                let ref = self.dbManager[keyPath: path].mainTree
+                
+                dataObjectC = items.map({
+                    return HODataForPublishing(collectionRef: ref, model: $0)
+                })
+                
+            }
+            
+            do {
+                
+                try dbManager.batchTwiceObject(object_A: dataObjectA, objects_C: dataObjectC)
+                
+                self.callOnMainQueque {
+                    self.refreshPath(destinationPath: refreshVMPath)
+                    
+                    self.sendSystemMessage(message: HOSystemMessage(vector: .log, title: "Success", body: HOSystemBodyMessage.custom("Salvataggio dati riuscito")))
+                }
+                
+            } catch let error {
+                
+                sendAlertMessage(alert: AlertModel(title: "Errore Salvataggio", message: error.localizedDescription))
+                
+            }
+             
     }
     
     func publishBatch<Item:Codable&HOProStarterPack,Syncro:HOProSyncroManager>(
@@ -257,8 +336,100 @@ extension HOViewModel {
         }
         
     }
+    
+   
 }
 
+/// logica delete document
+extension HOViewModel {
+    
+    func deleteBatchTwiceObject<A:Codable&HOProStarterPack,B:Codable&HOProStarterPack,SyncA:HOProSyncroManager,SyncB:HOProSyncroManager>(
+        object_A:(A,KeyPath<HOCloudDataManager,SyncA>)?,
+        objects_B:([B],KeyPath<HOCloudDataManager,SyncB>)?,
+        refreshVMPath:HODestinationPath? = nil) {
+        
+            var dataObjectA:HODataForPublishing<A>?
+            var dataObjectB:[HODataForPublishing<B>]?
+            
+            var docCount:Int = 0
+            
+            if let object_A {
+                
+                let item = object_A.0
+                let path = object_A.1
+                
+                let collRef = self.dbManager[keyPath: path].mainTree
+                
+                dataObjectA = HODataForPublishing(collectionRef: collRef, model: item)
+                
+                docCount += 1
+            }
+            
+            if let objects_B {
+                
+                let items = objects_B.0
+                let path = objects_B.1
+                
+                let ref = self.dbManager[keyPath: path].mainTree
+                
+                dataObjectB = items.map({
+                    return HODataForPublishing(collectionRef: ref, model: $0)
+                })
+                
+                docCount += items.count
+            }
+            
+            do {
+                
+                try dbManager.deleteBatchTwiceObject(object_A: dataObjectA, objects_B: dataObjectB)
+                
+                self.callOnMainQueque {
+                    
+                    self.refreshPath(destinationPath: refreshVMPath)
+                    
+                    self.sendSystemMessage(message: HOSystemMessage(vector: .log, title: "Success", body: HOSystemBodyMessage.custom("\(docCount) Documenti eliminati correttamente")))
+                }
+                
+            } catch let error {
+                
+                sendAlertMessage(alert: AlertModel(title: "OOPs!", message: error.localizedDescription))
+                
+            }
+             
+    }
+    
+    func deleteDocData<Item:Codable&HOProStarterPack,Syncro:HOProSyncroManager>(of itemData:Item,syncroDataPath:KeyPath<HOCloudDataManager,Syncro>,refreshVMPath:HODestinationPath? = nil) {
+        
+        let collRef = self.dbManager[keyPath: syncroDataPath].mainTree
+        
+        let data = HODataForPublishing(collectionRef:collRef, model: itemData)
+        
+        Task {
+            
+            do {
+                
+                try await self.dbManager.deleteDocData(of: data)
+                
+                self.callOnMainQueque {
+                    
+                    self.refreshPath(destinationPath: refreshVMPath)
+                    
+                    self.sendSystemMessage(message: HOSystemMessage(vector: .log, title: "Success", body: HOSystemBodyMessage.custom("Documento eliminato correttamente")))
+                }
+                
+                
+            } catch let error {
+                
+                sendAlertMessage(alert: AlertModel(title: "OOPS!", message: error.localizedDescription))
+                
+                
+            }
+            
+        }
+        
+    }
+    
+}
 
 extension HOViewModel:VM_FPC {
     
@@ -345,13 +516,38 @@ extension HOViewModel {
     
     func sendAlertMessage(alert:AlertModel) {
         
-        self.alertMessage = alert
+       // self.alertMessage = alert
+        self.callOnMainQueque {
+            self.alertMessage = alert
+        }
     }
     
 }
 
 /// retrieve wsData information
 extension HOViewModel {
+    
+    func getCostiTransazione() -> Double {
+        
+        guard let ws = self.db.currentWorkSpace,
+              let ota = ws.wsData.costiTransazione else {
+            return WorkSpaceData.defaultValue.costiTransazione!
+        }
+        
+        return ota
+        
+    }
+    
+    func getOTAChannels() -> [HOOTAChannel] {
+        
+        guard let ws = self.db.currentWorkSpace,
+              let ota = ws.wsData.otaChannels else {
+            return WorkSpaceData.defaultValue.otaChannels!
+        }
+        
+        return ota 
+        
+    }
     
     func getCityTaxPerPerson() -> Double {
         
@@ -408,6 +604,27 @@ extension HOViewModel {
     
 }
 
+extension HOViewModel {
+    
+    func getUnitModel(from uid:String) -> HOUnitModel? {
+        
+        guard let ws = self.db.currentWorkSpace else { return nil }
+        
+        let first = ws.wsUnit.all.first(where: {$0.uid == uid})
+        return first
+        
+    }
+    
+    func getOperation(from uidRefs:[String]) -> [HOOperationUnit]? {
+        
+        guard let ws = self.db.currentWorkSpace else { return nil }
+        
+        let associated = ws.wsOperations.all.filter({uidRefs.contains($0.uid)})
+        guard !associated.isEmpty else { return nil }
+        
+        return associated
+    }
+}
 
 let buy1:HOOperationUnit = {
     
@@ -451,10 +668,27 @@ let testUnit1:HOUnitModel = {
     return curr
 }()
 
+let reservation:HOReservation = {
+    
+    var current:HOReservation = HOReservation()
+    
+    current.guestName = "Lillo Friscia"
+    current.refUnit = testUnit1.uid
+    current.labelPortale = "booking.com"
+    current.guestType = .couple
+    current.notti = 7
+    current.pax = 2
+    current.dataArrivo = Date()
+    current.disposizione = [HOBedUnit(bedType: .double, number: 1)]
+    
+    return current
+}()
+
 let testWorkSpace:WorkSpaceModel = {
     
     var ws = WorkSpaceModel()
     ws.wsOperations.all = [buy1]
+    ws.wsReservations.all = [reservation]
     ws.wsUnit.all = [testUnit,testUnit1,testUnit2]
     return ws
 }()

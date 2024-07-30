@@ -14,7 +14,8 @@ struct HONewReservationMainModule: View {
     
     @StateObject var builderVM:HONewReservationBuilderVM
     
-    @State private var generalErrorCheck: Bool = true
+    @State private var generalErrorCheck: Bool = false
+    @State private var generalErrorByPassable: Bool = false
     @FocusState private var modelField:HOReservation.FocusField?
 
     let destinationPath: HODestinationPath
@@ -39,7 +40,7 @@ struct HONewReservationMainModule: View {
                     HOUnitLineView(
                         builderVM: builderVM,
                         generalErrorCheck: generalErrorCheck)
-                      
+                    
                     ScrollView {
                         
                         VStack(alignment:.leading,spacing:15) {
@@ -54,40 +55,26 @@ struct HONewReservationMainModule: View {
                             HOCheckInLineView(
                                 builderVM: builderVM,
                                 generalErrorCheck: self.generalErrorCheck)
+                           
                             
                             HOBedDispoLineView(
                                 builderVM: builderVM,
                                 generalErrorCheck: self.generalErrorCheck)
                             
-                            // tassa di soggiorno
-                            
                             HOCityTaxLineView(
-                                builderVM: builderVM,
-                                focusEqualValue: .cityTax,
-                                focusField: $modelField)
-                                .focused($modelField,equals: .cityTax)
-                            
-                            // amount
-                            
+                                builderVM: builderVM)
+
                             HOReservationAmountLineView(
                                 builderVM: builderVM,
                                 generalErrorCheck: self.generalErrorCheck,
-                                focusEqualValue:.refOperation,
                                 focusField:$modelField)
-                            
-                           
-                            // commissionu
-                            // costi transazione
-                            
-                            
-                            
+                            .id(builderVM.portale)
                             
                             HOGenericNoteLineView<HOReservation>(
                                 oggetto: $builderVM.reservation,
                                 focusEqualValue: .note,
                                 focusField: $modelField)
                             .focused($modelField,equals: .note)
-                            
                             
                             CSBottomDialogView() {
                                 vbDescription()
@@ -108,7 +95,7 @@ struct HONewReservationMainModule: View {
                 .padding(.horizontal,10)
                 
             }.onAppear(perform: {
-                builderVM.setMainVM(to: self.viewModel)
+                builderVM.initOnAppear(to: self.viewModel)
             })
         
     } // close body
@@ -131,8 +118,9 @@ struct HONewReservationMainModule: View {
     private func checkPreliminare() -> Bool {
         
         do {
-            try self.builderVM.checkValidation { value in
-                self.generalErrorCheck = value
+            try self.builderVM.checkValidation() { focusOn in
+                
+                self.modelField = focusOn
             }
             return true
             
@@ -140,6 +128,7 @@ struct HONewReservationMainModule: View {
             
             withAnimation {
                 self.generalErrorCheck = true
+            
                 self.viewModel.sendSystemMessage(message: HOSystemMessage(vector: .log, title: "ATTENZIONE", body: .custom(error.localizedDescription)))
             }
             return false
@@ -156,14 +145,16 @@ struct HONewReservationMainModule: View {
                 role: nil) {
                     true
                 } action: {
-                   // self.builderVM.publishOperation(mainVM: self.viewModel, refreshPath: nil)
+                    //self.builderVM.publishOperation(refreshPath: nil)
+                    
+                   /* self.viewModel.addToThePath(destinationPath: self.destinationPath, destinationView: .reservation(HOReservation()))*/
                 }
 
             DialogButtonElement(
                 label: .saveEsc) {
                     true
                 } action: {
-                    self.builderVM.publishOperation(mainVM: self.viewModel, refreshPath: self.destinationPath)
+                    self.builderVM.publishOperation(refreshPath: self.destinationPath)
                 }
         }
         
@@ -188,11 +179,9 @@ struct HOReservationAmountLineView:View {
     @EnvironmentObject var viewModel:HOViewModel
     @ObservedObject var builderVM:HONewReservationBuilderVM
     let generalErrorCheck:Bool
+    @FocusState.Binding var focusField:HOReservation.FocusField?
     
     @State private var quantityStepIncrement:Int = 1
-    
-    let focusEqualValue:HOReservation.FocusField?
-    @FocusState.Binding var focusField:HOReservation.FocusField?
     
     var body: some View {
         
@@ -205,293 +194,83 @@ struct HOReservationAmountLineView:View {
                 imageColor: Color.hoDefaultText,
                 backgroundColor: Color.hoBackGround,
                 backgroundOpacity: 0.4) {
-                    
-                    Picker(selection: $builderVM.reservation.portale) {
-                        
-                        Text("portale:")
-                            .tag(nil as String?)
-                        
-                        ForEach(HOReservationChannel.allCases,id:\.self) { channel in
-                            
-                            Text(channel.getExtendedRawValue())
-                                .tag(channel.rawValue as String?)
-                        }
 
-                    } label: {
-                        //
-                    }
-                    .menuIndicator(.hidden)
-                    .tint(Color.hoAccent)
-                    
-                }
-
-            VStack(alignment:.leading,spacing: 5) {
-
-                let isIvaSubject = self.viewModel.getIvaSubject()
-                
-                HStack {
-                    
-                    CSSyncTextField_4b(
-                        placeHolder: "0.0",
-                        showDelete: false,
-                        keyboardType:.decimalPad,
-                        focusValue: focusEqualValue,
-                        focusField: $focusField) {
-                        
-                        HStack(spacing:5) {
-                            
-                            Text("Entrata lorda")
-                                .foregroundStyle(.white)
-                                .bold()
-                                .padding(.vertical,10)
-                                .padding(.horizontal,6)
-                                .background(Color.scooter_p53.opacity(0.5))
-                                .clipShape(RoundedRectangle(cornerRadius: 10,style: .continuous))
-                            
-                            Image(systemName: "eurosign.circle.fill")
-                                .imageScale(.large)
-                                .bold()
-                               // .foregroundStyle(currentPrice == nil ? Color.gray : Color.green)
-                        }
-                        
-                    } disableLogic: { value in
-                        
-                     return false
-                        
-                    } syncroAction: { new in
-                        self.quantityStepIncrement = Int(new) ?? 0
-                   
-                    }
-                
-                    
-                    //vbVisualCheckAndRefresh()
-                }
-                
-                HStack {
-                    
-                    CSSyncTextField_4b(
-                        placeHolder: "0.0",
-                        showDelete: false,
-                        keyboardType:.decimalPad,
-                        focusValue: focusEqualValue,
-                        focusField: $focusField) {
-                        
-                        HStack(spacing:5) {
-                            
-                            Text("Commissione")
-                                .foregroundStyle(.white)
-                                .bold()
-                                .padding(.vertical,10)
-                                .padding(.horizontal,6)
-                                .background(Color.blazeOrange_p53.opacity(0.5))
-                                .clipShape(RoundedRectangle(cornerRadius: 10,style: .continuous))
-                            
-                            Image(systemName: "eurosign.circle.fill")
-                                .imageScale(.large)
-                                .bold()
-                               // .foregroundStyle(currentPrice == nil ? Color.gray : Color.green)
-                        }
-                        
-                    } disableLogic: { value in
-                        
-                     return false
-                        
-                    } syncroAction: { new in
-                        self.quantityStepIncrement = Int(new) ?? 0
-                   
-                    }
-                
-                    
-                    //vbVisualCheckAndRefresh()
-                }
-                
-                HStack {
-                    
-                    CSSyncTextField_4b(
-                        placeHolder: "0.0",
-                        showDelete: false,
-                        keyboardType:.decimalPad,
-                        focusValue: focusEqualValue,
-                        focusField: $focusField) {
-                        
-                        HStack(spacing:5) {
-                            
-                            Text("Transazione")
-                                .foregroundStyle(.white)
-                                .bold()
-                                .padding(.vertical,10)
-                                .padding(.horizontal,6)
-                                .background(Color.blazeOrange_p53.opacity(0.5))
-                                .clipShape(RoundedRectangle(cornerRadius: 10,style: .continuous))
-                            
-                            Image(systemName: "eurosign.circle.fill")
-                                .imageScale(.large)
-                                .bold()
-                               // .foregroundStyle(currentPrice == nil ? Color.gray : Color.green)
-                        }
-                        
-                    } disableLogic: { value in
-                        
-                     return false
-                        
-                    } syncroAction: { new in
-                        self.quantityStepIncrement = Int(new) ?? 0
-                   
-                    }
-                
-                    
-                    //vbVisualCheckAndRefresh()
-                }
-                
-                if !isIvaSubject {
-                    
                     HStack {
                         
-                        CSSyncTextField_4b(
-                            placeHolder: "0.0",
-                            showDelete: false,
-                            keyboardType:.decimalPad,
-                            focusValue: focusEqualValue,
-                            focusField: $focusField) {
+                        Picker(selection: $builderVM.portale) {
                             
-                            HStack(spacing:5) {
+                            Text("OTA:")
+                                .tag(nil as HOOTAChannel?)
+                            
+                            ForEach(self.viewModel.getOTAChannels(),id:\.self) { channel in
                                 
-                                Text("Iva")
-                                    .foregroundStyle(.white)
-                                    .bold()
-                                    .padding(.vertical,10)
-                                    .padding(.horizontal,6)
-                                    .background(Color.blazeOrange_p53.opacity(0.5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 10,style: .continuous))
-                                
-                                Image(systemName: "eurosign.circle.fill")
-                                    .imageScale(.large)
-                                    .bold()
-                                   // .foregroundStyle(currentPrice == nil ? Color.gray : Color.green)
+                                Text(channel.label ?? "")
+                                    .tag(channel as HOOTAChannel?)
                             }
-                            
-                        } disableLogic: { value in
-                            
-                         return false
-                            
-                        } syncroAction: { new in
-                            self.quantityStepIncrement = Int(new) ?? 0
-                       
+
+                        } label: {
+                            //
                         }
-                    
+                        .menuIndicator(.hidden)
+                        .tint(Color.hoAccent)
+                        .csWarningModifier(
+                            warningColor: Color.hoWarning,
+                            offset:(0,-5),
+                            isPresented: self.generalErrorCheck) {
+                            self.builderVM.portale == nil
+                        }
                         
-                        //vbVisualCheckAndRefresh()
+                        Spacer()
+                        
+                        HOInfoMessageView(
+                            messageBody: HOSystemMessage(
+                                vector: .log,
+                                title: "INFO",
+                                body: .custom(self.getInfo())))
+                    }
+
+                }
+
+                VStack(alignment:.leading,spacing: 5) {
+
+                    HOCommissionableLineView(
+                        builderVM: builderVM,
+                        focusField: $focusField,
+                        generalErrorCheck: self.generalErrorCheck)
+                        .focused($focusField,equals: .commisionabile)
+
+                    HOOTACommissionLineView(builderVM: builderVM)
+                       // .id(self.builderVM.portale)
+                    
+                    if let _ = builderVM.transazioneValue {
+                        
+                        HOCostiTransazioneLineView(builderVM: builderVM)
+                           
+                   }
+                    
+                    if let _ = builderVM.ivaValue {
+                        
+                        HOCostoIvaLineView(builderVM: builderVM)
+                            
                     }
                     
-                }
-                
                 } // chiusa vstack interno
-                
-           // }
+            
+                    HOAmountResumeLineView(builderVM: builderVM)
+                       .id(self.builderVM.commissionable)
+                    
+                   
+              //  .id(self.builderVM.portale)
+      
 
         } // chiusa vstack madre
-       // .onAppear { self.builderVM.initOperationAmount() }
+     
     } // chiusa body
     
     
-   /* private func vbVisualCheckAndRefresh() -> some View {
+    private func getInfo() -> String {
         
-         guard let syncedPriceValue = builderVM.syncedPriceValue,
-               let currentValueToCheck = builderVM.currentValueToCheck,
-              // let currentAmount = self.builderVM.operation.amount,
-               let currentAmount = self.builderVM.sharedAmount,
-               let pmc = currentAmount.pricePerUnit,
-               let total = currentAmount.imponibile else {
-          
-             let value:(image:String,color:Color) = {
-                 
-                 if self.generalErrorCheck {
-                     return ("exclamationmark.triangle.fill",Color.hoWarning)
-                     
-                 } else {
-                     return ("checkmark.circle",Color.gray)
-                 }
-             }()
-             
-             return Button(action: /*@START_MENU_TOKEN@*/{}/*@END_MENU_TOKEN@*/, label: {
-                 Image(systemName: value.image)
-                     .foregroundStyle(value.color)
-             }).disabled(true)
-             
-         }
-            /* var currentValueToCheck:String?
-             
-             switch amountCategory {
-             case .piece:
-                 currentValueToCheck = String(pmc)
-             case .pack:
-                 currentValueToCheck = String(total)
-             }*/
-             
-        var buttonImageName:String
-        var buttonColor:Color
-        var buttonAction:() -> () = { }
-        var buttonDisable:Bool
-        
-             if currentValueToCheck == syncedPriceValue {
-                 
-                 buttonImageName = "checkmark.circle.fill"
-                 buttonColor = Color.malibu_p53
-                 buttonDisable = true
-                
-             } else {
-                 
-                 buttonImageName = "arrow.clockwise.circle.fill"
-                 buttonColor = Color.hoAccent
-                 buttonDisable = false
-                 
-                 let path = self.setAmountFromCategory().path
-                // let converted = Int(syncedPriceValue)
-                 buttonAction = {self.builderVM.updateAmountValue(from: syncedPriceValue, to: path)}
-                
-                 
-             }
-        
-        return Button(action: {
-            
-            buttonAction()
-            
-        }, label: {
-            Image(systemName: buttonImageName)
-                 .foregroundStyle(buttonColor)
-        })
-        .disabled(buttonDisable)
-
-         }
-    */
-    private func setIncrement() {
-        
-        let current = self.quantityStepIncrement
-        
-        if current == 1 { self.quantityStepIncrement = 5 }
-        
-        else if current % 25 != 0 { self.quantityStepIncrement += 5}
-        
-        else { self.quantityStepIncrement = 1}
-        
-        
+        "Dal prezzo di vendita va esclusa la tassa di soggiorno.\n• SOGGETTI IVA:\nConsigliamo di escludere l'iva in entrata e in uscita. Inserire gli importi al netto.\n• SOGGETTI NON IVA:\nConsigliamo di includere l'iva nelle entrate e utilizzare l'apposito campo come costo.\n• COMMISSIONE:\nQuota riconosciuta ai portali per l'intermediazione.\n• TRANSAZIONE:\nTrattasi del costo che paghiamo al portale o alla banca per i pagamenti tramite carta. In caso di pagamenti in contanti il campo va azzerato manualmente.\n• IVA:\n Nella fattura l'iva sulla commissione e sulla transazione dovrebbe essere separata. I soggetti IVA non devono considerarla un costo e quindi la devono escludere dai costi di commissione e transazione. I soggetti non IVA la devono considerare un costo e applicarla tramite l'apposito campo."
     }
-    
-   /* private func setAmountFromCategory() -> (label:String,path:WritableKeyPath<HOOperationAmount,Double?>) {
-        
-        let label = builderVM.amountCategory.rawValue.capitalized
-        var path:WritableKeyPath<HOOperationAmount,Double?>
-        
-        switch builderVM.amountCategory {
-        case .piece:
-            path = \.pricePerUnit
-        case .pack:
-            path = \.imponibile
-        }
-        
-        return (label,path)
-    }*/
-    
-    
 }
 

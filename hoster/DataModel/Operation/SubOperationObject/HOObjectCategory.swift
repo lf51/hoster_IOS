@@ -22,11 +22,11 @@ enum HOObjectCategory:String,CaseIterable {
     case abbonamentiQuoteCanoni = "abbonamento/quota/canone"
     
     case tassePatrimoniali = "tassa patrimoniale"
-    case cityTax = "tassa di soggiorno"
-   // case imposte // non ha sub e serve per imputare cityTax e Iva
+   // case cityTax = "tassa di soggiorno"
+    case imposte // non ha sub e serve per imputare cityTax e Iva
     
    // case vat
-    case costiTransazione = "Costo di Transazione"
+   // case costiTransazione = "Costo di Transazione"
     case commissioni
     case tip = "mancia"
     
@@ -98,7 +98,7 @@ enum HOObjectCategory:String,CaseIterable {
         case .mod:
             return .hour
 
-        case .costiTransazione,.commissioni,.tip,.ads,.edifici:
+        case .commissioni,.tip,.ads,.edifici:
             return .standard
        
         case .arredi,.biancheria:
@@ -154,8 +154,11 @@ enum HOObjectCategory:String,CaseIterable {
         case .abbonamentiQuoteCanoni:
             return [.streaming,.payTv,.internet,.affitto,.associazione,.sitoWeb,.speseCondominiali,.altro]
         case .tassePatrimoniali:
-            return [.imu,.tari,.altro]
-            
+            return [.imu,.tari]
+        case .imposte:
+            return [.cityTax]
+        case .commissioni:
+            return [/*.agenzia,*/.bancarie]
         case .edifici:
             return nil
         case .costruzioniLeggere:

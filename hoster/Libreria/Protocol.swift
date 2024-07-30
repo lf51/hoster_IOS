@@ -37,3 +37,4 @@ protocol HOProAccountDoubleEntry:RawRepresentable,Encodable where RawValue == St
     
     func getAlgebricSign(from sign: HOAccWritingPosition) -> HOAccWritingSign
 }
+
