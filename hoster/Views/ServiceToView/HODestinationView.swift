@@ -13,6 +13,8 @@ enum HODestinationView:Hashable {
     case reservation(_ book:HOReservation)
     case operation(_ opt:HOOperationUnit)
     
+    case setupWsData
+    
 }
 
 extension HODestinationView {
@@ -31,6 +33,10 @@ extension HODestinationView {
             HONewOperationMainModule(
                 operation: opt,
                 destinationPath: destinationPath)
+            
+        case .setupWsData:
+            
+            Text("setup workspace data")
             
         }
         

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MyFilterPack
 
 enum HOGuestType:Int,CaseIterable {
     
@@ -71,3 +72,20 @@ enum HOGuestType:Int,CaseIterable {
 }
 
 extension HOGuestType:Codable { }
+
+extension HOGuestType:Property_FPC {
+    
+    func simpleDescription() -> String {
+        return self.stringValue()
+    }
+    
+    func returnTypeCase() -> HOGuestType {
+        return self
+    }
+    
+    func orderAndStorageValue() -> Int {
+        return self.rawValue
+    }
+    
+    
+}

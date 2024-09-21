@@ -303,7 +303,33 @@ extension HOCloudDataManager {
 ///Managing WorkSpace
 extension HOCloudDataManager {
     
-    func fetchAndListenWorkSpaceModel(wsFocusUID:String) throws {
+    func fetchAndListenReservationAndOperations(filteredBy years:[Int]?) throws {
+        
+        print("[CALL]_fetchAndListenReservationAndOperations")
+
+        self.workSpaceReservations.listener?.remove()
+        self.workSpaceOperations.listener?.remove()
+        
+        Task {
+
+            // set path subCollection
+          //  let docPath = self.workSpaceData.mainTree?.document(wsFocusUID)
+
+           // let booksCollRef = docPath?.collection(HOCollectionTreePath.allReservations.rawValue)
+           // self.workSpaceReservations.setMainTree(to: booksCollRef)
+            
+          //  let optCollRef = docPath?.collection(HOCollectionTreePath.allOperations.rawValue)
+           // self.workSpaceOperations.setMainTree(to: optCollRef)
+            // mettiamo un listener sull'intera collection
+      
+            try await fetchAndListenCollection(syncro: \.workSpaceReservations, filteredBy: years)
+            try await fetchAndListenCollection(syncro: \.workSpaceOperations, filteredBy: years)
+            
+        }
+        
+    }
+    
+    func fetchAndListenWorkSpaceModel(wsFocusUID:String,filteredBy years:[Int]?) throws {
         
         // rimuoviamo i listener per azzerare i fetch dopo il primo
         print("[CALL]_fetchAndListenWorkSpaceUnit_for:\(wsFocusUID)")
@@ -330,9 +356,9 @@ extension HOCloudDataManager {
             let optCollRef = docPath?.collection(HOCollectionTreePath.allOperations.rawValue)
             self.workSpaceOperations.setMainTree(to: optCollRef)
             // mettiamo un listener sull'intera collection
-            try await fetchAndListenCollection(syncro: \.workSpaceUnits)
-            try await fetchAndListenCollection(syncro: \.workSpaceReservations)
-            try await fetchAndListenCollection(syncro: \.workSpaceOperations)
+            try await fetchAndListenCollection(syncro: \.workSpaceUnits, filteredBy: nil)
+            try await fetchAndListenCollection(syncro: \.workSpaceReservations, filteredBy: years)
+            try await fetchAndListenCollection(syncro: \.workSpaceOperations, filteredBy: years)
             
         }
         
@@ -399,7 +425,89 @@ extension HOCloudDataManager {
             }
     }
     
-    private func fetchAndListenCollection<Item:Codable>(syncro tree:KeyPath<HOCloudDataManager,HOSyncroCollectionManager<Item>>) async throws {
+    private func fetchAndListenCollection<Item:Codable>(syncro tree:KeyPath<HOCloudDataManager,HOSyncroCollectionManager<Item>>,filteredBy years:[Int]?) async throws {
+    
+       /* guard let collection = self[keyPath: tree].mainTree else {
+    
+            throw HOCustomError.mainRefCorrotto
+        }*/
+        
+      //  let filtered = collection.whereField("data_arrivo", isGreaterThan: Date())
+        let mainObject = self[keyPath: tree]
+        
+        let collection = try mainObject.getMainQuery(filteredBy: years)
+        let parentDocCollection = mainObject.getCollectionParentDocumentID()
+            
+        mainObject.listener = collection.addSnapshotListener(includeMetadataChanges: false, listener: { [weak self] querySnap, error in
+          
+            print("[START]_fetchAndListenCollection_for:\(Item.self)")
+            
+            var loadingStatus = HOLoadingStatus(
+                loadCase: .inFullScreen,
+                description: "Fetching collection: \(Item.self)")
+            
+            self?.loadingPublisher.send(loadingStatus)
+            
+            guard let self,
+                  let querySnap else {
+                
+              //  self?[keyPath:tree].publisher.send((nil,nil))
+                mainObject.publisher.send((nil,nil))
+                loadingStatus.nullStatus()
+                self?.loadingPublisher.send(loadingStatus)
+               // self?[keyPath: tree].publisher.send(completion: .failure(URLError(.badURL)))
+                return
+                
+            }
+
+           // let source = querySnap.metadata.isFromCache
+           // let pending = querySnap.metadata.hasPendingWrites
+            
+           /* guard !pending else {
+                print("[PENDING]_cambiamenti locali. In attesa di snap dal server")
+                return
+            }*/
+            
+            let document = querySnap.documents
+            
+            guard !document.isEmpty else {
+                
+              //  self[keyPath: tree].publisher.send((nil,nil))
+                mainObject.publisher.send((parentDocCollection,[]))
+                loadingStatus.nullStatus()
+                self.loadingPublisher.send(loadingStatus)
+               // self[keyPath: tree].publisher.send(completion: .failure(URLError(.badURL)))
+                return
+            }
+            
+           // let doc = collection.parent?.documentID
+            
+            let allUnit:[Item] = document.compactMap { snap -> Item? in
+                
+                let item = try? snap.data(as: Item.self,decoder: self.localDecoder)
+                return item
+            }
+
+            print("[END]_fetchAndListenCollection_for:\(Item.self)")
+            
+          //  self[keyPath: tree].publisher.send((doc,allUnit))
+            mainObject.publisher.send((parentDocCollection,allUnit))
+            loadingStatus.nullStatus()
+            self.loadingPublisher.send(loadingStatus)
+            
+           // self[keyPath: tree].publisher.send(completion: .finished)
+            
+           /* for doc in document {
+                
+                let item = try? doc.data(as: Item.self)
+                self[keyPath: tree].publisher.send(item)
+            }
+            self[keyPath: tree].publisher.send(completion: .finished) */
+        })
+        
+    }
+    
+   /* private func fetchAndListenCollection<Item:Codable>(syncro tree:KeyPath<HOCloudDataManager,HOSyncroCollectionManager<Item>>) async throws {
     
         guard let collection = self[keyPath: tree].mainTree else {
     
@@ -469,6 +577,6 @@ extension HOCloudDataManager {
             self[keyPath: tree].publisher.send(completion: .finished) */
         })
         
-    }
+    }*/ // backup 14.08 for update queryFilter
 
 }

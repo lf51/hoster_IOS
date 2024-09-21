@@ -13,7 +13,7 @@ struct HOOperationsList: View {
     
     @EnvironmentObject var viewModel:HOViewModel
    
-    @State private var mapTree:MapTree<HOOperationUnit,Test>?
+    @State private var mapTree:MapTree<HOOperationUnit,HOAreaAccount>?
     @State private var filterCore:CoreFilter<HOOperationUnit> = CoreFilter()
     
     var body: some View {
@@ -29,7 +29,12 @@ struct HOOperationsList: View {
             }()
             
             let generalDisable:Bool = {
-                return container.isEmpty
+                
+                let condition_1 = container.isEmpty
+                let condition_2 = self.filterCore.countChange == 0
+                let condition_3 = self.filterCore.stringaRicerca == ""
+                
+                return condition_1 && condition_2 && condition_3
             }()
             
             FiltrableContainerView(
@@ -48,7 +53,9 @@ struct HOOperationsList: View {
                         }
                     }
                 } mapButtonAction: {
-                    //
+                   // mapButtonAction()
+                    // 13.09.24 disabilitato poichè lo scroll sfarfallia. Comunque per le operazioni non è così necessario. Valutare modifiche al pack
+                    
                 } trailingView: {
                     vbTrailing()
                 } filterView: {
@@ -57,82 +64,7 @@ struct HOOperationsList: View {
                     vbSorterView()
                 } elementView: { operation in
                     
-                    VStack(alignment:.leading) {
-                        
-                        Text(operation.writingLabel.uppercased())
-                            .bold()
-                        Text(operation.regolamento,format: .dateTime)
-                        
-                        if let writing = operation.writing {
-                            
-                            
-                            Text("area: \(writing.operationArea?.rawValue ?? "no area")")
-                            Text("type: \(writing.type?.rawValue ?? "no type")")
-                            Text("dare: \(writing.dare ?? "no dare")")
-                            Text("avere: \(writing.avere ?? "no avere")")
-                            
-                            if let oggetto = writing.oggetto {
-                                Text("categoria: \(oggetto.category ?? "no cat in")")
-                                Text("subCat: \(oggetto.subCategory ?? "no sub in")")
-                                Text("specification: \(oggetto.specification ?? "noSpecs")")
-                                
-                                
-                            } else {
-                                
-                                Text("no oggetto in")
-                            }
-                            
-                            
-                        } else {
-                            
-                            Text("no writing in")
-                        }
-                        
-                        if let amount = operation.amount {
-                            
-                            Text("q:\(amount.quantityStringValue ?? "no q")\n\(amount.pricePerUnitStringValue ?? "no pmc")")
-                        } else {
-                            
-                            Text("no amount in")
-                        }
-                        
-                       
-                        if let note = operation.note {
-                            
-                            Text(note)
-                            
-                        } else { Text("no note in")}
-                       
-                        Text("-----------")
-                        
-                        if let time = operation.timeImputation {
-                            
-                            Text("startYY: \(time.startYY ?? 1000)")
-                            Text("yearsOfImput: \(time.yyImputation ?? [1000,1001])")
-                            
-                            if let monthImputation = time.monthImputation {
-                                
-                                if let startMM = monthImputation.mmStart {
-                                    
-                                    Text("startMM: \(startMM )")
-                                } else { Text("startMM is Nil")}
-                                
-                                if let advancingMM = monthImputation.mmAdvancing {
-                                    Text("advancingMM: \(advancingMM)")
-                                } else { Text("advancin is nil ")}
-                                
-                            } else {
-                                Text("no month imputation")
-                            }
-                            
-                            
-                        } else {
-                            Text("time imputation is nil")
-                        }
-                        
-                        
-                        Divider()
-                    }
+                    HOOperationRowView(operation: operation)
          
 
                 } onRefreshAction: {
@@ -148,36 +80,120 @@ struct HOOperationsList: View {
         } // chiusa navStack
     }// chiusa body
     
+   /* private func mapButtonAction() {
+        
+        if mapTree == nil {
+ 
+            let allCases = HOAreaAccount.allCases.sorted(by: {$0.orderAndStorageValue() < $1.orderAndStorageValue() })
+            
+            self.mapTree = MapTree(
+                mapProperties: allCases,
+                kpPropertyInObject: \.operationArea.id,
+                labelColor: Color.scooter_p53,
+                labelOpacity: 0.3)
+            
+            
+        } else {
+            
+            self.mapTree = nil
+        }
+    }*/
+    
     @ViewBuilder private func vbTrailing() -> some View {
         
-        Button {
-            self.viewModel.addToThePath(
-                destinationPath: .operations,
-                destinationView: .operation(HOOperationUnit()))
-        } label: {
-            HStack {
-                Text("Add New")
-                Image(systemName: "circle")
-                   
+       /* let currentYY = self.viewModel.yyFetchData ?? self.viewModel.currentYY*/
+        
+        HStack {
+            
+            HStack(spacing:5) {
                 
+                Image(systemName: "calendar")
+                Text("\(self.viewModel.yyFetchData.description)")
+                 
+                }
+                .font(.subheadline)
+                .foregroundStyle(Color.hoDefaultText)
+                .opacity(0.6)
+                .padding(5)
+                .background {
+                    RoundedRectangle(cornerRadius: 5.0)
+                        .fill(Color.hoBackGround.opacity(0.4))
+                }
+
+            
+            
+            Button {
+                self.viewModel.addToThePath(
+                    destinationPath: .operations,
+                    destinationView: .operation(HOOperationUnit()))
+            } label: {
+                
+             //   HStack {
+                   // Text("Add New")
+                   // Image(systemName: "circle")
+                       
+                    Image(systemName: "doc.badge.plus")
+                        .imageScale(.large)
+                        .foregroundStyle(Color.hoAccent)
+              //  }
+               // .foregroundStyle(Color.hoAccent)
             }
-            .foregroundStyle(Color.hoAccent)
+            
         }
     
     }
     
     @ViewBuilder private func vbFilterView(container:[HOOperationUnit]) -> some View {
         
-        Text("Filtri")
-       /* MyFilterRow(
-            allCases: ProductAdress.allCases,
-            filterCollection: $filterCore.filterProperties.percorsoPRP,
-            selectionColor: Color.white.opacity(0.5),
-            imageOrEmoji: "fork.knife",
-            label: "Tipologia") { value in
-                container.filter({$0.adress == value}).count
-            }*/
+        MyFilterRow(
+            allCases: HOAreaAccount.allCases,
+            filterProperty: $filterCore.filterProperties.area,
+            selectionColor: Color.blue.opacity(0.5),
+            imageOrEmoji: "storefront",
+            label: "Area") { value in
+                    
+                container.filter({$0.writing?.operationArea == value}).count
+            }
         
+        MyFilterRow(
+            allCases: HOOperationType.allCases,
+            filterProperty: $filterCore.filterProperties.tipologia,
+            selectionColor: Color.white.opacity(0.5),
+            imageOrEmoji: "storefront",
+            label: "Tipologia") { value in
+                    
+                container.filter({$0.writing?.type == value}).count
+            }
+        
+        MyFilterRow(
+            allCases: HOImputationAccount.allCases,
+            filterProperty: $filterCore.filterProperties.imputazione,
+            selectionColor: Color.yellow.opacity(0.5),
+            imageOrEmoji: "storefront",
+            label: "Conto Imputazione") { value in
+                    
+                container.filter({$0.writing?.imputationAccount == value}).count
+            }
+        
+        MyFilterRow(
+            allCases: HOObjectCategory.allCases,
+            filterProperty: $filterCore.filterProperties.categoria,
+            selectionColor: Color.cyan.opacity(0.5),
+            imageOrEmoji: "storefront",
+            label: "Categoria") { value in
+                    
+                container.filter({$0.writing?.oggetto?.getCategoryCase() == value}).count
+            }
+        
+        MyFilterRow(
+            allCases: HOObjectSubCategory.allCases,
+            filterProperty: $filterCore.filterProperties.subCategoria,
+            selectionColor: Color.orange.opacity(0.5),
+            imageOrEmoji: "storefront",
+            label: "Sub Categoria") { value in
+                    
+                container.filter({$0.writing?.oggetto?.getSubCategoryCase() == value}).count
+            }
     }
     
     @ViewBuilder private func vbSorterView() -> some View {
@@ -189,8 +205,6 @@ struct HOOperationsList: View {
         
      
     }
-
-
 }
 
 #Preview {

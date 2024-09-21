@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import MyFilterPack
 
 enum HOObjectSubCategory:String,CaseIterable {
     
@@ -118,6 +119,10 @@ extension HOObjectSubCategory {
         case .sitoWeb,.associazione,.imu,.tari:
             return .year
       
+        case .agenzia,.vat,.bancarie:
+            return .percent
+        case .cityTax:
+            return .pernottamenti
         default: return .standard
 
         }
@@ -172,4 +177,23 @@ enum HOSubsImputationAccount { // probabile deprecazione
     // transfer
     case aeroporto
     case fuoriPorta
+}
+
+extension HOObjectSubCategory: Property_FPC {
+    
+    func simpleDescription() -> String {
+        return self.rawValue
+    }
+    
+    func returnTypeCase() -> HOObjectSubCategory {
+        return self
+    }
+    
+    func orderAndStorageValue() -> Int {
+        return 0
+    }
+    
+    
+    
+    
 }

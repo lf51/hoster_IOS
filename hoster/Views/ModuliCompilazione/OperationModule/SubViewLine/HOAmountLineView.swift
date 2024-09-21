@@ -153,7 +153,9 @@ struct HOAmountLineView:View {
                     vbVisualCheckAndRefresh()
                 }
                 
-                Text(currentPrice ?? "prezzo unitario nullo")
+                let priceString = "prezzo unitario: \(currentPrice ?? "nullo")"
+                
+                Text(priceString)
                     .italic(currentPrice == nil)
                     .font(.callout)
                     .foregroundStyle(Color.malibu_p53)

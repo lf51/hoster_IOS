@@ -39,6 +39,25 @@ enum HOAccWritingSign:CaseIterable {
     case plus
     case minus
     
+    func getSymbol() -> String {
+        
+        switch self {
+        case .plus:
+            return "plus"
+        case .minus:
+            return "minus"
+        }
+    }
+    
+    func getColorAssociated() -> Color {
+        
+        switch self {
+        case .plus:
+            return Color.green
+        case .minus:
+            return Color.faluRed_p52
+        }
+    }
 }
 
 /// Enumerazione per categorizzare tutte le struct conformi al protoccolo HOProAccountDoubleEntry, di modo da identificare dai codici salvati su firebase a quale tipo di account si riferiscono, e poi dall'index recuperare il caso specifico

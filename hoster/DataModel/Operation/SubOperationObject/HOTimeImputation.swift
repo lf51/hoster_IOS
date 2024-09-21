@@ -103,7 +103,7 @@ extension HOMonthImputation {
                     let new = mmIn.last! + 1
                     mmIn.append(new)
                     mmControlAdvancing -= 1
-                    print(mmIn.last!.description)
+                  //  print(mmIn.last!.description)
                 }
                 
                 mmToYY.updateValue(mmIn, forKey: eachYY)
@@ -283,6 +283,7 @@ struct HOTimeImputation:Equatable,Hashable {
     var monthImputation:HOMonthImputation?
     
     var monthToYearImputation:[Int:[Int]]? { self.getMonthToYearImputation() }
+    
     var yyImputation:[Int]? { self.getYYOfImputation() } // viene salvato su firebase e ci serve salvare questo per poter fetchare le operazioni in base all'anno di imputazione
 }
 

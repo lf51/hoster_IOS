@@ -140,7 +140,7 @@ struct HONewReservationMainModule: View {
         
         csBuilderDialogButton {
             
-            DialogButtonElement(
+            /*DialogButtonElement(
                 label: .saveNew,
                 role: nil) {
                     true
@@ -148,7 +148,7 @@ struct HONewReservationMainModule: View {
                     //self.builderVM.publishOperation(refreshPath: nil)
                     
                    /* self.viewModel.addToThePath(destinationPath: self.destinationPath, destinationView: .reservation(HOReservation()))*/
-                }
+                }*/
 
             DialogButtonElement(
                 label: .saveEsc) {

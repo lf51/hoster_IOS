@@ -13,6 +13,40 @@ import MyPackView
 /// subscriber
 extension HOViewModel {
     
+     func addYYSubscriber() {
+        
+        $yyFetchData
+            .sink { _ in
+                //
+            } receiveValue: { [weak self] yyCurrent in
+                print("[START]_addYYSubscriber")
+                guard let self,
+               // let yyCurrent,
+                yyCurrent != self.yyFetchData else { return }
+                // vedi Nota 29.08.24
+                do {
+                    print("YY_Subscriber:\nNewValue is \(yyCurrent.description)\nOld Value is \(self.yyFetchData.description)")
+                    let yy:[Int] = {
+                       return [yyCurrent]
+                    }()
+                    
+                    try self.dbManager.fetchAndListenReservationAndOperations(filteredBy: yy)
+                    
+                } catch let error {
+                    
+                    self.callOnMainQueque {
+                        
+                        let message = HOSystemMessage(vector:.log,title: "Error", body: .custom(error.localizedDescription))
+                        self.sendSystemMessage(message: message)
+
+                    }
+                    
+                }
+                
+            }.store(in: &cancellables)
+
+    }
+    
      func addLoadingSubscriber() {
         
         self.dbManager
@@ -106,7 +140,12 @@ extension HOViewModel {
                        
                         self.db.currentWorkSpace = WorkSpaceModel(focusUid: ref)
                         
-                        try self.dbManager.fetchAndListenWorkSpaceModel(wsFocusUID: ref)
+                        let yy:[Int] = {
+                           // return [self.yyFetchData]
+                            return [self.currentYY]
+                        }()
+                        
+                        try self.dbManager.fetchAndListenWorkSpaceModel(wsFocusUID: ref, filteredBy:yy)
                     } else {
                         
                        // self.setLoading(to: .end)
@@ -135,7 +174,6 @@ extension HOViewModel {
         self.dbManager
             .workSpaceData
             .publisher
-          //  .last()
             .sink { _ in
             
             } receiveValue: { [weak self] workSpaceData in

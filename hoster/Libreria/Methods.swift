@@ -36,7 +36,7 @@ func csTimeFormatter(style:DateFormatter.Style = .full) -> (ora:DateFormatter,da
    let current = allMonth[value - 1]
    return current
     
-}
+} // probabile deprecazione. Creato duplicato nel viewModel per avere ceertezza di coerenza coi simboli e il calendario
 
 func csLastMonthString(from value:Int?,advancedBy:Int?) -> String {
    
@@ -73,4 +73,30 @@ func csStringCleaner(value:String,byCharacter forbidden:CharacterSet) -> String 
  
     return cleanSpace.joined(separator: " ")
     
+}
+
+func csTimeString(from hour:Int?,minute:Int?) -> String {
+    
+    guard let hour else {
+        return "not set"
+    }
+
+    guard let minute,
+    minute > 0 else {
+        
+        return String("\(hour):00")
+    }
+    
+    return String("\(hour):\(minute)")
+    
+}
+
+func csCutString(value:String,character:Character) -> String {
+    
+    guard let _ = value.firstIndex(of: character) else { return value }
+    
+    let zero = value.split(separator: character)
+    
+    guard  let first = zero.first else { return value }
+    return String(first)
 }

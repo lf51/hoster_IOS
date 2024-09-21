@@ -23,6 +23,9 @@ enum HOAmountUnitMisure:String {
     case hour = "hh"
     case month = "mm"
     case year = "yy"
+    case percent = "%"
+    case night = "n"
+    case pernottamenti = "pnt"
     
     func getExtendedRawValue() -> String {
         
@@ -41,8 +44,25 @@ enum HOAmountUnitMisure:String {
             return "mensilità"
         case .year:
             return "annualità"
+        case .percent:
+            return "percent"
+        case .night:
+            return "notti"
+        case .pernottamenti:
+            return "pernottamenti"
         }
         
+        
+    }
+    
+    func getUnitAssociatedNormalized(transform unit:Double) -> Double {
+        
+        switch self {
+            
+        case .percent: return unit * 100
+        default: return unit
+            
+        }
         
     }
     
@@ -70,11 +90,13 @@ extension HOOperationAmount {
     
     var quantityStringValue:String? {
         
-        guard let quantity else { return nil }
+       /* guard let quantity else { return nil }
         
-        let string = String(format:"%.1f", quantity)
+        let string = String(format:"%.2f", quantity)
         
-        return "\(string)"
+        return "\(string)" */
+        
+        self.getQuantityStringValue()
         
     }
     
@@ -83,7 +105,7 @@ extension HOOperationAmount {
         guard let pricePerUnit else { return nil }
 
         let value = pricePerUnit.formatted(.currency(code:localCurrencyCode))
-        return "prezzo unitario: \(value)"
+        return value
         
     }
     
@@ -93,6 +115,26 @@ extension HOOperationAmount {
 
         let value = imponibile.formatted(.currency(code: localCurrencyCode))
         return value
+        
+        
+    }
+    
+    func getQuantityStringValue(coerent toUnitMeasure:HOAmountUnitMisure? = nil) -> String? {
+        
+        guard let quantity else { return nil }
+ 
+        guard let toUnitMeasure else {
+            
+            let string = String(format:"%.1f", quantity)
+            
+            return string
+        }
+        
+        let normalizeQuantity = toUnitMeasure.getUnitAssociatedNormalized(transform: quantity)
+        
+        let string2 = String(format:"%.1f", normalizeQuantity)
+        
+        return string2
         
         
     }

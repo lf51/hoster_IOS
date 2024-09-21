@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import MyFilterPack
 
 /// Risponde alla domanca: Cosa? Oggetto dell'operazione
 enum HOObjectCategory:String,CaseIterable {
@@ -199,4 +200,20 @@ extension HOObjectCategory: HOProWritingDownLoadFilter {
     func getColorAssociated() -> Color {
         return Color.seaTurtle_3
     }
+}
+
+extension HOObjectCategory: Property_FPC {
+    func simpleDescription() -> String {
+        return self.rawValue
+    }
+    
+    func returnTypeCase() -> HOObjectCategory {
+        return self
+    }
+    
+    func orderAndStorageValue() -> Int {
+        return 0 
+    }
+    
+    
 }

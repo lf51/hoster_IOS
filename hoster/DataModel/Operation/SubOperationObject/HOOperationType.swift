@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import MyFilterPack
 
 enum HOOperationType:String,CaseIterable,Codable {
     
@@ -80,6 +81,18 @@ extension HOOperationType {
         case .resoPassivo,.vendita,.versamento:
             return "da"
     
+        }
+        
+    }
+    /// ritorna il segno + o - legato al tipo di operazione. E' un valore economico che differisce dal significato patrimoniale. Indica se vi è una entrata o una uscita economica
+    func getEconomicSign() -> HOAccWritingSign {
+        
+        switch self {
+        case .acquisto,.ammortamento,.consumo,.pagamento,.versamento,.resoPassivo:
+            return .minus
+        case .riscossione,.vendita,.resoAttivo,.regalie:
+            return .plus
+
         }
         
     }
@@ -456,5 +469,43 @@ extension HOOperationType {
         return Array(cleanDuplicate)
 
     }
+    
+}
+
+extension HOOperationType:Property_FPC {
+    func simpleDescription() -> String {
+       return self.rawValue
+    }
+    
+    func returnTypeCase() -> HOOperationType {
+        return self
+    }
+    
+    func orderAndStorageValue() -> Int {
+        
+        switch self {
+        case .acquisto:
+            return 0
+        case .pagamento:
+            return 1
+        case .consumo:
+            return 2
+        case .resoPassivo:
+            return 4
+        case .ammortamento:
+            return 5
+        case .riscossione:
+            return 7
+        case .versamento:
+            return 3
+        case .vendita:
+            return 6
+        case .resoAttivo:
+            return 8
+        case .regalie:
+            return 9
+        }
+    }
+    
     
 }

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import MyFilterPack
 /// L'utente può creare i suoi canali OTA che saranno salvati nel workspaceData
 struct HOOTAChannel:Hashable,Codable {
     
@@ -30,6 +30,26 @@ struct HOOTAChannel:Hashable,Codable {
         
     }
     
+}
+
+extension HOOTAChannel:Property_FPC {
+    func simpleDescription() -> String {
+        return label ?? "no ota"
+    }
+    
+    func returnTypeCase() -> HOOTAChannel {
+        return self
+    }
+    
+    func orderAndStorageValue() -> Int {
+        // per ordine di grandezza
+        guard let label else { return 0 }
+        
+        let count = label.count
+       
+        return count
+    }
+
 }
 
 

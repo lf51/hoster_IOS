@@ -123,8 +123,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/lf51/MyContainerPack.git",
       "state" : {
-        "revision" : "98f3d825721fd22aaef3f8e3e15215dd279c5047",
-        "version" : "0.3.8"
+        "revision" : "5bdcbb9cd7614f78908cf5bb19391b491243e560",
+        "version" : "0.3.9"
       }
     },
     {

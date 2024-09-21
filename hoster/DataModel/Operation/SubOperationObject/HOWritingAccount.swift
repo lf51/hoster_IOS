@@ -73,6 +73,15 @@ extension HOWritingAccount {
 
 extension HOWritingAccount {
     
+    var imputationStringValue:String {
+        
+        guard let imputationAccount else { 
+            return "\(self.operationArea?.rawValue ?? "")" }
+        
+        return "conto \(imputationAccount.rawValue)"
+        
+    }
+    
     /// Ritorna la descrizione della scrittura. Tipo: consumo scorte merci cocaCola per colazione
     func getWritingDescription() -> String? {
         
@@ -84,11 +93,11 @@ extension HOWritingAccount {
       
         let oggettoValue = oggetto.getDescription(campi:\.subCategory, \.specification)
         
-        let imputationValue = imputationAccount == nil ? "\(operationArea.rawValue)" : "conto \(imputationAccount!.rawValue)"
+       // let imputationValue = imputationAccount == nil ? "\(operationArea.rawValue)" : "conto \(imputationAccount!.rawValue)"
         
         let preposition = type.getPrepositionAssociated()
         
-        return "\(areaValue.csCapitalizeFirst()) (\(oggettoValue)) \(preposition) \(imputationValue)."
+        return "\(areaValue.csCapitalizeFirst()) (\(oggettoValue)) \(preposition) \(imputationStringValue)."
         
     }
  

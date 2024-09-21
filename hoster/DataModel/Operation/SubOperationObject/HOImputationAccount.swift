@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import MyFilterPack
 /// Risponde alla domanda; Per Cosa? per quale attività effettuiamo l'operazione
 enum HOImputationAccount:String,CaseIterable { // imputazione diretta
     // dare i ricavi // avere i costi
@@ -170,4 +171,54 @@ extension HOImputationAccount:HOProWritingDownLoadFilter {
     }
 }
 
-
+extension HOImputationAccount:Property_FPC {
+    func simpleDescription() -> String {
+        return self.rawValue
+    }
+    
+    func returnTypeCase() -> HOImputationAccount {
+        return self
+    }
+    
+    func orderAndStorageValue() -> Int {
+        switch self {
+        case .pernottamento:
+            return 0
+        case .lavanderia:
+            return 1
+        case .pulizia:
+            return 2
+        case .accoglienza:
+            return 3
+        case .colazione:
+            return 4
+        case .marketing:
+            return 5
+        case .transfer:
+            return 6
+        case .experience:
+            return 7
+        case .noleggio:
+            return 8
+        case .parcheggio:
+            return 9
+        case .boutique:
+            return 10
+        case .minibar:
+            return 11
+        case .cityTax:
+            return 12
+        case .ota:
+            return 13
+        case .diversi:
+            return 14
+        case .mainUnit:
+            return 15
+        case .subUnit:
+            return 16
+        }
+    }
+    
+    
+    
+}

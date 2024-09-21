@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MyFilterPack
 
 struct HOUnitModel:HOProStarterPack, Hashable {
     
@@ -42,6 +43,21 @@ extension HOUnitModel {
 
 extension HOUnitModel:Codable { }
 
+extension HOUnitModel:Property_FPC {
+    
+    func simpleDescription() -> String {
+        return self.label
+    }
+    
+    func returnTypeCase() -> HOUnitModel {
+        return self
+    }
+    
+    func orderAndStorageValue() -> Int {
+        return self.unitType.rawValue
+    }
+    
+}
 /*
 extension HOUnitModel:HOProCDCPack {
     

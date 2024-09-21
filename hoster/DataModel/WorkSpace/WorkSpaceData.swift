@@ -19,6 +19,7 @@ struct WorkSpaceData:HOProStarterPack {
     var maxNightIn:Int? // setup utente
     var bedTypeIn:[HOBedType]? // setup utente
     var checkInTime:DateComponents? // setup utente
+    var checkOutTime:DateComponents? // setup utente
     
     var ivaSubject:Bool? // setup utente
     var cityTaxPerPerson:Double? // setup utente
@@ -37,7 +38,8 @@ struct WorkSpaceData:HOProStarterPack {
         defaultData.maxNightIn = 28
         defaultData.bedTypeIn = HOBedType.allCases 
         defaultData.checkInTime = DateComponents(hour:16,minute:0)
-        defaultData.ivaSubject = false 
+        defaultData.checkOutTime = DateComponents(hour:11,minute:0)
+        defaultData.ivaSubject = false
         defaultData.cityTaxPerPerson = 2.0//0.0
         defaultData.costiTransazione = 1.3
         

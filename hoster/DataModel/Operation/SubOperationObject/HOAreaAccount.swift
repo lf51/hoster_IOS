@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import MyFilterPack
 
 enum HOAreaAccount:String,CaseIterable,Codable {
     
@@ -27,7 +28,7 @@ extension HOAreaAccount {
         
        // if associatedType.contains(type) {
             
-            return "\(typeValue) \(self.getGergalRawValue())"
+        return "\(typeValue) \(self.getGergalRawValue())"
             
        // } else { return nil }
         
@@ -252,5 +253,43 @@ extension HOAreaAccount:HOProWritingDownLoadFilter {
             return Color.hoBackGround
         }
     }
+    
+}
+
+extension HOAreaAccount: Property_FPC {
+    func simpleDescription() -> String {
+        return self.rawValue
+    }
+    
+    func returnTypeCase() -> HOAreaAccount {
+        return self
+    }
+    
+    func orderAndStorageValue() -> Int {
+        switch self {
+        case .scorte:
+            return 0
+        case .corrente:
+            return 1
+        case .tributi:
+            return 2
+        case .pluriennale:
+            return 3
+        }
+    }
+    
+    
+    
+    
+}
+
+extension HOAreaAccount: Property_FPC_Mappable {
+   
+    var id: String {self.rawValue}
+    
+    func imageAssociated() -> String {
+        self.getImageAssociated()
+    }
+    
     
 }
