@@ -180,7 +180,12 @@ struct HOCheckInLineView:View {
         
        HStack {
             
-           let checkOut = csTimeFormatter(style: .long).data.string(from: self.builderVM.reservation.checkOut)
+           let checkOut:String = {
+               
+               guard let out = self.builderVM.reservation.checkOut else { return "no value"}
+               
+               return csTimeFormatter(style: .long).data.string(from: out)
+           }()
             
             Text("Check-Out:")
                 .fontDesign(.monospaced)

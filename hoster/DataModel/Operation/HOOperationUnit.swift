@@ -200,7 +200,9 @@ extension HOOperationUnit:Object_FPC {
     static func sortModelInstance(lhs: HOOperationUnit, rhs: HOOperationUnit, condition: SortCondition?, readOnlyVM: HOViewModel) -> Bool {
         
         switch condition {
-        case .regolamento:
+        case .regolamentoCrescente:
+            return lhs.regolamento < rhs.regolamento
+        case .regolamentoDecrescente:
             return lhs.regolamento > rhs.regolamento
         case nil:
             return false
@@ -278,23 +280,28 @@ extension HOOperationUnit:Object_FPC {
     
     enum SortCondition:SubSortObject_FPC {
         
-        static var defaultValue: HOOperationUnit.SortCondition = .regolamento
+        static var defaultValue: HOOperationUnit.SortCondition = .regolamentoDecrescente
         
-        case regolamento
+        case regolamentoCrescente
+        case regolamentoDecrescente
         
         func simpleDescription() -> String {
             
             switch self {
-            case .regolamento:
-                return "Data Contabile"
+            case .regolamentoCrescente:
+                return "Data Contabile Crescente"
+            case .regolamentoDecrescente:
+                return "Data Contabile Decrescente"
             }
         }
         
         func imageAssociated() -> String {
            
             switch self {
-            case .regolamento:
-                return "calendar"
+            case .regolamentoCrescente:
+                return "calendar.badge.plus"
+            case .regolamentoDecrescente:
+                return "calendar.badge.minus"
             }
         }
     }

@@ -52,10 +52,6 @@ struct HOOperationsList: View {
                             proxy.scrollTo(1, anchor: .top)
                         }
                     }
-                } mapButtonAction: {
-                   // mapButtonAction()
-                    // 13.09.24 disabilitato poichè lo scroll sfarfallia. Comunque per le operazioni non è così necessario. Valutare modifiche al pack
-                    
                 } trailingView: {
                     vbTrailing()
                 } filterView: {
@@ -66,7 +62,6 @@ struct HOOperationsList: View {
                     
                     HOOperationRowView(operation: operation)
          
-
                 } onRefreshAction: {
                     //
                 }
@@ -105,7 +100,8 @@ struct HOOperationsList: View {
         
         HStack {
             
-            HStack(spacing:5) {
+            vbCurrentYearView(viewModel: self.viewModel)
+           /* HStack(spacing:5) {
                 
                 Image(systemName: "calendar")
                 Text("\(self.viewModel.yyFetchData.description)")
@@ -118,7 +114,7 @@ struct HOOperationsList: View {
                 .background {
                     RoundedRectangle(cornerRadius: 5.0)
                         .fill(Color.hoBackGround.opacity(0.4))
-                }
+                }*/
 
             
             
@@ -200,10 +196,14 @@ struct HOOperationsList: View {
         
         MySortRow(
             sortCondition: $filterCore.sortConditions,
-            localSortCondition: .regolamento,
+            localSortCondition: .regolamentoDecrescente,
+            coloreScelta: Color.orange)
+        
+        MySortRow(
+            sortCondition: $filterCore.sortConditions,
+            localSortCondition: .regolamentoCrescente,
             coloreScelta: Color.yellow)
         
-     
     }
 }
 

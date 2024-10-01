@@ -26,8 +26,9 @@ extension HOViewModel {
                 // vedi Nota 29.08.24
                 do {
                     print("YY_Subscriber:\nNewValue is \(yyCurrent.description)\nOld Value is \(self.yyFetchData.description)")
+                    let t0 = yyCurrent - 1
                     let yy:[Int] = {
-                       return [yyCurrent]
+                        return [yyCurrent,t0]
                     }()
                     
                     try self.dbManager.fetchAndListenReservationAndOperations(filteredBy: yy)
@@ -142,7 +143,8 @@ extension HOViewModel {
                         
                         let yy:[Int] = {
                            // return [self.yyFetchData]
-                            return [self.currentYY]
+                            let t0 = self.currentYY - 1
+                            return [self.currentYY,t0]
                         }()
                         
                         try self.dbManager.fetchAndListenWorkSpaceModel(wsFocusUID: ref, filteredBy:yy)

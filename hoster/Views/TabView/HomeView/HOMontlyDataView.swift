@@ -8,14 +8,16 @@
 import SwiftUI
 import MyPackView
 
-struct HOUnitCalendarView: View {
+struct HOMontlyDataView: View {
     
     @EnvironmentObject var viewModel:HOViewModel
     
-    @State private var mmOrdinale:Int = 0
+    @State private var mmOrdinale:Int = 1
     @State private var selectedDay:Int?
     
-    var mmReservations:[HOReservation]? { self.viewModel.getReservations(month: mmOrdinale, unitRef: nil,notConsiderCheckOut: false) }
+    let focusUnit:String?
+    
+    var mmReservations:[HOReservation]? { self.viewModel.getReservations(unitRef: focusUnit,notConsiderCheckOut: false) }
     
     var body: some View {
             
@@ -30,12 +32,34 @@ struct HOUnitCalendarView: View {
                 VStack(alignment:.leading,spacing: 15) {
                     
                     vbMMfilterLine()
+
+                    HOResumeLineView(
+                        mmOrdinale: mmOrdinale,
+                        focusUnit: focusUnit)
+                    .padding([.top,.trailing],5)
+                    .padding(.bottom,10)
+                    .padding(.leading,15)
+                    .background {
                         
-                    vbMMResumeLine()
+                        Color.hoBackGround
+                            .opacity(0.2)
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 5.0))
                     
-                    HOUnitCalendarGridView(mmOrdinale: $mmOrdinale, selectedDay: $selectedDay)
+                    HOCalendarGridView(selectedDay: $selectedDay, mmOrdinale: mmOrdinale, focusUnit: focusUnit)
                     
-                    vbInOut()
+                    if selectedDay != nil {
+                        
+                        vbInOut()
+                        
+                    } else {
+                        
+                        Text("nessun giorno selezionato")
+                            .italic()
+                            .font(.caption)
+                            .foregroundStyle(Color.gray)
+                    
+                    }
                    
                 }
                 .padding(.horizontal,10)
@@ -50,16 +74,20 @@ struct HOUnitCalendarView: View {
         
     } // chiusa body
     
-    @ViewBuilder private func vbMMResumeLine() -> some View {
+   /* @ViewBuilder private func vbMMResumeLine() -> some View {
         
-        let reservationsInfo = self.viewModel.getReservationInfo(month:self.mmOrdinale,sub: nil)
+        let reservationsInfo = self.viewModel.getReservationInfo(month:self.mmOrdinale,sub: focusUnit)
         
         let count = reservationsInfo?.count ?? 0
         let countString = csSwitchSingolarePlurale(checkNumber: count, wordSingolare: "prenotazione", wordPlurale: "prenotazioni")
         let guest = reservationsInfo?.totaleGuest ?? 0
         let night = reservationsInfo?.totaleNotti ?? 0
         let gross = reservationsInfo?.grossAmount ?? 0
-        let averagePrice = gross / Double(night)
+        let averagePrice:Double = {
+            let value = gross / Double(night)
+            if value.isNaN { return 0 }
+            else { return value }
+        }()
         
         VStack(alignment:.leading,spacing: 0) {
             
@@ -97,7 +125,7 @@ struct HOUnitCalendarView: View {
                 HStack {
 
                     Text("\(gross,format: .currency(code: self.viewModel.localCurrencyID))")
-                        .font(.title2)
+                        .font(.title3)
                         .bold()
                         .foregroundStyle(Color.green)
                     
@@ -127,7 +155,8 @@ struct HOUnitCalendarView: View {
                 
                 
             }
-            
+            .lineLimit(1)
+            .minimumScaleFactor(0.65)
         }
         .padding(.vertical,5)
         .padding(.trailing,5)
@@ -142,74 +171,101 @@ struct HOUnitCalendarView: View {
         
         
     }
-    
+    */
     @ViewBuilder private func vbInOut() -> some View {
         
         let associatedReservation = self.getReservationInOut()
         
         VStack(alignment:.leading,spacing:5) {
             
-            HStack {
-                
-                Image(systemName: "circle.fill")
-                    .foregroundStyle(Color.gray)
-                    .font(.system(size: 5))
-                
-                if let peopleOut = associatedReservation.out {
+                if let peopleOuts = associatedReservation.out {
                     
-                    HStack(spacing:5) {
-
-                        Text(peopleOut.guestName ?? "")
-                           
-                        Text("is checking out")
-                            .italic()
-
-                    }
-                    .font(.caption)
-                    .foregroundStyle(Color.gray)
-                    
-                } else {
-                    
-                    Text("no check-out")
-                        .italic()
-                        .font(.caption)
-                        .foregroundStyle(Color.gray)
-                }
-            }
-            
-            HStack(alignment:.center) {
-                
-                Image(systemName: "circle.fill")
-                    .foregroundStyle(Color.green)
-                    .font(.system(size: 5))
-                
-                if let peopleIn = associatedReservation.in {
-                    
-                    VStack(alignment:.leading) {
+                    ForEach(peopleOuts) { peopleOut in
                         
                         HStack(spacing:5) {
+
+                            Image(systemName: "circle.fill")
+                                .foregroundStyle(Color.gray)
+                                .font(.system(size: 5))
                             
-                            Text(peopleIn.guestName ?? "")
-                                .fontWeight(.semibold)
-                            
-                            Text("is checking in")
-                                .italic()
+                            HStack(spacing:3) {
+                                
+                                Text(peopleOut.guestName ?? "")
+                                   
+                                Text("is checking out")
+                                    .italic()
+                            }
+                            .font(.caption)
+                            .foregroundStyle(Color.gray)
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.9)
+
                         }
-                        .font(.caption)
-                        .foregroundStyle(Color.cinderella_p47)
                         
-                        vbInOutInfo(for: peopleIn)
                     }
                     
                 } else {
                     
-                    Text("no check-in")
-                        .italic()
-                        .font(.caption)
-                        .foregroundStyle(Color.gray)
+                    HStack(spacing:5) {
+                        
+                        Image(systemName: "circle.fill")
+                            .font(.system(size: 5))
+                        
+                        Text("no check-out")
+                            .italic()
+                            .font(.caption)
+                            
+                    }
+                    .foregroundStyle(Color.gray)
+                }
+ 
+                if let peopleIn = associatedReservation.in {
+                    
+                    ForEach(peopleIn) { personIn in
+                        
+                        VStack(alignment:.leading) {
+                            
+                            HStack(spacing:5) {
+                                
+                                Image(systemName: "circle.fill")
+                                    .foregroundStyle(Color.green)
+                                    .font(.system(size: 5))
+                                
+                                HStack(spacing:3) {
+                                    
+                                    Text(personIn.guestName ?? "")
+                                        .fontWeight(.semibold)
+                                    
+                                    Text("is checking in")
+                                        .italic()
+                                }
+                                .font(.caption)
+                                .foregroundStyle(Color.cinderella_p47)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.9)
+                            }
+                            
+                            vbInOutInfo(for: personIn)
+                        }
+                        
+                    }
+                    
+                } else {
+                    
+                    HStack(spacing:5) {
+                        
+                        Image(systemName: "circle.fill")
+                            .foregroundStyle(Color.green)
+                            .font(.system(size: 5))
+                        
+                        Text("no check-in")
+                            .italic()
+                            .font(.caption)
+                            .foregroundStyle(Color.gray)
+                    }
                 }
                 
-            }
+           // }
         }
         
     }
@@ -255,15 +311,31 @@ struct HOUnitCalendarView: View {
                 
                 Text("\(totale) \(letto)")
                 
-                Spacer()
+              //  Spacer()
             }
-           
-            Spacer()
+
+            if self.viewModel.isUnitWithSubs,
+               let sub = reservation.refUnit,
+               focusUnit == nil {
+                
+                let label = self.viewModel.getUnitModel(from: sub)?.label
+                
+                HStack(spacing:3) {
+                    
+                    Image(systemName: "door.right.hand.closed")
+                    
+                    Text(label ?? "unlabeled")
+                        .italic()
+                }
+                .bold()
+                
+            }
+           // Spacer()
             
             }
-        .font(.caption)
-        .foregroundStyle(Color.cinderella_p47)
-        .opacity(0.8)
+        .font(.caption2)
+        .foregroundStyle(Color.gray)
+        //.opacity(0.8)
 
         }
    
@@ -278,20 +350,14 @@ struct HOUnitCalendarView: View {
                 }
                 
             }, label: {
-                Image(systemName: "chevron.compact.backward")
+                Image(systemName: "chevron.backward.circle")
+                    .imageScale(.large)
                     .foregroundStyle(Color.hoAccent)
             })
             .opacity(mmOrdinale != 1 ? 1.0 : 0.6)
             .disabled(mmOrdinale == 1)
             
             Spacer()
-            
-           /* Text(mm)
-                .font(.title3)
-                .fontDesign(.monospaced)
-                .foregroundStyle(Color.cinderella_p47)
-              */
-            
             
             Picker(selection: $mmOrdinale) {
 
@@ -318,7 +384,8 @@ struct HOUnitCalendarView: View {
                     addMM()
                 }
             }, label: {
-                Image(systemName: "chevron.compact.forward")
+                Image(systemName: "chevron.forward.circle")
+                    .imageScale(.large)
                     .foregroundStyle(Color.hoAccent)
             })
             .opacity(mmOrdinale != 12 ? 1.0 : 0.6)
@@ -330,29 +397,34 @@ struct HOUnitCalendarView: View {
     
     // method
     
-    private func getReservationInOut() -> (in:HOReservation?,out:HOReservation?) {
+    private func getReservationInOut() -> (in:[HOReservation]?,out:[HOReservation]?) {
         
         guard let mmReservations,
               let selectedDay,
               let localDate = DateComponents(calendar: self.viewModel.localCalendar,year: self.viewModel.yyFetchData, month: self.mmOrdinale, day: selectedDay).date else { return (nil,nil) }
         
-        var reservIn:HOReservation?
-        var reservOut:HOReservation?
+        var reservIn:[HOReservation] = []
+        var reservOut:[HOReservation] = []
         
         for eachReserv in mmReservations {
             
-            guard let ddArrivo = eachReserv.dataArrivo else { continue }
+            guard let ddArrivo = eachReserv.dataArrivo,
+                  let ddOut = eachReserv.checkOut else { continue }
             
             if self.viewModel.localCalendar.isDate(localDate, inSameDayAs: ddArrivo) {
-                reservIn = eachReserv
+                reservIn.append(eachReserv) //= eachReserv
             }
-            else if self.viewModel.localCalendar.isDate(localDate, inSameDayAs: eachReserv.checkOut) {
-                reservOut = eachReserv
+            else if self.viewModel.localCalendar.isDate(localDate, inSameDayAs: ddOut) {
+                reservOut.append(eachReserv) //= eachReserv
             }
             
         }
         
-        return (reservIn,reservOut)
+        let valueIn:[HOReservation]? = reservIn.isEmpty ? nil : reservIn
+        
+        let valueOut:[HOReservation]? = reservOut.isEmpty ? nil : reservOut
+        
+        return (valueIn,valueOut)
     }
     
     private func addMM() {
@@ -360,7 +432,7 @@ struct HOUnitCalendarView: View {
         guard self.mmOrdinale < 12 else { return }
         
         self.mmOrdinale += 1
-        self.selectedDay = nil
+      //  self.selectedDay = nil
         
     }
     
@@ -369,7 +441,7 @@ struct HOUnitCalendarView: View {
         guard self.mmOrdinale > 1 else { return }
         
         self.mmOrdinale -= 1
-        self.selectedDay = nil
+       // self.selectedDay = nil
         
     }
 }
@@ -378,14 +450,17 @@ struct HOUnitCalendarView: View {
     HOUnitCalendarView()
 }*/
 
-struct HOUnitCalendarGridView:View {
+struct HOCalendarGridView:View {
     
     @EnvironmentObject var viewModel:HOViewModel
     
-    @Binding var mmOrdinale:Int
     @Binding var selectedDay:Int?
+    let mmOrdinale:Int
+    let focusUnit:String?
     
-    var allDateOccupies:[(in:Date,out:Date)]? { viewModel.getOccupancyFor(month: mmOrdinale, unitRef: nil)}
+   // var allDateOccupies:[(in:Date,out:Date)]? { viewModel.getOccupancyFor(month: mmOrdinale, unitRef: focusUnit)}
+    
+    var allDateOccupies:[DateInterval]? { viewModel.getOccupacyInterval(unitRef: focusUnit)}
     
     let columns = [
         GridItem(.flexible(),alignment: .top),
@@ -502,7 +577,23 @@ struct HOUnitCalendarGridView:View {
         var pIn:Bool = false
         var pOut:Bool = false
         
-        for eachPair in allDateOccupies {
+        for eachInterval in allDateOccupies {
+            
+            if self.viewModel.localCalendar.isDate(localDate, inSameDayAs: eachInterval.start) {
+                pIn = true
+                busy = true
+            }
+            
+            else if self.viewModel.localCalendar.isDate(localDate, inSameDayAs: eachInterval.end) { pOut = true }
+            
+            else if eachInterval.contains(localDate) {
+                
+                busy = true
+            }
+            
+        }
+        
+       /* for eachPair in allDateOccupies {
        
             if self.viewModel.localCalendar.isDate(localDate, inSameDayAs: eachPair.in) {
                 pIn = true
@@ -516,7 +607,7 @@ struct HOUnitCalendarGridView:View {
                 busy = true
             }
             
-        }
+        }*/
       
         return (busy,pIn,pOut,isPassed)
         

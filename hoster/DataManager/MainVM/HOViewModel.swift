@@ -85,6 +85,7 @@ extension HOViewModel {
     var currentYY:Int { localCalendar.component(.year, from: Date()) }
     var currentMMOrdinal:Int { localCalendar.component(.month, from: Date()) }
     var currentDDOrdinal:Int { localCalendar.component(.day, from: Date()) }
+    var currentDDOnFetchYY:Int { self.getDDOnFetchYear() }
     
     var localCurrencySymbol:String {
         Locale.current.currencySymbol ?? "$"
@@ -111,10 +112,31 @@ extension HOViewModel {
         return value
         
     }
+    
+   private func getDDOnFetchYear() -> Int {
+        
+        let baseDate = DateComponents(calendar: localCalendar, year: self.yyFetchData, month: 1, day: 1).date ?? Date()
+
+        let days = localCalendar.range(of: .day, in: .year, for: baseDate)?.count ?? 0
+        return days 
+        
+    }
+    /// torna il numero di giorni in un mese dell'anno selezionato
+    func getDDOn(monthOrdinal:Int) -> Int {
+        
+        let baseDate = DateComponents(calendar: localCalendar, year: self.yyFetchData, month: 1, day: 1).date ?? Date()
+        
+        let specularDate = localCalendar.date(bySetting: .month, value: monthOrdinal, of: baseDate) ?? Date()
+        
+        let days = localCalendar.range(of: .day, in: .month, for: specularDate)?.count ?? 0
+        
+        return days
+    }
+    
     /// tupla contenente il numero di giorni in un mese, e l'ordinale del primo giorno del mese.
     private func getMMDays(from monthOrdinal:Int) -> (ddIn:Int,firstWD:Int) {
         
-        let baseDate = DateComponents(calendar: localCalendar, year: currentYY, month: 1, day: 1).date ?? Date()
+        let baseDate = DateComponents(calendar: localCalendar, year: self.yyFetchData, month: 1, day: 1).date ?? Date()
         
         let specularDate = localCalendar.date(bySetting: .month, value: monthOrdinal, of: baseDate) ?? Date()
         
@@ -604,6 +626,9 @@ extension HOViewModel {
 /// workspace get data from
 extension HOViewModel {
     
+    var isUnitWithSubs:Bool { self.getSubsCount() > 0 }
+    var subUnitCount:Int { self.getSubsCount() }
+    
     func getUserName() -> String {
         
         if let user = self.authData.userName {
@@ -636,9 +661,14 @@ extension HOViewModel {
         
         guard let ws = self.db.currentWorkSpace,
               let subs = ws.wsUnit.subs else { return nil }
-        
         return subs.sorted(by: {$0.label < $1.label})
         
+    }
+    
+    private func getSubsCount() -> Int {
+        
+        guard let ws = self.db.currentWorkSpace else { return 0 }
+        return ws.wsUnit.subs?.count ?? 0
     }
     
 }
@@ -800,8 +830,8 @@ extension HOViewModel {
         return associated
     }
     
-    func getOccupancyFor(month:Int?, unitRef:String?) -> [(in:Date,out:Date)]? {
-        /// da implementare le unità
+   /* func getOccupancyFor(month:Int?, unitRef:String?) -> [(in:Date,out:Date)]? {
+  
         guard let reservations = self.getReservations(month: month, unitRef: unitRef,notConsiderCheckOut: false) else { return nil }
         
         let allDates:[(Date,Date)] = reservations.compactMap({
@@ -810,38 +840,34 @@ extension HOViewModel {
             return (checkIn,checkOut)
         })
         return allDates
+    }*/ // deprecata
+    
+    func getOccupacyInterval(unitRef:String?) -> [DateInterval]? {
+        
+        guard let reservations = self.getReservations(unitRef: unitRef,notConsiderCheckOut: false) else { return nil }
+        
+        let allInterval:[DateInterval] = reservations.compactMap({ $0.occupacyInterval })
+        
+        return allInterval
     }
     
-    func getReservations(month:Int?,unitRef:String?,notConsiderCheckOut:Bool = true) -> [HOReservation]? {
-        /// da implementare le unità
+    func getReservations(unitRef:String?,notConsiderCheckOut:Bool = true) -> [HOReservation]? {
+      
         guard let ws = self.db.currentWorkSpace else { return nil }
         
-        let reservations = ws.wsReservations.getAllFiltered(for: self.yyFetchData, month: month,unitRef: nil,notConsiderCheckOut: notConsiderCheckOut)
+        let reservations = ws.wsReservations.getAllFiltered(year: self.yyFetchData,subRef: unitRef,notConsiderCheckOut: notConsiderCheckOut)
         
         return reservations
     }
     
     
-    func getReservationInfo(month:Int?,sub:String?) -> (count:Int,grossAmount:Double,totaleNotti:Int,totaleGuest:Int)? {
+    func getReservationInfo(month:Int?,sub:String?) -> (count:Int,grossAmount:Double,totaleNotti:Int,totaleGuest:Int,tassoOccupazioneNigh:Double)? {
         
         guard let ws = self.db.currentWorkSpace else { return nil }
         
-        let reservationInfo = ws.wsReservations.getInformation(for: self.yyFetchData,month: month,sub: sub)
+        let reservationInfo = ws.wsReservations.getInformation(year: self.yyFetchData,month: month,sub: sub,viewModel: self)
 
-        let operationModelAssociated = self.getOperation(from: reservationInfo.optAssociatedRef) ?? []
-        
-        let optFiltered = operationModelAssociated.filter({
-            
-            $0.writing?.imputationAccount == .pernottamento
-        })
-        
-        let totalAmount = optFiltered.reduce(into: 0) { partialResult, operation in
-            
-            partialResult += (operation.amount?.imponibile ?? 0)
-        }
-        
-        
-        return (reservationInfo.count,totalAmount,reservationInfo.totalNight,reservationInfo.totalGuest)
+        return (reservationInfo.arrivalCount,reservationInfo.incomeAggregato,reservationInfo.totalNight,reservationInfo.totalGuest,reservationInfo.tassoOccupazioneNotti)
         
     }
     
@@ -854,7 +880,6 @@ extension HOViewModel {
         let positive = opts.filter({$0.writing?.type?.getEconomicSign() == .plus })
         
         let negative = opts.filter({$0.writing?.type?.getEconomicSign() == .minus })
-        
         
         let totalPositive = positive.reduce(into: 0) { partialResult, operation in
             
@@ -872,40 +897,59 @@ extension HOViewModel {
 
 // area test
 
-let buy1:HOOperationUnit = {
-    
-    var x = HOOperationUnit()
-    x.writing = HOWritingAccount(
-        type: .acquisto,
-        dare: nil,
-        avere: "AA02",
-        oggetto: HOWritingObject(
-            category: .merci,
-            subCategory: .food,
-            specification: "Colazione Continentale"))
-    
-    x.amount = HOOperationAmount(quantity:10, pricePerUnit: 1.5)
-    
-    return x
-}()
-
-let buy2:HOOperationUnit = {
+let optCate:HOOperationUnit = {
     
     var x = HOOperationUnit()
     x.writing = HOWritingAccount(
         type: .vendita,
-        dare: nil,
-        avere: "AA02",
+        dare: "IA01",
+        avere: "AA01",
         oggetto: HOWritingObject(
             category: .servizi,
             subCategory: .interno,
-            specification: "Lillo Friscia"))
+            specification: "Caterina Dul"))
     
-    x.amount = HOOperationAmount(quantity:7, pricePerUnit: 71.5)
+    x.amount = HOOperationAmount(quantity:15, pricePerUnit: 80)
+    x.regolamento = Date()
     
     return x
 }()
 
+let optLillo:HOOperationUnit = {
+    
+    var x = HOOperationUnit()
+    x.writing = HOWritingAccount(
+        type: .vendita,
+        dare: "IA01",
+        avere: "AA01",
+        oggetto: HOWritingObject(
+            category: .servizi,
+            subCategory: .interno,
+            specification: "Lillo F"))
+    
+    x.amount = HOOperationAmount(quantity:60, pricePerUnit: 70)
+    x.regolamento = Date().addingTimeInterval(1500)
+    
+    return x
+}()
+
+let optPeppe:HOOperationUnit = {
+    
+    var x = HOOperationUnit()
+    x.writing = HOWritingAccount(
+        type: .vendita,
+        dare: "IA01",
+        avere: "AA01",
+        oggetto: HOWritingObject(
+            category: .servizi,
+            subCategory: .interno,
+            specification: "Peppe F"))
+    
+    x.amount = HOOperationAmount(quantity:3, pricePerUnit: 100)
+    x.regolamento = Date().addingTimeInterval(3000)
+    
+    return x
+}()
 // chiusa AREA TEST CORRENTE
 
 let testUnit:HOUnitModel = {
@@ -933,15 +977,15 @@ let reservation:HOReservation = {
     
     var current:HOReservation = HOReservation()
     
-    current.guestName = "Calogero Lillo Friscia"
+    current.guestName = "Lillo Friscia"
     current.refUnit = testUnit1.uid
     current.labelPortale = "booking.com"
     current.guestType = .couple
-    current.notti = 7
+    current.notti = 60
     current.pax = 2
-    current.dataArrivo = Date()
+    current.dataArrivo = DateComponents(calendar: Locale.current.calendar,year: 2024, month: 9, day: 15).date
     current.disposizione = [HOBedUnit(bedType: .double, number: 1)]
-    current.refOperations = [buy1.uid,buy2.uid]
+    current.refOperations = [optLillo.uid]
     return current
 }()
 
@@ -955,9 +999,9 @@ let reservation1:HOReservation = {
     current.guestType = .couple
     current.notti = 3
     current.pax = 2
-    current.dataArrivo = Locale.current.calendar.date(byAdding: DateComponents(year:-1,month: 1,day: 2), to: Date())
+    current.dataArrivo = Locale.current.calendar.date(byAdding: DateComponents(month: 1,day: 0), to: Date())
     current.disposizione = [HOBedUnit(bedType: .double, number: 1)]
-    
+    current.refOperations = [optPeppe.uid]
     return current
 }()
 
@@ -969,19 +1013,19 @@ let reservation2:HOReservation = {
     current.refUnit = testUnit2.uid
     current.labelPortale = "booking.com"
     current.guestType = .couple
-    current.notti = 5
+    current.notti = 15
     current.pax = 3
-    current.dataArrivo = Date().addingTimeInterval(2592000)
+    current.dataArrivo = Locale.current.calendar.date(byAdding: DateComponents(year:-1,month: 3), to: Date())
     current.disposizione = [HOBedUnit(bedType: .double, number: 1),HOBedUnit(bedType: .single, number: 1)]
-    
+    current.refOperations = [optCate.uid]
     return current
 }()
 
 let testWorkSpace:WorkSpaceModel = {
     
     var ws = WorkSpaceModel()
-    ws.wsOperations.all = [buy1,buy2]
-    ws.wsReservations.all = [reservation,reservation1,reservation2]
+    ws.wsOperations.all = [/*optCate,*/optLillo,optPeppe]
+    ws.wsReservations.all = [reservation/*,reservation1*//*,reservation2*/]
     ws.wsUnit.all = [testUnit,testUnit1,testUnit2]
     return ws
 }()

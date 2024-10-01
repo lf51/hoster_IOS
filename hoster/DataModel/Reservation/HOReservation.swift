@@ -29,10 +29,7 @@ struct HOReservation:HOProStarterPack {
     var disposizione:[HOBedUnit]? //
     
     var scheduleCache:Int? // salvato su firebase in caso di schedule forzata// 0 manuale - nil è automatico
-    
     var note:String? //
-    
-    
     
     init() {
         self.uid = UUID().uuidString
@@ -41,51 +38,110 @@ struct HOReservation:HOProStarterPack {
     }
 }
 
+/// gestione date per Calendario
+extension HOReservation {
+    
+    
+    
+    /// sequenza contenente le date dall'arrivo al checkOut, arrivo e checkOut sono escluse
+  /* var dateInvolved:[Date]? { self.getDatesInvolved() }
+    
+    private func getDatesInvolved() -> [Date]? {
+        
+        guard let dataArrivo
+              else { return nil }
+        
+        let intervallo = calendar.dates(byAdding: .day, value: 1, startingAt: dataArrivo, in: dataArrivo..<checkOut, wrappingComponents: false)
+        
+        let x = Array(intervallo)
+        return x
+    }*/
+}
+
 /// miscellaneus
 extension HOReservation {
     
     var calendar:Calendar { Locale.current.calendar }
-    /// tupla con l'anno di checkIn e checkOut
-    var yearIn:(yyIn:Int,yyOut:Int)? { self.getYearIn() }
-    /// tupla con gli ordinali del mese di checkIn e checkOut
-    var monthInOrdinal:(mmIn:Int,mmOut:Int)? { self.getMonthInOrdinal() }
+    /// tupla con l'anno e mese di checkIn e checkOut
     
-    var monthIn:HOMonthObject? { self.getMonthIn() } // oggetto utile per il filtro. Fare update del myFilterPack ed eliminare quest'oggetto sostibuile con il valore ordinale del mese o il suo valore stringa
+    var occupacyInterval:DateInterval? {
+        
+        self.getOccupacyInterval()
+    }
     
-    private func getYearIn() -> (Int,Int)? {
+    var yyInvolved:(in:Int,out:Int)? { self.getYYMMInvolved() }
+    
+   /* var yyMMInvolved:(in:(yy:Int,mm:Int),out:(yy:Int,mm:Int))? { self.getYYMMInvolved() }*/ // deprecazione possibile
+    /// tupla con le notti divise fra il mese di checkIn e quello di checkOut. Se non vi è cavallo il mese di checkOut avrà valore zero
+  //  var ddInvolvedPerMonth:(mmIn:Int,mmOut:Int)? { self.getDDInPerMonth() } // deprecazione possibile
+    
+    var monthIn:HOMonthObject? { self.getMonthIn() } // oggetto utile per il filtro.
+ 
+    private func getOccupacyInterval() -> DateInterval? {
         
-        guard let dataArrivo else { return nil }
+        guard let dataArrivo,
+              let checkOut else { return nil }
+        // normalizziamo le date per trascurare le differenze di orario nei checkIn
+        let arrivoComp = calendar.dateComponents([.year,.month,.day], from: dataArrivo)
         
-        let yearIn = calendar.component(.year, from: dataArrivo)
-        let yearOut = calendar.component(.year, from: checkOut)
+        let outComp = calendar.dateComponents([.year,.month,.day], from: checkOut)
         
-        return (yearIn,yearOut)
+        guard let arrivoNorm = calendar.date(from: arrivoComp),
+              let outNorm = calendar.date(from: outComp) else { return nil }
+        
+        let interval = DateInterval(start: arrivoNorm, end: outNorm)
+        
+        return interval
         
     }
     
-    private func getMonthIn() -> HOMonthObject? { // deprecata
+    /// Divide le notti di pernottamento fra i due mesi in caso di prenotazioni a cavallo. Se cadono nello stesso mese, il valore mmOut sarà zero
+   /* private func getDDInPerMonth() -> (mmIn:Int,mmOut:Int)? {
+        
+        guard let dataArrivo,
+              let yyMMInvolved,
+              let notti,
+              let daysCountMMIn = calendar.range(of: .day, in: .month, for: dataArrivo)?.count else { return nil }
+        
+        guard yyMMInvolved.in != yyMMInvolved.out else {
+            return (notti,0)
+        }
+        
+        let dayOfArrival = calendar.component(.day, from: dataArrivo)
+        
+        let ddMMIn = (daysCountMMIn - dayOfArrival) + 1
+        let ddMMOut = notti - ddMMIn
+        
+        return (ddMMIn,ddMMOut)
+        
+    } */// deprecata
+    
+    private func getYYMMInvolved() -> (in:Int,out:Int)? {
+        
+        guard let dataArrivo,
+              let checkOut else { return nil }
+        
+        let yyIn = calendar.component(.year, from: dataArrivo)
+      //  let mmIn = calendar.component(.month, from: dataArrivo)
+        
+        let yyOut = calendar.component(.year, from: checkOut)
+        //let mmOut = calendar.component(.month, from: checkOut)
+        
+        return (yyIn,yyOut) //((yyIn,mmIn),(yyOut,mmOut))
+        
+        
+    }
+    
+    private func getMonthIn() -> HOMonthObject? {
         
         guard let dataArrivo else { return nil }
-       
-      // let calendar = Locale.current.calendar
-        
+
         let month = calendar.component(.month, from: dataArrivo)
         let monthValue = csMonthString(from: month)//calendar.monthSymbols[month - 1]
 
         return HOMonthObject.month(monthValue)
     }
-    
-    private func getMonthInOrdinal() -> (Int,Int)? {
-        
-        guard let dataArrivo else { return nil }
 
-        let monthIn = calendar.component(.month, from: dataArrivo)
-        let monthOut = calendar.component(.month, from: checkOut)
-        
-        
-        return (monthIn,monthOut)
-    }
-    
 }
 
 /// campi string per le proprietà. Utile nei salvataggi singleValue. Possibile elevazione a protocollo
@@ -276,7 +332,8 @@ extension HOReservation {
         if let scheduleCache,
            scheduleCache == 0 { return .noShow }
         
-        guard let dataArrivo else { return .inArrivo } // valutare se inserire un caso apposito. Cmq la data seppur optional è un valore mandatory
+        guard let dataArrivo,
+              let checkOut else { return .inArrivo } // valutare se inserire un caso apposito. Cmq la data seppur optional è un valore mandatory
         
         let today = Date()
         
@@ -284,7 +341,7 @@ extension HOReservation {
         
         if compareToArrivo.rawValue == -1 { return .inArrivo }
         
-        let compareToCheckOut = today.compare(self.checkOut)
+        let compareToCheckOut = today.compare(checkOut)
         
         if compareToCheckOut.rawValue == -1 { return .inCorso }
         else { return .completata }
@@ -375,7 +432,7 @@ extension HOReservation {
     
     var pernottamenti:Int { getPernottamenti() }
    // var pernottamentiTassati:Int? { (self.pernottamenti) - (self.pernottamentiEsentiCityTax ?? 0) } // forse inutile
-    var checkOut:Date { getCheckOut() }
+    var checkOut:Date? { getCheckOut() }
     
     private func getPernottamenti() -> Int {
         
@@ -385,7 +442,7 @@ extension HOReservation {
         return pax * notti
     }
     
-    private func getCheckOut() -> Date {
+    private func getCheckOut() -> Date? {
         
         guard let dataArrivo else {
             
@@ -398,9 +455,11 @@ extension HOReservation {
             return out
         }
         
-        let nightInterval = TimeInterval(86400 * notti)
+     //  let nightInterval = TimeInterval(86400 * notti)
         
-        return dataArrivo.addingTimeInterval(nightInterval)
+      //  return dataArrivo.addingTimeInterval(nightInterval)
+        let out = calendar.date(byAdding: .day, value: notti, to: dataArrivo) ?? Date()
+        return out
             
     }
     
@@ -418,9 +477,22 @@ extension HOReservation:Object_FPC {
         switch condition {
         case .schedule:
             return schedulSortCondition(lhs: lhs, rhs: rhs)
+        case .dataArrivoCrescente:
+           return ordineArrivo(lhs: lhs, rhs: rhs)
+        case .dataArrivoDecrescente:
+            return ordineArrivo(lhs: rhs, rhs: lhs)
         default:
             return false
         }
+        
+    }
+    
+    private static func ordineArrivo(lhs:HOReservation,rhs:HOReservation) -> Bool {
+        
+        guard let rhsArrive = rhs.dataArrivo,
+              let lhsArrive = lhs.dataArrivo else { return false }
+        
+        return lhsArrive < rhsArrive
         
     }
     
@@ -535,17 +607,30 @@ extension HOReservation:Object_FPC {
         static var defaultValue: HOReservation.SortCondition = .schedule
         
         case schedule
+        case dataArrivoCrescente
+        case dataArrivoDecrescente
         
         func simpleDescription() -> String {
             switch self {
    
             case .schedule:
-                return "Stato Arrivo"
+                return "Stato di Arrivo"
+            case .dataArrivoCrescente:
+                return "Data Arrivo Crescente"
+            case .dataArrivoDecrescente:
+                return "Data Arrivo Decrescente"
             }
         }
         
         func imageAssociated() -> String {
-            return "calendar.circle"
+            switch self {
+            case .schedule:
+                return "calendar"
+            case .dataArrivoCrescente:
+                return "calendar.badge.plus"
+            case .dataArrivoDecrescente:
+                return "calendar.badge.minus"
+            }
         }
         
     }

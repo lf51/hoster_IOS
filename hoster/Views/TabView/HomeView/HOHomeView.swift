@@ -20,7 +20,7 @@ struct HOHomeView: View {
         
         NavigationStack(path: $viewModel.homePath) {
             
-            let label = viewModel.getUserName()//viewModel.getWSLabel()
+            let label = viewModel.getWSLabel() //viewModel.getUserName()//viewModel.getWSLabel()
             
             CSZStackVB(
                 title: label,
@@ -31,16 +31,18 @@ struct HOHomeView: View {
                     vbMainInfoLine()
                         .fixedSize()
                     
-                   // HOUnitCalendarView()
-                    
-                    vbfilterLine()
+                    vbfilterSubLine()
                         .fixedSize()
                     
                     ScrollView {
                         
-                        HOUnitCalendarView()
+                        HOGeneralDataView(focusUnit: focusUnit)
                         
-                        vbReservationResumeLine()
+                        HOMontlyDataView(focusUnit: focusUnit)
+                        
+                        
+                        
+                       // vbReservationResumeLine()
                        // vbPricePerNightResumeLine()
                        // vbCurrentAreaResumeLine()
                       //  vbStockResumeLine()
@@ -436,7 +438,7 @@ struct HOHomeView: View {
     }
     */
     
-    @ViewBuilder private func vbPricePerNightResumeLine(value:Double) -> some View {
+   /* @ViewBuilder private func vbPricePerNightResumeLine(value:Double) -> some View {
         
         CSZStackVB_Framed(
             frameWidth: 400,
@@ -488,7 +490,7 @@ struct HOHomeView: View {
                 .padding(.vertical,5)
             }
         
-    }
+    }*/ // deprecato
     
     @ViewBuilder private func vbYYfilter() -> some View {
         
@@ -526,7 +528,7 @@ struct HOHomeView: View {
         // .tint(Color.hoAccent)
     }
     
-    @ViewBuilder private func vbfilterLine() -> some View {
+    @ViewBuilder private func vbfilterSubLine() -> some View {
         
         let subs:[HOUnitModel]? = self.viewModel.getSubs()
         
@@ -571,7 +573,7 @@ struct HOHomeView: View {
         
     }
     
-    @ViewBuilder private func vbReservationResumeLine() -> some View {
+    /*@ViewBuilder private func vbReservationResumeLine() -> some View {
         
         let reservationsInfo = self.viewModel.getReservationInfo(month:nil,sub: self.focusUnit)
         let count = reservationsInfo?.count ?? 0
@@ -665,7 +667,7 @@ struct HOHomeView: View {
         vbPricePerNightResumeLine(value:averagePrice)
        // }
         
-    }
+    }*/// deprecato
     
     @ViewBuilder private func vbMainInfoLine() -> some View {
         

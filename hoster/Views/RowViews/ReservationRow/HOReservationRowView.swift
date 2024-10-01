@@ -316,9 +316,19 @@ struct HOReservationRowView: View {
     
     @ViewBuilder private func vbSecondLine() -> some View {
         
-        let checkOut = csTimeFormatter(style: .medium).data.string(from: self.reservation.checkOut)
+        let checkOut:String = {
+            
+            guard let out = self.reservation.checkOut else { return "no value" }
+            
+            return csTimeFormatter(style: .medium).data.string(from: out) }()
        
-        let checkIn = csTimeFormatter(style: .medium).data.string(from: self.reservation.dataArrivo ?? Date())
+        let checkIn:String = {
+           
+            guard let inDate = self.reservation.dataArrivo else { return "no value" }
+            
+            return csTimeFormatter(style: .medium).data.string(from:inDate)
+            
+        }()
         
         HStack {
             

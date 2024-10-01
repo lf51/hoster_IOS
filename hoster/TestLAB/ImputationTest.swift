@@ -7,12 +7,30 @@
 
 import SwiftUI
 
-struct ImputationTest: View {
+struct SampleRow: View {
+    let id: Int
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Text("Row \(id)")
+    }
+
+    init(id: Int) {
+        print("Loading row \(id)")
+        self.id = id
+    }
+}
+
+struct LazyContentView: View {
+    var body: some View {
+        ScrollView {
+            LazyVStack {
+                ForEach(1...100, id: \.self, content: SampleRow.init)
+            }
+        }
+        .frame(height: 300)
     }
 }
 
 #Preview {
-    ImputationTest()
+    LazyContentView()
 }

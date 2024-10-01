@@ -124,7 +124,8 @@ struct HOReservationsList: View {
         
         HStack {
             
-            HStack(spacing:5) {
+            vbCurrentYearView(viewModel: self.viewModel)
+           /* HStack(spacing:5) {
                 
                 Image(systemName: "calendar")
                 Text("\(self.viewModel.yyFetchData.description)")
@@ -137,7 +138,7 @@ struct HOReservationsList: View {
                 .background {
                     RoundedRectangle(cornerRadius: 5.0)
                         .fill(Color.hoBackGround.opacity(0.4))
-                }
+                }*/
 
             Button {
                 self.viewModel.addToThePath(
@@ -220,6 +221,16 @@ struct HOReservationsList: View {
             sortCondition: $filterCore.sortConditions,
             localSortCondition: .schedule,
             coloreScelta: Color.orange)
+        
+        MySortRow(
+            sortCondition: $filterCore.sortConditions,
+            localSortCondition: .dataArrivoCrescente,
+            coloreScelta: Color.yellow)
+        
+        MySortRow(
+            sortCondition: $filterCore.sortConditions,
+            localSortCondition: .dataArrivoDecrescente,
+            coloreScelta: Color.blue)
        // .disabled(true)
         
     }
