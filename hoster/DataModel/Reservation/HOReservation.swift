@@ -22,10 +22,11 @@ struct HOReservation:HOProStarterPack {
     var labelPortale:String? //
     
     var dataArrivo:Date? //
+    var checkOut:Date?
     var guestName:String? //
     var guestType:HOGuestType? //
     var pax:Int? //
-    var notti:Int? //
+  //  var notti:Int? // not saved
     var disposizione:[HOBedUnit]? //
     
     var scheduleCache:Int? // salvato su firebase in caso di schedule forzata// 0 manuale - nil è automatico
@@ -36,26 +37,6 @@ struct HOReservation:HOProStarterPack {
         self.regolamento = Date()
         self.statoPagamento = .inPagamento
     }
-}
-
-/// gestione date per Calendario
-extension HOReservation {
-    
-    
-    
-    /// sequenza contenente le date dall'arrivo al checkOut, arrivo e checkOut sono escluse
-  /* var dateInvolved:[Date]? { self.getDatesInvolved() }
-    
-    private func getDatesInvolved() -> [Date]? {
-        
-        guard let dataArrivo
-              else { return nil }
-        
-        let intervallo = calendar.dates(byAdding: .day, value: 1, startingAt: dataArrivo, in: dataArrivo..<checkOut, wrappingComponents: false)
-        
-        let x = Array(intervallo)
-        return x
-    }*/
 }
 
 /// miscellaneus
@@ -427,12 +408,18 @@ extension HOReservation:Hashable {
     
     
 }
-/// logica pernottamento
+/// logica notti e pernottamento
 extension HOReservation {
     
+    var notti:Int? {
+        
+        get { self.getNotti() }
+        set { self.setNotti(newValue: newValue) }
+    }
+    
     var pernottamenti:Int { getPernottamenti() }
-   // var pernottamentiTassati:Int? { (self.pernottamenti) - (self.pernottamentiEsentiCityTax ?? 0) } // forse inutile
-    var checkOut:Date? { getCheckOut() }
+
+   // var checkOut:Date? { getCheckOut() } // saved
     
     private func getPernottamenti() -> Int {
         
@@ -442,9 +429,28 @@ extension HOReservation {
         return pax * notti
     }
     
-    private func getCheckOut() -> Date? {
+    private func getNotti() -> Int? {
         
-        guard let dataArrivo else {
+        guard let dataArrivo,
+              let checkOut else { return nil }
+        
+        let days = self.calendar.dateComponents([.day], from: dataArrivo, to: checkOut)
+        return days.day
+    }
+    
+    mutating func setNotti(newValue:Int?) {
+        
+        guard let newValue,
+              let dataArrivo else { return }
+        
+        let out = self.calendar.date(byAdding: .day, value: newValue, to: dataArrivo)
+        self.checkOut = out
+        
+    }
+    
+   /* private func getCheckOut() -> Date? {
+        
+       /* guard let dataArrivo else {
             
             let out = Date().addingTimeInterval(86400) // + one day
             return out }
@@ -453,7 +459,10 @@ extension HOReservation {
             
             let out = dataArrivo.addingTimeInterval(86400)
             return out
-        }
+        }*/
+        
+        guard let dataArrivo,
+              let notti else { return nil }
         
      //  let nightInterval = TimeInterval(86400 * notti)
         
@@ -461,7 +470,7 @@ extension HOReservation {
         let out = calendar.date(byAdding: .day, value: notti, to: dataArrivo) ?? Date()
         return out
             
-    }
+    }*/
     
 }
 
@@ -698,3 +707,56 @@ extension HOReservation {
     
 
 }
+
+/*extension HOReservation:Decodable {
+    
+    enum CodingKeys:String,CodingKey {
+        
+       case uid
+       case regolamento
+       case statoPagamento
+       case refUnit
+       case refOperations
+       case pax
+       case notti // deprecare
+       case labelPortale
+       case guestType
+       case guestName
+       case disposizione
+       case dataArrivo
+       case checkOut
+       case scheduleCache
+       case note
+    
+    }
+    
+    init(from decoder: any Decoder) throws {
+       
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.uid = try container.decode(String.self, forKey: .uid)
+        self.regolamento = try container.decode(Date.self, forKey: .regolamento)
+        self.statoPagamento = try container.decode(HOReservationPayamentStatus.self, forKey: .statoPagamento)
+        self.refUnit = try container.decodeIfPresent(String.self, forKey: .refUnit)
+        self.refOperations = try container.decodeIfPresent([String].self, forKey: .refOperations)
+        self.labelPortale = try container.decodeIfPresent(String.self, forKey: .labelPortale)
+        
+        self.dataArrivo = try container.decodeIfPresent(Date.self, forKey: .dataArrivo)
+        self.guestName = try container.decodeIfPresent(String.self, forKey: .guestName)
+        self.guestType = try container.decodeIfPresent(HOGuestType.self, forKey: .guestType)
+        self.pax = try container.decodeIfPresent(Int.self, forKey: .pax)
+        self.notti = try container.decodeIfPresent(Int.self, forKey: .notti)
+        self.disposizione = try container.decodeIfPresent([HOBedUnit].self, forKey: .disposizione)
+        self.note = try container.decodeIfPresent(String.self, forKey: .note)
+        self.scheduleCache = try container.decodeIfPresent(Int.self, forKey: .scheduleCache)
+    }
+    
+    
+}
+
+extension HOReservation:Encodable {
+    
+    func encode(to encoder: any Encoder) throws {
+        return
+    }
+}*/

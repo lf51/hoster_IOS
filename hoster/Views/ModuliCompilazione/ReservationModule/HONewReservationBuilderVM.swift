@@ -256,8 +256,17 @@ extension HONewReservationBuilderVM {
 /// computed di conformità valori
 extension HONewReservationBuilderVM {
     
+    var inOutAreConformed:Bool { getInOutCheckConformity() }
+    
     var paxIsConformToUnit:Bool { self.getPaxUnitConformity() }
     var paxIsConformToBeds:Bool {  self.reservation.isBedDispoCoerentToPax() }
+    
+    private func getInOutCheckConformity() -> Bool {
+        
+        guard let notti = self.reservation.notti else { return false }
+        
+        return notti > 0
+    }
     
     private func getPaxUnitConformity() -> Bool {
         
@@ -333,9 +342,9 @@ extension HONewReservationBuilderVM {
      func checkDateAndNight() -> Bool {
         
         guard self.reservation.dataArrivo != nil,
-              let notti = self.reservation.notti,
-              notti > 0 else { return false }
-        return true
+              let notti = self.reservation.notti else { return false }
+         
+        return notti > 0
         
     }
     

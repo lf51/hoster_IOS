@@ -981,9 +981,10 @@ let reservation:HOReservation = {
     current.refUnit = testUnit1.uid
     current.labelPortale = "booking.com"
     current.guestType = .couple
-    current.notti = 60
+  //  current.notti = 60
     current.pax = 2
     current.dataArrivo = DateComponents(calendar: Locale.current.calendar,year: 2024, month: 9, day: 15).date
+    current.checkOut = DateComponents(calendar: Locale.current.calendar,year: 2024, month: 10, day: 15).date
     current.disposizione = [HOBedUnit(bedType: .double, number: 1)]
     current.refOperations = [optLillo.uid]
     return current

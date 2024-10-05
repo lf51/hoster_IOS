@@ -125,20 +125,6 @@ struct HOReservationsList: View {
         HStack {
             
             vbCurrentYearView(viewModel: self.viewModel)
-           /* HStack(spacing:5) {
-                
-                Image(systemName: "calendar")
-                Text("\(self.viewModel.yyFetchData.description)")
-                 
-                }
-                .font(.subheadline)
-                .foregroundStyle(Color.hoDefaultText)
-                .opacity(0.6)
-                .padding(5)
-                .background {
-                    RoundedRectangle(cornerRadius: 5.0)
-                        .fill(Color.hoBackGround.opacity(0.4))
-                }*/
 
             Button {
                 self.viewModel.addToThePath(

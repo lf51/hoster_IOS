@@ -22,8 +22,10 @@ struct HOCheckInLineView:View {
         
         VStack(alignment: .leading, spacing: 10) {
            
+            //vbArrivalBox()
+            
             CSLabel_conVB(
-                placeHolder: "Check-In",
+                placeHolder: "Calendar",
                 placeHolderColor: Color.hoDefaultText,
                 imageNameOrEmojy: "calendar",
                 imageColor: Color.hoDefaultText,
@@ -44,6 +46,7 @@ struct HOCheckInLineView:View {
             VStack(alignment:.leading,spacing: 5) {
                 
                vbArrivalBox()
+              
                vbCheckOutBox()
           
             }
@@ -62,7 +65,11 @@ struct HOCheckInLineView:View {
     
     private func getCurrentDate() -> Date? {
         
-        let calendar = Locale.current.calendar // Calendar.current
+        let today = self.viewModel.localCalendar.date(bySettingHour: 03, minute: 00, second: 00, of: Date.now)
+        
+        return today
+        
+       /* let calendar = Locale.current.calendar // Calendar.current
         
         var today = calendar.dateComponents([.day,.month,.year,.weekday], from: Date.now)
         
@@ -72,7 +79,7 @@ struct HOCheckInLineView:View {
         today.minute = wsCheckInTime.minute
         
         guard let date = calendar.date(from: today) else { return nil }
-        return date
+        return date */
     }
     
    /*private func errorIn() -> Bool {
@@ -112,28 +119,57 @@ struct HOCheckInLineView:View {
             self.builderVM.reservation.dataArrivo ?? Date()
         } set: { new in
             
+            let notti = self.builderVM.reservation.notti ?? 0
+
             self.builderVM.reservation.dataArrivo = new
+            self.builderVM.reservation.setNotti(newValue: notti)
         }
 
+        let inToday = self.viewModel.localCalendar.isDateInToday(self.builderVM.reservation.dataArrivo ?? Date())
+        
+      //  let wsCheckInTime = self.viewModel.getCheckInTime()
+      //  let hour = wsCheckInTime.hour?.description ?? "00"
+      //  let minute = wsCheckInTime.minute?.description ?? "00"
+        
         HStack(alignment:.top) {
-
+            
             DatePicker(selection: dataArrivo,
-                       displayedComponents: [.date,.hourAndMinute]) {
-              
+                       displayedComponents: [.date/*,.hourAndMinute*/]) {
+                
                 Text("Check-In:")
                     .fontDesign(.monospaced)
                     .fontWeight(.semibold)
                     .font(.subheadline)
                 
             }
-            .colorMultiply(Color.black)
-            .fixedSize()
+                       .colorMultiply(Color.black)
+                       .fixedSize()
             
-           Text("orario previsto")
+            
+         //   Text("\(hour):\(minute)")
+            
+            Text("orario previsto")
                 .italic()
                 .font(.caption2)
                 .foregroundStyle(Color.black)
             Spacer()
+            
+            if inToday {
+                
+                Button(action: {
+                    
+                    self.viewModel.sendAlertMessage(alert: AlertModel(title: "Attenzione", message: "Il check-in è previsto per la data di oggi. Correggere o ignorare."))
+                    
+                }, label: {
+                    Image(systemName: "lightbulb.min.badge.exclamationmark.fill")
+                        .imageScale(.medium)
+                        .foregroundStyle(Color.yellow)
+                })
+                
+            }
+            
+         //   Spacer()
+            
         }
         .padding(.horizontal,10)
         .padding(.vertical,5)
@@ -142,12 +178,13 @@ struct HOCheckInLineView:View {
             RoundedRectangle(cornerRadius: 10.0)
                 .foregroundStyle(Color.scooter_p53)
                 .opacity(0.8)
-                .frame(maxWidth:.infinity)
-               
+                .frame(maxWidth:400)
+            
         }
         
-        
     }
+    
+
     
   /*  @ViewBuilder private func vbPernottBox() -> some View {
         
@@ -178,39 +215,57 @@ struct HOCheckInLineView:View {
     
     @ViewBuilder private func vbCheckOutBox() -> some View {
         
-       HStack {
+        HStack {
+        
+        HStack {
             
-           let checkOut:String = {
-               
-               guard let out = self.builderVM.reservation.checkOut else { return "no value"}
-               
-               return csTimeFormatter(style: .long).data.string(from: out)
-           }()
+            let checkOut:String = {
+                
+                guard let out = self.builderVM.reservation.checkOut else { return "no value"}
+                
+                return csTimeFormatter(style: .long).data.string(from: out)
+            }()
             
             Text("Check-Out:")
                 .fontDesign(.monospaced)
                 .fontWeight(.semibold)
                 .font(.subheadline)
                 .foregroundStyle(Color.hoDefaultText)
-                
+            
             Text(checkOut)
                 .italic()
                 .fontWeight(.light)
                 .font(.body)
                 .foregroundStyle(Color.malibu_p53)
-               // .lineLimit(1)
-         //  Spacer()
+            // .lineLimit(1)
+            //  Spacer()
         }
-       
         .padding(.horizontal,10)
         .padding(.vertical,5)
         .background {
             
             RoundedRectangle(cornerRadius: 10.0)
                 .foregroundStyle(Color.hoBackGround)
-               // .frame(maxWidth:.infinity)
-               
+            // .frame(maxWidth:.infinity)
+            
         }
+        
+            if !builderVM.inOutAreConformed {
+                
+                Button(action: {
+                    
+                    self.viewModel.sendAlertMessage(alert: AlertModel(title: "Attenzione", message: "Il numero minimo di notti è uno"))
+                    
+                }, label: {
+                    Image(systemName: "lightbulb.min.badge.exclamationmark.fill")
+                        .imageScale(.medium)
+                        .foregroundStyle(Color.yellow)
+                })
+                
+            }
+            
+    }
+        
         
     }
     
@@ -249,12 +304,14 @@ struct HOCheckInLineView:View {
     @ViewBuilder private func vbNightIn() -> some View {
 
         let maxIn = self.viewModel.getMaxNightIn()
-        
+       // let initialValue = self.builderVM.reservation.notti ?? 0
         HStack {
             
             CSSinkStepper_1(
+               // initialValue:initialValue,
                 range:0...maxIn,
-               // label:"Notti",
+               /* label:"Notti",
+                labelBackground: Color.sienna_p52,*/
                 image:"moon.zzz.fill",
                 imageColor:Color.hoAccent,
                 valueColor:Color.hoDefaultText,
@@ -263,10 +320,11 @@ struct HOCheckInLineView:View {
                     self.builderVM.reservation.notti = newValue
 
             }
+            //.id(self.builderVM.reservation.dataArrivo)
             .fixedSize()
             
             let value = csSwitchSingolarePlurale(checkNumber: self.builderVM.reservation.notti ?? 1, wordSingolare: "notte", wordPlurale: "notti")
-            
+           Text(self.builderVM.reservation.notti?.description ?? "no")
             Text(value)
                 .italic()
                 .font(.caption)
