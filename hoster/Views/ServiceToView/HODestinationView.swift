@@ -14,7 +14,7 @@ enum HODestinationView:Hashable {
     case operation(_ opt:HOOperationUnit)
     
     case setupWsData
-    case reportAnnuale(_ subRef:String?)
+    case annualReport
     
 }
 
@@ -39,9 +39,9 @@ extension HODestinationView {
             
             Text("setup workspace data")
             
-        case .reportAnnuale(let sub):
+        case .annualReport:
             
-            HOAnnualReportView(focusUnit: sub)
+            HOAnnualReportView()
             
         }
         

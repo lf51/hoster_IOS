@@ -18,7 +18,9 @@ protocol HOProSyncroManager {
 
 protocol HOProCodable {
     
-    static func getQueryFilterValue(_ mainTree:CollectionReference, for years:[Int]?) -> Query
+   /* static func getQueryFilterValue(_ mainTree:CollectionReference, for years:[Int]?) -> Query */// da deprecare
+    
+    static func getQueryFilterValue(_ mainTree:CollectionReference, for year:Int?) -> Query
     
     /// enum di campi string per le proprietà. Utile per recuperare le chiavi del database per i salvataggi single Value o per il filtraggio
     associatedtype InternalPropertyStringValue:RawRepresentable where InternalPropertyStringValue.RawValue == String
@@ -65,14 +67,14 @@ final class HOSyncroCollectionManager<Item:Codable&HOProCodable>:HOProSyncroMana
         return mainTree.parent?.documentID
     }
     
-    func getMainQuery(filteredBy years:[Int]?) throws -> Query {
+    func getMainQuery(filteredBy year:Int?) throws -> Query {
         
         guard let mainTree else {
             
             throw HOCustomError.mainRefCorrotto
         }
         
-        let filtered = Item.getQueryFilterValue(mainTree, for: years)
+        let filtered = Item.getQueryFilterValue(mainTree, for: year)
         
         return filtered
     }
@@ -80,9 +82,10 @@ final class HOSyncroCollectionManager<Item:Codable&HOProCodable>:HOProSyncroMana
 
 extension HOReservation:HOProCodable {
     
+  
    static var calendar:Calendar { Locale.current.calendar }
     
-   static func getQueryFilterValue(_ mainTree:CollectionReference, for years:[Int]?) -> Query {
+  /* static func getQueryFilterValue(_ mainTree:CollectionReference, for years:[Int]?) -> Query {
         
         guard let years,
               let bottomValue = years.min(),
@@ -98,7 +101,7 @@ extension HOReservation:HOProCodable {
            return mainTree }
        
        let key = InternalPropertyStringValue.dataArrivo.rawValue
-       
+    
      //  let currentQuery:Query = mainTree
        //    .whereField(key, isGreaterThanOrEqualTo: bottomDate)
         //   .whereField(key, isLessThanOrEqualTo: topDate)
@@ -116,24 +119,105 @@ extension HOReservation:HOProCodable {
             
             )
        
+
            
        return currentQuery
 
         
+    }*/
+    
+    static func getQueryFilterValue(_ mainTree: CollectionReference, for year: Int?) -> Query {
+        
+        guard let year else {
+            print("ERROR !!! no year")
+            return mainTree
+        }
+        
+        guard let bottomDate = DateComponents(calendar:calendar,year:year,month: 1,day: 1).date,
+              let topDate =  DateComponents(calendar:calendar,year:year,month: 12,day: 31).date else {
+            
+            print("ERROR !!! no top or bottom date")
+            return mainTree }
+       
+        // codice vecchio da deprecare
+        
+      /*  let keyOne = InternalPropertyStringValue.dataArrivo.rawValue
+        let keyTwo = InternalPropertyStringValue.checkOut.rawValue
+        
+         let currentQuery = mainTree
+              .whereFilter(
+              
+                 Filter.orFilter([
+                     
+                     Filter.andFilter([
+                     
+                         Filter.whereField(keyOne, isGreaterOrEqualTo: bottomDate),
+                         Filter.whereField(keyOne, isLessThanOrEqualTo: topDate)
+
+                     ]),
+                     
+                     Filter.andFilter([
+                     
+                         Filter.whereField(keyTwo, isGreaterOrEqualTo: bottomDate),
+                         Filter.whereField(keyTwo, isLessThanOrEqualTo: topDate)
+
+                     ])
+                 ])
+              )*/
+        
+        // codice nuovo da attivare
+        let rootKey = InternalPropertyStringValue.imputationPeriod.rawValue
+        
+        let startPath = FieldPath([rootKey,InternalPropertyStringValue.start.rawValue])
+        
+        let endPath = FieldPath([rootKey,InternalPropertyStringValue.end.rawValue])
+        
+        let currentQuery = mainTree
+             .whereFilter(
+             
+                Filter.orFilter([
+                    
+                    Filter.andFilter([
+                    
+                        Filter.whereField(startPath, isGreaterOrEqualTo: bottomDate),
+                        Filter.whereField(startPath, isLessThanOrEqualTo: topDate)
+
+                    ]),
+                    
+                    Filter.andFilter([
+                    
+                        Filter.whereField(endPath, isGreaterOrEqualTo: bottomDate),
+                        Filter.whereField(endPath, isLessThanOrEqualTo: topDate)
+
+                    ])
+                ])
+             )
+        
+        return currentQuery
+        
     }
+    
+    
     
     enum InternalPropertyStringValue:String {
         
         case scheduleCache = "schedule_cache"
         case statoPagamento = "stato_pagamento"
-        case dataArrivo = "data_arrivo"
+       
+       // case dataArrivo = "data_arrivo" // deprecare
+       // case checkOut = "check_out" // deprecare
+       
+        case imputationPeriod = "imputation_period"
+        case end
+        case start
     }
     
 }
 
 extension HOOperationUnit:HOProCodable {
     
-    static func getQueryFilterValue(_ mainTree: CollectionReference, for years: [Int]?) -> Query {
+    static var calendar:Calendar { Locale.current.calendar }
+   /* static func getQueryFilterValue(_ mainTree: CollectionReference, for years: [Int]?) -> Query {
         
         guard let years else { return mainTree }
 
@@ -154,12 +238,71 @@ extension HOOperationUnit:HOProCodable {
             )
 
          return currentQuery
+    }*/
+    
+    static func getQueryFilterValue(_ mainTree: CollectionReference, for year: Int?) -> Query {
+        
+        guard let year else {
+            print("ERROR !!! no year")
+            return mainTree
+        }
+        
+        guard let bottomDate = DateComponents(calendar:calendar,year:year,month: 1,day: 1).date,
+              let topDate =  DateComponents(calendar:calendar,year:year,month: 12,day: 31).date else {
+            
+            print("ERROR !!! no top or bottom date")
+            return mainTree }
+       
+        let rootKey = InternalPropertyStringValue.imputationPeriod.rawValue
+        
+        let startPath = FieldPath([rootKey,InternalPropertyStringValue.start.rawValue])
+        
+        let endPath = FieldPath([rootKey,InternalPropertyStringValue.end.rawValue])
+        
+        let currentQuery = mainTree
+             .whereFilter(
+             
+                Filter.orFilter([
+                    
+                  //  Filter.whereField(rootKey, isEqualTo: NSNull()),
+                    
+                    Filter.andFilter([
+                    
+                        Filter.whereField(startPath, isGreaterOrEqualTo: bottomDate),
+                        Filter.whereField(startPath, isLessThanOrEqualTo: topDate)
+
+                    ]),
+                    
+                    Filter.andFilter([
+                    
+                        Filter.whereField(endPath, isGreaterOrEqualTo: bottomDate),
+                        Filter.whereField(endPath, isLessThanOrEqualTo: topDate)
+
+                    ]),
+                    
+                    Filter.andFilter([
+                        
+                        Filter.whereField(startPath, isLessThan: bottomDate),
+                        Filter.whereField(endPath, isGreaterThan: topDate)
+                    ])
+                ])
+             )
+        
+       return currentQuery
+       // return mainTree
     }
+    
+    
+    
     
     enum InternalPropertyStringValue:String {
         
-       case timeImputation = "time_imputation"
-       case yyImputation = "yy_imputation"
+      // case timeImputation = "time_imputation"
+      // case yyImputation = "yy_imputation"
+        
+       case imputationPeriod = "imputation_period"
+       case start
+       case end
     }
     
     
@@ -167,7 +310,7 @@ extension HOOperationUnit:HOProCodable {
 
 extension HOUnitModel:HOProCodable {
     
-    static func getQueryFilterValue(_ mainTree: CollectionReference, for years: [Int]?) -> Query {
+    static func getQueryFilterValue(_ mainTree: CollectionReference, for year: Int?) -> Query {
         return mainTree
     }
     

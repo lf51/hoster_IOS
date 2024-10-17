@@ -20,3 +20,9 @@ struct HOSingleValuePublishig {
     let docReference:DocumentReference?
     let path:[String:Any]
 }
+
+struct HOSingleValueDelete {
+    
+    let docReference:DocumentReference?
+    let fields:[String]
+}

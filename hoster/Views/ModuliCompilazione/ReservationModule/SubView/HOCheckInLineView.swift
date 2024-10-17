@@ -14,8 +14,7 @@ struct HOCheckInLineView:View {
     @EnvironmentObject var viewModel:HOViewModel
     
     @ObservedObject var builderVM:HONewReservationBuilderVM
-  //  @Binding var reservation:HOReservation
-    
+
     let generalErrorCheck:Bool
     
     var body: some View {
@@ -59,59 +58,19 @@ struct HOCheckInLineView:View {
     private func onAppearAction() {
         
        // print("OnAppear HOCheckInLineView")
-        self.builderVM.reservation.dataArrivo = getCurrentDate()
+        self.builderVM.reservation.imputationPeriod = getCurrentPeriod()
         
     }
     
-    private func getCurrentDate() -> Date? {
+    private func getCurrentPeriod() -> HOImputationPeriod {
         
         let today = self.viewModel.localCalendar.date(bySettingHour: 03, minute: 00, second: 00, of: Date.now)
         
-        return today
+        let period = HOImputationPeriod(start: today)
         
-       /* let calendar = Locale.current.calendar // Calendar.current
-        
-        var today = calendar.dateComponents([.day,.month,.year,.weekday], from: Date.now)
-        
-        let wsCheckInTime = self.viewModel.getCheckInTime()
-        
-        today.hour = wsCheckInTime.hour
-        today.minute = wsCheckInTime.minute
-        
-        guard let date = calendar.date(from: today) else { return nil }
-        return date */
+        return period
+ 
     }
-    
-   /*private func errorIn() -> Bool {
-        
-        guard self.reservation.dataArrivo != nil,
-              let notti = self.reservation.notti,
-              notti > 0 else { return true }
-        return false
-        
-    }*/
-    
-   /* @ViewBuilder private func vbArrivalDateExtended() -> some View {
-        
-        let arrivalDate = csTimeFormatter(style: .short).data.string(from: self.builderVM.reservation.dataArrivo ?? Date.now)
-        
-        let arrivalTime = csTimeFormatter(style: .short).ora.string(from: self.builderVM.reservation.dataArrivo ?? Date.now)
-        
-        Text("Check-in –––> \(arrivalDate) dalle ore \(arrivalTime)")
-            .italic()
-            .font(.caption2)
-            .foregroundStyle(Color.hoDefaultText)
-            .opacity(0.8)
-    }*/ // deprecated
-    
-   /* @ViewBuilder private func vbDateLabel() -> some View {
-        
-            Text("Check-In:")
-                .fontDesign(.monospaced)
-                .fontWeight(.semibold)
-                .font(.subheadline)
-              
-    }*/ // deprecated
     
     @ViewBuilder private func vbArrivalBox() -> some View {
         
@@ -121,15 +80,11 @@ struct HOCheckInLineView:View {
             
             let notti = self.builderVM.reservation.notti ?? 0
 
-            self.builderVM.reservation.dataArrivo = new
-            self.builderVM.reservation.setNotti(newValue: notti)
+            self.builderVM.reservation.imputationPeriod?.start = new
+            self.builderVM.reservation.imputationPeriod?.setDistance(newValue: notti)
         }
 
         let inToday = self.viewModel.localCalendar.isDateInToday(self.builderVM.reservation.dataArrivo ?? Date())
-        
-      //  let wsCheckInTime = self.viewModel.getCheckInTime()
-      //  let hour = wsCheckInTime.hour?.description ?? "00"
-      //  let minute = wsCheckInTime.minute?.description ?? "00"
         
         HStack(alignment:.top) {
             
@@ -317,7 +272,7 @@ struct HOCheckInLineView:View {
                 valueColor:Color.hoDefaultText,
                 numberWidth:35) { _, newValue in
                 
-                    self.builderVM.reservation.notti = newValue
+                    self.builderVM.reservation.imputationPeriod?.ddDistance = newValue
 
             }
             //.id(self.builderVM.reservation.dataArrivo)

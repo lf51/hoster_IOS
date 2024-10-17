@@ -41,15 +41,17 @@ final class HOViewModel:ObservableObject {
     
     init(authData:HOAuthData) {
         
-       // self.isLoading = true
+        self.loadStatus = [/*HOLoadingStatus(loadCase: .inFullScreen, description: "initViewModel")*/]
+        self.yyFetchData = Locale.current.calendar.component(.year, from: Date())
+        
         let userUid = authData.uid
         self.authData = authData
         
         self.db = HOCloudData(userAuthUid: userUid)
         self.dbManager = HOCloudDataManager(userAuthUID: userUid )
-        self.yyFetchData = Locale.current.calendar.component(.year, from: Date())
+        
       // self.isLoading = []
-        self.loadStatus = []
+        
         // Subscriber Train
         addLoadingSubscriber() // chiuso per test
         
@@ -86,10 +88,23 @@ extension HOViewModel {
     var currentMMOrdinal:Int { localCalendar.component(.month, from: Date()) }
     var currentDDOrdinal:Int { localCalendar.component(.day, from: Date()) }
     var currentDDOnFetchYY:Int { self.getDDOnFetchYear() }
+    var localCalendarMMRange:Range<Int> { localCalendarMMSymbol.indices }
     
     var localCurrencySymbol:String {
         Locale.current.currencySymbol ?? "$"
     }
+    
+    func getMMOrdinal(from index:Int) -> Int {
+        
+        return index + 1
+    }
+    /// valore stringa del mese ricavato dal suo ordinale. 1 == gennaio
+    func getMMSymbol2(from index:Int) -> String {
+               
+     let value = localCalendarMMSymbol[index]
+     return value
+        
+   }
     
     /// valore stringa del mese ricavato dal suo ordinale. 1 == gennaio
     func getMMSymbol(from ordinal:Int) -> String {
@@ -100,8 +115,8 @@ extension HOViewModel {
      let value = localCalendarMMSymbol[index]
      return value
         
-
-   }
+   } // da deprecare. Sostituita dalla 2 che in combo con il range dell'indice ritorna i mesi correttamente
+    
     /// valore srtringa del giorno ricavato dal suo ordinale. 1 == sunday
     func getDDSymbol(from ordinal:Int) -> String {
         
@@ -208,6 +223,7 @@ extension HOViewModel {
         
     }
     var mainLoadingCase:HOLoadingCase? {
+        
         guard !loadStatus.isEmpty else { return nil }
         
         if loadStatus.allSatisfy({
@@ -472,6 +488,34 @@ extension HOViewModel {
 }
 /// logica delete document
 extension HOViewModel {
+    
+    func deleteSingleField<Item:Codable&HOProStarterPack,Syncro:HOProSyncroManager>(
+        from itemData:Item,
+        syncroDataPath:KeyPath<HOCloudDataManager,Syncro>,
+        fields:[String]) {
+        
+        let docRef = self.dbManager[keyPath: syncroDataPath].mainTree?.document(itemData.uid)
+        
+            let singleValueErasing = HOSingleValueDelete(docReference: docRef, fields: fields)
+        
+            do {
+                
+                try self.dbManager.deleteSingleField(from: singleValueErasing)
+                
+                self.callOnMainQueque {
+                    
+                    self.sendSystemMessage(message: HOSystemMessage(vector: .log, title: "Success", body: HOSystemBodyMessage.custom("Rimozione campo dati riuscito")))
+                }
+                
+            } catch let error {
+                
+                sendAlertMessage(alert: AlertModel(title: "Errore Rimozione dati", message: error.localizedDescription))
+                
+                
+            }
+            
+    }
+    
     
     func deleteBatchTwiceObject<A:Codable&HOProStarterPack,B:Codable&HOProStarterPack,SyncA:HOProSyncroManager,SyncB:HOProSyncroManager>(
         object_A:(A,KeyPath<HOCloudDataManager,SyncA>)?,
@@ -830,18 +874,6 @@ extension HOViewModel {
         return associated
     }
     
-   /* func getOccupancyFor(month:Int?, unitRef:String?) -> [(in:Date,out:Date)]? {
-  
-        guard let reservations = self.getReservations(month: month, unitRef: unitRef,notConsiderCheckOut: false) else { return nil }
-        
-        let allDates:[(Date,Date)] = reservations.compactMap({
-            guard let checkIn = $0.dataArrivo else { return nil }
-            let checkOut = $0.checkOut
-            return (checkIn,checkOut)
-        })
-        return allDates
-    }*/ // deprecata
-    
     func getOccupacyInterval(unitRef:String?) -> [DateInterval]? {
         
         guard let reservations = self.getReservations(unitRef: unitRef,notConsiderCheckOut: false) else { return nil }
@@ -861,13 +893,13 @@ extension HOViewModel {
     }
     
     
-    func getReservationInfo(month:Int?,sub:String?) -> (count:Int,grossAmount:Double,totaleNotti:Int,totaleGuest:Int,tassoOccupazioneNigh:Double)? {
+    func getReservationInfo(month:Int?,sub:String?) -> (count:Int,totaleNotti:Int,totaleGuest:Int,tassoOccupazioneNigh:Double)? {
         
         guard let ws = self.db.currentWorkSpace else { return nil }
         
         let reservationInfo = ws.wsReservations.getInformation(year: self.yyFetchData,month: month,sub: sub,viewModel: self)
 
-        return (reservationInfo.arrivalCount,reservationInfo.incomeAggregato,reservationInfo.totalNight,reservationInfo.totalGuest,reservationInfo.tassoOccupazioneNotti)
+        return (reservationInfo.arrivalCount,reservationInfo.totalNight,reservationInfo.totalGuest,reservationInfo.tassoOccupazioneNotti)
         
     }
     
@@ -895,6 +927,20 @@ extension HOViewModel {
     }
 }
 
+/// Work with Operations
+extension HOViewModel {
+    
+    func getNastrino<Account:HOProAccountDoubleEntry>(for element:Account,in month:Int?, for unitRef:String?) -> HONastrinoAccount? {
+        
+        guard let ws = self.db.currentWorkSpace else { return nil }
+        
+        let nastrino = ws.wsOperations.getNastrinoAccount(for:element,year: self.yyFetchData,month:month,refUnit: unitRef)
+        
+        return nastrino
+    }
+    
+}
+
 // area test
 
 let optCate:HOOperationUnit = {
@@ -915,6 +961,12 @@ let optCate:HOOperationUnit = {
     return x
 }()
 
+let arrivoLillo = DateComponents(calendar: Locale.current.calendar,year: 2024, month: 1, day: 23,hour: 00).date
+let checkOutLillo = DateComponents(calendar: Locale.current.calendar,year: 2024, month: 2, day: 20,hour: nil).date
+
+let arrivoPeppe = DateComponents(calendar: Locale.current.calendar,year: 2024, month: 1, day: 6).date
+let checkOutPepp = DateComponents(calendar: Locale.current.calendar,year: 2024, month: 1, day: 10).date
+
 let optLillo:HOOperationUnit = {
     
     var x = HOOperationUnit()
@@ -927,9 +979,33 @@ let optLillo:HOOperationUnit = {
             subCategory: .interno,
             specification: "Lillo F"))
     
-    x.amount = HOOperationAmount(quantity:60, pricePerUnit: 70)
+    let imputationPeriod = HOImputationPeriod(start: arrivoLillo, end: checkOutLillo)
+    x.imputationPeriod = imputationPeriod
+    x.amount = HOOperationAmount(quantity:Double(imputationPeriod.ddDistance ?? 0), pricePerUnit: 40)
     x.regolamento = Date().addingTimeInterval(1500)
+    x.refUnit = testUnit1.uid
+
+    return x
+}()
+
+let commissionLillo:HOOperationUnit = {
     
+    var x = HOOperationUnit()
+    x.writing = HOWritingAccount(
+        type: .vendita,
+        dare: HOAreaAccount.corrente.getIDCode(),
+        avere: HOImputationAccount.ota.getIDCode(),
+        oggetto: HOWritingObject(
+            category: .commissioni,
+            subCategory: .agenzia,
+            specification: "Lillo F"))
+    
+    let imputationPeriod = HOImputationPeriod(start: arrivoLillo, end: checkOutLillo)
+    x.imputationPeriod = imputationPeriod
+    x.amount = HOOperationAmount(quantity:0.18, pricePerUnit: 1120)
+    x.regolamento = Date().addingTimeInterval(1500)
+    x.refUnit = testUnit1.uid
+
     return x
 }()
 
@@ -944,9 +1020,11 @@ let optPeppe:HOOperationUnit = {
             category: .servizi,
             subCategory: .interno,
             specification: "Peppe F"))
-    
-    x.amount = HOOperationAmount(quantity:3, pricePerUnit: 100)
+    let imputation = HOImputationPeriod(start: arrivoPeppe, end: checkOutPepp)
+    x.amount = HOOperationAmount(quantity:Double(imputation.ddDistance ?? 0), pricePerUnit: 60)
+    x.imputationPeriod = imputation
     x.regolamento = Date().addingTimeInterval(3000)
+    x.refUnit = testUnit2.uid
     
     return x
 }()
@@ -983,10 +1061,10 @@ let reservation:HOReservation = {
     current.guestType = .couple
   //  current.notti = 60
     current.pax = 2
-    current.dataArrivo = DateComponents(calendar: Locale.current.calendar,year: 2024, month: 9, day: 15).date
-    current.checkOut = DateComponents(calendar: Locale.current.calendar,year: 2024, month: 10, day: 15).date
+ 
+    current.imputationPeriod = HOImputationPeriod(start: arrivoLillo, end: checkOutLillo)
     current.disposizione = [HOBedUnit(bedType: .double, number: 1)]
-    current.refOperations = [optLillo.uid]
+    current.refOperations = [optLillo.uid,commissionLillo.uid]
     return current
 }()
 
@@ -995,12 +1073,14 @@ let reservation1:HOReservation = {
     var current:HOReservation = HOReservation()
     
     current.guestName = "Giuseppe Friscia"
-    current.refUnit = testUnit1.uid
+    current.refUnit = testUnit2.uid
     current.labelPortale = "booking.com"
     current.guestType = .couple
-    current.notti = 3
-    current.pax = 2
-    current.dataArrivo = Locale.current.calendar.date(byAdding: DateComponents(month: 1,day: 0), to: Date())
+   // current.notti = 3
+    current.pax = 3
+   // let dataArrivo = Locale.current.calendar.date(byAdding: DateComponents(month: 1,day: 0), to: Date())
+   // let checkOut = Locale.current.calendar.date(byAdding: DateComponents(month: 1,day: 3), to: Date())
+    current.imputationPeriod = HOImputationPeriod(start: arrivoPeppe, end: checkOutPepp)
     current.disposizione = [HOBedUnit(bedType: .double, number: 1)]
     current.refOperations = [optPeppe.uid]
     return current
@@ -1014,9 +1094,11 @@ let reservation2:HOReservation = {
     current.refUnit = testUnit2.uid
     current.labelPortale = "booking.com"
     current.guestType = .couple
-    current.notti = 15
+   // current.notti = 15
     current.pax = 3
-    current.dataArrivo = Locale.current.calendar.date(byAdding: DateComponents(year:-1,month: 3), to: Date())
+    let dataArrivo = Locale.current.calendar.date(byAdding: DateComponents(year:-1,month: 3), to: Date())
+    let checkOut = Locale.current.calendar.date(byAdding: DateComponents(year:-1,month: 3,day: 15), to: Date())
+    current.imputationPeriod = HOImputationPeriod(start: dataArrivo, end: checkOut)
     current.disposizione = [HOBedUnit(bedType: .double, number: 1),HOBedUnit(bedType: .single, number: 1)]
     current.refOperations = [optCate.uid]
     return current
@@ -1025,8 +1107,8 @@ let reservation2:HOReservation = {
 let testWorkSpace:WorkSpaceModel = {
     
     var ws = WorkSpaceModel()
-    ws.wsOperations.all = [/*optCate,*/optLillo,optPeppe]
-    ws.wsReservations.all = [reservation/*,reservation1*//*,reservation2*/]
+    ws.wsOperations.all = [/*optCate,*/optLillo,optPeppe,commissionLillo]
+    ws.wsReservations.all = [reservation,reservation1/*,reservation2*/]
     ws.wsUnit.all = [testUnit,testUnit1,testUnit2]
     return ws
 }()

@@ -26,7 +26,7 @@ struct HOWsReservations:HOProStarterPack {
     ///   - sub: sotto unità da investigare
     ///   - viewModel: viewModel
     /// - Returns: ritorna il conto degli arrivi, le notti totali, il numero di ospiti, e il valore incassato
-    func getInformation(year:Int,month:Int?,sub:String?,viewModel:HOViewModel)  -> (arrivalCount:Int,totalNight:Int,totalGuest:Int,incomeAggregato:Double,tassoOccupazioneNotti:Double) {
+    func getInformation(year:Int,month:Int?,sub:String?,viewModel:HOViewModel)  -> (arrivalCount:Int,totalNight:Int,totalGuest:Int,tassoOccupazioneNotti:Double) {
   
         // tutte le prenotazioni che hanno il check-in e il check-out nel mese e nell'anno di riferimento
         let filtered:[HOReservation] = self.getAllFiltered(year: year,subRef: sub,notConsiderCheckOut: false)
@@ -46,7 +46,7 @@ struct HOWsReservations:HOProStarterPack {
             
         }()
         
-        guard let baseInterval else { return (0,0,0,0,0) }
+        guard let baseInterval else { return (0,0,0,0) }
         
         let reservationInvolved = filtered.filter({
             
@@ -94,7 +94,7 @@ struct HOWsReservations:HOProStarterPack {
             
         } // second info
    
-        let income = getIncomeDDbased(from: reservationInvolved, monthInterval: baseInterval, viewModel: viewModel) // fourth info
+       // let income = getIncomeDDbased(from: reservationInvolved, monthInterval: baseInterval, viewModel: viewModel) // fourth info
         
         // tasso di occupazine
         // notti / notti disponibili
@@ -124,7 +124,7 @@ struct HOWsReservations:HOProStarterPack {
         
         let tassoOccNotti = Double(nights) / Double(nottiAvaible)
 
-        return (arrivalCount,nights,guests,income,tassoOccNotti)
+        return (arrivalCount,nights,guests,tassoOccNotti)
         
     }
     
@@ -255,7 +255,7 @@ struct HOWsReservations:HOProStarterPack {
         }
         
         return income
-    }
+    } // 14.10.24 non in uso
     
    /* private func getIncomeDDbasedDEPRECATA(from reservations:[HOReservation],on dailyPath:KeyPath<HOReservation,Int?>,viewModel:HOViewModel) -> Double {
         

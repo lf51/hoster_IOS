@@ -298,12 +298,27 @@ extension HOCloudDataManager {
          }
          
      }
+    
+    func deleteSingleField(from element:HOSingleValueDelete) throws {
+        
+        guard let docReference = element.docReference else {
+            throw HOCustomError.erroreGenerico()
+        }
+         
+        let values:[AnyHashable:Any] = element.fields.reduce(into:[:]) { partialResult, key in
+            let value = FieldValue.delete()
+            partialResult[key] = value
+        }
+    
+        docReference.updateData(values)
+    }
+    
 }
 
 ///Managing WorkSpace
 extension HOCloudDataManager {
     
-    func fetchAndListenReservationAndOperations(filteredBy years:[Int]?) throws {
+    func fetchAndListenReservationAndOperations(filteredBy year:Int?) throws {
         
         print("[CALL]_fetchAndListenReservationAndOperations")
 
@@ -322,14 +337,14 @@ extension HOCloudDataManager {
            // self.workSpaceOperations.setMainTree(to: optCollRef)
             // mettiamo un listener sull'intera collection
       
-            try await fetchAndListenCollection(syncro: \.workSpaceReservations, filteredBy: years)
-            try await fetchAndListenCollection(syncro: \.workSpaceOperations, filteredBy: years)
+            try await fetchAndListenCollection(syncro: \.workSpaceReservations, filteredBy: year)
+            try await fetchAndListenCollection(syncro: \.workSpaceOperations, filteredBy: year)
             
         }
         
     }
     
-    func fetchAndListenWorkSpaceModel(wsFocusUID:String,filteredBy years:[Int]?) throws {
+    func fetchAndListenWorkSpaceModel(wsFocusUID:String,filteredBy year:Int?) throws {
         
         // rimuoviamo i listener per azzerare i fetch dopo il primo
         print("[CALL]_fetchAndListenWorkSpaceUnit_for:\(wsFocusUID)")
@@ -357,8 +372,8 @@ extension HOCloudDataManager {
             self.workSpaceOperations.setMainTree(to: optCollRef)
             // mettiamo un listener sull'intera collection
             try await fetchAndListenCollection(syncro: \.workSpaceUnits, filteredBy: nil)
-            try await fetchAndListenCollection(syncro: \.workSpaceReservations, filteredBy: years)
-            try await fetchAndListenCollection(syncro: \.workSpaceOperations, filteredBy: years)
+            try await fetchAndListenCollection(syncro: \.workSpaceReservations, filteredBy: year)
+            try await fetchAndListenCollection(syncro: \.workSpaceOperations, filteredBy: year)
             
         }
         
@@ -425,7 +440,7 @@ extension HOCloudDataManager {
             }
     }
     
-    private func fetchAndListenCollection<Item:Codable>(syncro tree:KeyPath<HOCloudDataManager,HOSyncroCollectionManager<Item>>,filteredBy years:[Int]?) async throws {
+    private func fetchAndListenCollection<Item:Codable>(syncro tree:KeyPath<HOCloudDataManager,HOSyncroCollectionManager<Item>>,filteredBy year:Int?) async throws {
     
        /* guard let collection = self[keyPath: tree].mainTree else {
     
@@ -435,7 +450,7 @@ extension HOCloudDataManager {
       //  let filtered = collection.whereField("data_arrivo", isGreaterThan: Date())
         let mainObject = self[keyPath: tree]
         
-        let collection = try mainObject.getMainQuery(filteredBy: years)
+        let collection = try mainObject.getMainQuery(filteredBy: year)
         let parentDocCollection = mainObject.getCollectionParentDocumentID()
             
         mainObject.listener = collection.addSnapshotListener(includeMetadataChanges: false, listener: { [weak self] querySnap, error in
@@ -450,7 +465,7 @@ extension HOCloudDataManager {
             
             guard let self,
                   let querySnap else {
-                
+                print("[ERROR]_fetchAndListenCollection_no QUERY SNAP")
               //  self?[keyPath:tree].publisher.send((nil,nil))
                 mainObject.publisher.send((nil,nil))
                 loadingStatus.nullStatus()

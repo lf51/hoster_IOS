@@ -60,7 +60,7 @@ extension HONewReservationBuilderVM {
             self.ivaValue = 22
         }
 
-        initUnitOnFocus(vm: vm)
+       // initUnitOnFocus(vm: vm)
         
     }
     
@@ -159,7 +159,7 @@ extension HONewReservationBuilderVM {
             self.unitOnFocus = nil
         }
         
-    }
+    } // deprecata
     
 }
 
@@ -271,9 +271,26 @@ extension HONewReservationBuilderVM {
     private func getPaxUnitConformity() -> Bool {
         
         let paxIn = self.reservation.pax ?? 0
-        let maxPax = self.unitOnFocus?.pax ?? 0
+        var maxPax:Int = 0 //= self.unitOnFocus?.pax ?? 0
+        
+       // return paxIn <= maxPax
+        
+        //
+        
+        guard let ws = mainVM?.db.currentWorkSpace else { return false }
+        
+        switch ws.wsType {
+       
+        case .wholeUnit:
+            //let main = ws.wsUnit.main
+           // self.unitOnFocus = main
+            maxPax = ws.wsUnit.main.pax ?? 0
+        case .withSub:
+            maxPax = self.unitOnFocus?.pax ?? 0
+        }
         
         return paxIn <= maxPax
+        
     }
     
 }
@@ -336,7 +353,18 @@ extension HONewReservationBuilderVM {
     
      func checkUnitOnFocusValidation() -> Bool {
          
-         return self.unitOnFocus != nil
+        // return self.unitOnFocus != nil
+         
+         guard let ws = mainVM?.db.currentWorkSpace else { return false }
+         
+         switch ws.wsType {
+        
+         case .wholeUnit:
+             return true
+         case .withSub:
+             return self.unitOnFocus != nil
+         }
+         
      }
     
      func checkDateAndNight() -> Bool {
@@ -387,9 +415,9 @@ extension HONewReservationBuilderVM {
     
     private func buildSideOperations() -> [HOOperationUnit]? {
         
-        guard let timeImputation = self.buildTimeImputation() else {
+       /*guard let timeImputation = self.buildTimeImputation() else {
             return nil
-        }
+        }*/
     
         // riscossione cityTax
         let cityTaxOPT:HOOperationUnit? = {
@@ -402,7 +430,9 @@ extension HONewReservationBuilderVM {
             let avere = HOAreaAccount.tributi.getIDCode()
             
             current.regolamento = self.reservation.regolamento
-            current.timeImputation = timeImputation
+           // current.timeImputation = timeImputation
+            current.imputationPeriod = self.reservation.imputationPeriod
+            current.refUnit = unitOnFocus?.uid
             current.amount = HOOperationAmount(
                 quantity: Double(self.pernottamentiTassati),
                 pricePerUnit: self.cityTax)
@@ -424,7 +454,9 @@ extension HONewReservationBuilderVM {
             let avere = HOAreaAccount.corrente.getIDCode()
             
             current.regolamento = self.reservation.regolamento
-            current.timeImputation = timeImputation
+           // current.timeImputation = timeImputation
+            current.imputationPeriod = self.reservation.imputationPeriod
+            current.refUnit = unitOnFocus?.uid
             current.amount = HOOperationAmount(
                 quantity: Double(self.reservation.notti ?? 0),
                 pricePerUnit: self.pricePerNight)
@@ -450,7 +482,9 @@ extension HONewReservationBuilderVM {
             let dare = HOAreaAccount.corrente.getIDCode()
             
             current.regolamento = self.reservation.regolamento
-            current.timeImputation = timeImputation
+           // current.timeImputation = timeImputation
+            current.imputationPeriod = self.reservation.imputationPeriod
+            current.refUnit = unitOnFocus?.uid
             current.amount = HOOperationAmount(
                 quantity: portale.commissionPercent,
                 pricePerUnit: self.commissionable)
@@ -479,7 +513,9 @@ extension HONewReservationBuilderVM {
             let dare = HOAreaAccount.corrente.getIDCode()
             
             current.regolamento = self.reservation.regolamento
-            current.timeImputation = timeImputation
+           // current.timeImputation = timeImputation
+            current.imputationPeriod = self.reservation.imputationPeriod
+            current.refUnit = unitOnFocus?.uid
             current.amount = HOOperationAmount(
                 quantity: self.transazionePercent,
                 pricePerUnit: self.commissionable)
@@ -505,7 +541,9 @@ extension HONewReservationBuilderVM {
             let avere = HOImputationAccount.diversi.getIDCode()
           
             current.regolamento = self.reservation.regolamento
-            current.timeImputation = timeImputation
+           // current.timeImputation = timeImputation
+            current.imputationPeriod = self.reservation.imputationPeriod
+            current.refUnit = unitOnFocus?.uid
             current.amount = HOOperationAmount(
                 quantity: self.ivaPercent,
                 pricePerUnit: self.costoCommPlusTrans)
@@ -526,7 +564,7 @@ extension HONewReservationBuilderVM {
         return optValide
     }
     
-    private func buildTimeImputation() -> HOTimeImputation? {
+   /* private func buildTimeImputation() -> HOTimeImputation? {
         
         guard let checkIn = self.reservation.dataArrivo else {
             return nil
@@ -539,7 +577,7 @@ extension HONewReservationBuilderVM {
         let timeImputation = HOTimeImputation(startYY: imputationComponent.year, monthImputation: monthImputation)
         
         return timeImputation
-    }
+    }*/ // deprecato
     
     func publishOperation(refreshPath:HODestinationPath?) {
         

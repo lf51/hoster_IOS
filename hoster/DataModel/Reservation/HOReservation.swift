@@ -15,14 +15,15 @@ struct HOReservation:HOProStarterPack {
     let uid:String
     let regolamento:Date
     var statoPagamento:HOReservationPayamentStatus
-    
+    /// Nel caso di unità intera il valore sarà nil. Nel caso di unitàWithSub vi sarà il valore della sub a cui riferisce
     var refUnit:String? //
     var refOperations:[String]? // operazioni associate // vendita servizio pernottamento, vendita servizio colazione transfer etc. Associabili in fase di creazione attraverso un default che possiamo fare impostare all'utente, con i servizi inclusi nella reservation, e possiamo associare in seguito ad esempio per il sopravvenire di regali e mance.
     
     var labelPortale:String? //
     
-    var dataArrivo:Date? //
-    var checkOut:Date?
+   // var dataArrivo:Date? //
+   // var checkOut:Date?
+    var imputationPeriod:HOImputationPeriod?
     var guestName:String? //
     var guestType:HOGuestType? //
     var pax:Int? //
@@ -36,6 +37,24 @@ struct HOReservation:HOProStarterPack {
         self.uid = UUID().uuidString
         self.regolamento = Date()
         self.statoPagamento = .inPagamento
+    }
+}
+
+extension HOReservation {
+    
+    var dataArrivo:Date? { self.imputationPeriod?.start }
+    var checkOut:Date? { self.imputationPeriod?.end }
+    var notti:Int? { self.imputationPeriod?.ddDistance }
+    
+    var pernottamenti:Int { self.getPernottamenti() }
+
+    
+    private func getPernottamenti() -> Int {
+        
+        guard let pax,
+              let notti else { return 0 }
+        
+        return pax * notti
     }
 }
 
@@ -393,8 +412,9 @@ extension HOReservation:Hashable {
         lhs.guestType == rhs.guestType &&
         lhs.guestName == rhs.guestName &&
         lhs.pax == rhs.pax &&
-        lhs.dataArrivo == rhs.dataArrivo &&
-        lhs.notti == rhs.notti &&
+       // lhs.dataArrivo == rhs.dataArrivo &&
+       // lhs.notti == rhs.notti &&
+        lhs.imputationPeriod == rhs.imputationPeriod &&
         lhs.disposizione == rhs.disposizione &&
         lhs.labelPortale == rhs.labelPortale &&
         lhs.note == rhs.note &&
@@ -411,7 +431,7 @@ extension HOReservation:Hashable {
 /// logica notti e pernottamento
 extension HOReservation {
     
-    var notti:Int? {
+   /* var notti:Int? {
         
         get { self.getNotti() }
         set { self.setNotti(newValue: newValue) }
@@ -427,9 +447,9 @@ extension HOReservation {
               let notti else { return 0 }
         
         return pax * notti
-    }
+    }*/
     
-    private func getNotti() -> Int? {
+   /* private func getNotti() -> Int? {
         
         guard let dataArrivo,
               let checkOut else { return nil }
@@ -446,7 +466,7 @@ extension HOReservation {
         let out = self.calendar.date(byAdding: .day, value: newValue, to: dataArrivo)
         self.checkOut = out
         
-    }
+    }*/
     
    /* private func getCheckOut() -> Date? {
         

@@ -23,8 +23,8 @@ struct HOLoadingStatus {
     
     var log:LoadingLog {
         
-        guard let loadCase,
-              let loadDescription else { return .completed}
+        guard let _ = loadCase,
+              let _ = loadDescription else { return .completed}
         return .active
     }
     

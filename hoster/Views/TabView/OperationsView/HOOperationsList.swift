@@ -100,6 +100,27 @@ struct HOOperationsList: View {
         
         HStack {
             
+           /* Button("DELETE") {
+                
+                let optReser:[String]? = self.viewModel.db.currentWorkSpace?.wsReservations.all.reduce(into: [], { partialResult, reserve in
+                    
+                    partialResult.append(contentsOf: reserve.refOperations ?? [])
+                })
+                
+                guard let optReser else { return }
+                
+                let all = self.viewModel.db.currentWorkSpace?.wsOperations.all.filter({!optReser.contains($0.uid)})
+                
+                guard let all else { return }
+                
+                for eachOPT in all {
+                    
+                    self.viewModel.deleteDocData(of: eachOPT, syncroDataPath: \.workSpaceOperations)
+                    
+                }
+
+            }*/
+            
             vbCurrentYearView(viewModel: self.viewModel)
            /* HStack(spacing:5) {
                 

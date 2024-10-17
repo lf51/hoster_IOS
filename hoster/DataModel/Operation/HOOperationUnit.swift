@@ -13,7 +13,10 @@ struct HOOperationUnit:HOProStarterPack {
     let uid:String
     var regolamento:Date
     
-    var timeImputation:HOTimeImputation?
+    var timeImputation:HOTimeImputation? // deprecata // già non più decodificata ed encodificata
+    /// Nel caso di unità intera il valore sarà nil. Nel caso di unitàWithSub vi sarà il valore della sub a cui riferisce o il valore della main per operazioni trasversali
+    var refUnit:String? // Da Consolidare, in quanto non presente quando si è costruito il modulo di creazione delle operazioni
+    var imputationPeriod:HOImputationPeriod?
     
     var writing:HOWritingAccount?
     
@@ -26,7 +29,46 @@ struct HOOperationUnit:HOProStarterPack {
         self.regolamento = Date()
     }
     
+    var calendar:Calendar { Locale.current.calendar }
 }
+/// manipolazione amount
+extension HOOperationUnit {
+    
+    ///  normalizza l'amount dell'operazione per il periodo richiesto. IL nuovo operation amount avrà alla quantità il numero di giorni, e al price per unit l'imputazione giornaliera
+    private func getAmountRelatedTo(year:Int?,mm:Int?) -> HOOperationAmount? {
+        /// il mese senza l'anno non serve a niente
+        guard let year,
+              let imputationPeriod else { return self.amount }
+        
+        guard let generalDailyQuote = self.getAmountDailyQuote() else { return nil }
+        
+        // porzione di amount per l'anno
+        guard let relatedInterval = imputationPeriod.getIntersectionWith(year: year, mm: mm) else { return nil }
+        
+        let ddRelated = calendar.dateComponents([.day], from: relatedInterval.start, to: relatedInterval.end).day ?? 0
+       
+        let doubleDDRelated = Double(ddRelated)
+        
+        let relatedAmount = HOOperationAmount(quantity: doubleDDRelated, pricePerUnit: generalDailyQuote)
+        
+        return relatedAmount
+    }
+    
+    /// calcola la quota di imputazione giornaliera dell'imponibile per l'intero periodo dell'operazione
+    private func getAmountDailyQuote() -> Double? {
+        
+        guard let amount,
+              let imponibile = amount.imponibile,
+              let imputationPeriod,
+              let distance = imputationPeriod.ddDistance  else { return nil }
+
+        let dailyQuote = imponibile / Double(distance)
+        
+        return dailyQuote
+        
+    }
+}
+
 
 /// time logic
 extension HOOperationUnit {
@@ -114,10 +156,13 @@ extension HOOperationUnit:Decodable {
         
        case uid
        case regolamento
-       case timeImputation //= "time_imputation"
+      // case timeImputation //= "time_imputation"
+       case imputationPeriod
+       case refUnit
        case writing
        case amount
        case note
+  
     
     }
     
@@ -129,7 +174,9 @@ extension HOOperationUnit:Decodable {
         
         self.regolamento = try container.decode(Date.self, forKey: .regolamento)
         
-        self.timeImputation = try container.decodeIfPresent(HOTimeImputation.self, forKey: .timeImputation)
+       // self.timeImputation = try container.decodeIfPresent(HOTimeImputation.self, forKey: .timeImputation)
+        self.imputationPeriod = try container.decodeIfPresent(HOImputationPeriod.self, forKey: .imputationPeriod)
+        self.refUnit = try container.decodeIfPresent(String.self, forKey: .refUnit)
         
         self.writing = try container.decodeIfPresent(HOWritingAccount.self, forKey: .writing)
         
@@ -148,7 +195,9 @@ extension HOOperationUnit:Encodable {
         
         try container.encode(self.uid, forKey: .uid)
         try container.encode(self.regolamento, forKey: .regolamento)
-        try container.encode(self.timeImputation, forKey: .timeImputation)
+       // try container.encode(self.timeImputation, forKey: .timeImputation)
+        try container.encode(self.imputationPeriod, forKey: .imputationPeriod)
+        try container.encodeIfPresent(self.refUnit, forKey: .refUnit)
         try container.encodeIfPresent(self.writing, forKey: .writing)
         try container.encodeIfPresent(self.amount, forKey: .amount)
         try container.encodeIfPresent(self.note, forKey: .note)
@@ -163,7 +212,9 @@ extension HOOperationUnit:Hashable {
     static func == (lhs: HOOperationUnit, rhs: HOOperationUnit) -> Bool {
         lhs.uid == rhs.uid &&
         lhs.regolamento == rhs.regolamento &&
-        lhs.timeImputation == rhs.timeImputation &&
+        //lhs.timeImputation == rhs.timeImputation &&
+        lhs.imputationPeriod == rhs.imputationPeriod &&
+        lhs.refUnit == rhs.refUnit &&
         lhs.writing == rhs.writing &&
         lhs.amount == rhs.amount &&
         lhs.note == rhs.note
@@ -177,14 +228,15 @@ extension HOOperationUnit:Hashable {
 
 extension HOOperationUnit {
     
-    func getScritturaNastrino<Account:HOProAccountDoubleEntry>(for account:Account) -> HOAccWritingRiclassificato? {
+    func getScritturaNastrino<Account:HOProAccountDoubleEntry>(for account:Account,year:Int?=nil,mm:Int?=nil) -> HOAccWritingRiclassificato? {
         
-        guard let writing,
-              let amount else { return nil }
+        guard let writing/*,
+              let amount*/ else { return nil }
     
         guard var entrySpecification = writing.getWritingRiclassificato(for: account) else { return nil }
         
-        entrySpecification.amount = amount
+       // entrySpecification.amount = amount
+        entrySpecification.amount = self.getAmountRelatedTo(year: year, mm: mm)
         
         return entrySpecification
        // return nil

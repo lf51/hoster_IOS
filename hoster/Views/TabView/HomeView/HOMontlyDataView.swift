@@ -32,13 +32,34 @@ struct HOMontlyDataView: View {
                 VStack(alignment:.leading,spacing: 15) {
                     
                     vbMMfilterLine()
-
-                    HOResumeLineView(
+                    
+                    VStack(alignment:.leading,spacing:4) {
+                        
+                    HOReservationsResumeLineView(
                         mmOrdinale: mmOrdinale,
-                        focusUnit: focusUnit)
-                    .padding([.top,.trailing],5)
-                    .padding(.bottom,10)
-                    .padding(.leading,15)
+                        focusUnit: focusUnit,
+                        firstLineFont: .subheadline)
+                    //.padding([.top,.trailing],5)
+                   // .padding(.bottom,10)
+                    //.padding(.leading,15)
+                    
+                        HONastrinoResumeLine(
+                            account: HOImputationAccount.pernottamento,
+                            mmOrdinal: mmOrdinale,
+                            unitRef: focusUnit,
+                            amountFont: (.title3,.title2),
+                            amountColor: (Color.green,Color.hoAccent),
+                            subTextFont: .system(size: 10),
+                            subTextOffset: (5,-2),
+                            show: .totalPlusAverage)
+                        
+                    vbCityTaxLine()
+                        
+                }
+                    .padding(5)
+                    //.padding([.vertical,.trailing],5)
+                   // .padding(.bottom,10)
+                    //.padding(.leading,15)
                     .background {
                         
                         Color.hoBackGround
@@ -74,104 +95,32 @@ struct HOMontlyDataView: View {
         
     } // chiusa body
     
-   /* @ViewBuilder private func vbMMResumeLine() -> some View {
-        
-        let reservationsInfo = self.viewModel.getReservationInfo(month:self.mmOrdinale,sub: focusUnit)
-        
-        let count = reservationsInfo?.count ?? 0
-        let countString = csSwitchSingolarePlurale(checkNumber: count, wordSingolare: "prenotazione", wordPlurale: "prenotazioni")
-        let guest = reservationsInfo?.totaleGuest ?? 0
-        let night = reservationsInfo?.totaleNotti ?? 0
-        let gross = reservationsInfo?.grossAmount ?? 0
-        let averagePrice:Double = {
-            let value = gross / Double(night)
-            if value.isNaN { return 0 }
-            else { return value }
-        }()
-        
-        VStack(alignment:.leading,spacing: 0) {
+    
+    @ViewBuilder private func vbCityTaxLine() -> some View {
+      
+        HStack(alignment:.firstTextBaseline,spacing:5) {
             
-            HStack(spacing:20) {
-                
-                HStack(spacing:2) {
-                    
-                    Image(systemName: "person.2.square.stack")
-                       
-                    Text("\(count) \(countString)")
-                }
-                
-                HStack(spacing:2){
-                    
-                    Image(systemName: "moon.zzz.fill")
-                       
-                    Text("\(night)")
-                }
-                
-                HStack(spacing:2) {
-                    
-                    Image(systemName: "person.fill")
-                       
-                    Text("\(guest)")
-                       
-                }
-                
-            }
-            .fontWeight(.semibold)
-            .font(.caption)
-            .foregroundStyle(Color.gray)
+            HOInfoMessageView(imageScale:.medium,messageBody: HOSystemMessage(vector: .log, title: "Nota Contabile", body: .cityTaxImputation))
             
-            HStack {
-                
-                HStack {
-
-                    Text("\(gross,format: .currency(code: self.viewModel.localCurrencyID))")
-                        .font(.title3)
-                        .bold()
-                        .foregroundStyle(Color.green)
-                    
-                    Text("mensile")
-                        .italic()
-                        .font(.system(size: 10))
-                        .foregroundStyle(Color.gray)
-                        .offset(x: -10, y: 10)
-                    
-                }
-                Spacer()
-                
-                HStack {
-                    
-                    Text("\(averagePrice,format: .currency(code: self.viewModel.localCurrencyID))")
-                        .font(.title2)
-                        .bold()
-                        .foregroundStyle(Color.green)
-                    
-                    Text("notte")
-                        .italic()
-                        .font(.system(size: 10))
-                        .foregroundStyle(Color.gray)
-                        .offset(x: -10, y: 10)
-
-                }
-                
-                
-            }
-            .lineLimit(1)
-            .minimumScaleFactor(0.65)
+            Text("Tassa di Soggiorno")// \(gross)")
+                .italic()
+                .font(.system(size: 15))
+                .foregroundStyle(Color.scooter_p53)
+            
+            HONastrinoResumeLine(
+                account: HOImputationAccount.cityTax,
+                mmOrdinal: mmOrdinale,
+                unitRef: focusUnit,
+                amountFont: (.system(size: 15),.largeTitle),
+                amountColor: (Color.scooter_p53,Color.gray),
+                subTextFont: .system(size: 8),
+                subTextOffset: (15,-2),
+                show: .plus)
+            
         }
-        .padding(.vertical,5)
-        .padding(.trailing,5)
-        .padding(.leading,15)
-        
-        .background {
-            
-            Color.hoBackGround
-                .opacity(0.2)
-        }
-        .clipShape(RoundedRectangle(cornerRadius: 5.0))
-        
-        
+
     }
-    */
+    
     @ViewBuilder private func vbInOut() -> some View {
         
         let associatedReservation = self.getReservationInOut()
@@ -369,8 +318,18 @@ struct HOMontlyDataView: View {
                         .fontDesign(.monospaced)
                         .tag(month)
                          
-                 }
+                 } // da deprecare
                  
+               /* ForEach(self.viewModel.localCalendarMMRange,id: \.self) { month in
+                     
+                    let mm = self.viewModel.getMMSymbol2(from: month)
+                     
+                    Text(mm)
+                        .fontDesign(.monospaced)
+                        .tag(month)
+                         
+                 }*/
+                
              } label: {
                  //
              }

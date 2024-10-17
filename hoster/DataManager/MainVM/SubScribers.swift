@@ -26,12 +26,13 @@ extension HOViewModel {
                 // vedi Nota 29.08.24
                 do {
                     print("YY_Subscriber:\nNewValue is \(yyCurrent.description)\nOld Value is \(self.yyFetchData.description)")
-                    let t0 = yyCurrent - 1
-                    let yy:[Int] = {
-                        return [yyCurrent,t0]
-                    }()
                     
-                    try self.dbManager.fetchAndListenReservationAndOperations(filteredBy: yy)
+                   // let t0 = yyCurrent - 1
+                   /* let yy:[Int] = {
+                        return [yyCurrent]
+                    }()*/
+                    
+                    try self.dbManager.fetchAndListenReservationAndOperations(filteredBy: yyCurrent)
                     
                 } catch let error {
                     
@@ -85,6 +86,7 @@ extension HOViewModel {
 
     }
     
+    /// <#Description#>
      func addUserDataSubscriber()  {
        // 1° Publisher
         self.dbManager
@@ -141,13 +143,13 @@ extension HOViewModel {
                        
                         self.db.currentWorkSpace = WorkSpaceModel(focusUid: ref)
                         
-                        let yy:[Int] = {
+                       /* let yy:[Int] = {
                            // return [self.yyFetchData]
                             let t0 = self.currentYY - 1
                             return [self.currentYY,t0]
-                        }()
-                        
-                        try self.dbManager.fetchAndListenWorkSpaceModel(wsFocusUID: ref, filteredBy:yy)
+                        }()*/
+                        print ("[USER_DATA_SUBSCRIBER]_FETCHYY: \(self.yyFetchData.description)")
+                        try self.dbManager.fetchAndListenWorkSpaceModel(wsFocusUID: ref, filteredBy:self.yyFetchData)
                     } else {
                         
                        // self.setLoading(to: .end)
@@ -165,7 +167,7 @@ extension HOViewModel {
                     return
                 }
                 
-                print("[END]_addUserManagerSubscriber")
+              //  print("[END]_addUserManagerSubscriber")
                 
             }.store(in: &cancellables)
 

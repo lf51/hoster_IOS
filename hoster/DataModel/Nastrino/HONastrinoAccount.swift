@@ -25,6 +25,34 @@ struct HONastrinoAccount {
     
 }
 
+/// logica sulle quantità
+extension HONastrinoAccount {
+    
+    var qPlus:Double { getQ(from: \.allPlus) }
+    var qMinus:Double { getQ(from: \.allMinus) }
+    var qTotal:Double { qPlus - qMinus }
+    
+    var average:Double {
+        
+        let value = totalResult / qTotal
+        if value.isNaN { return 0 }
+        else { return value }
+    }
+    
+    private func getQ(from kp:KeyPath<Self,[HOAccWritingRiclassificato]>) -> Double {
+        
+        let all = self[keyPath: kp]
+        
+        let quantity = all.compactMap({$0.amount?.quantity})
+        
+        let result = quantity.reduce(0, +)
+        
+        return result
+        
+    }
+    
+}
+
 extension HONastrinoAccount {
     
     /// Tutte le scritture riclassificate e compattate per segno plus

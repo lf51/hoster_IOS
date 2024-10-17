@@ -24,8 +24,18 @@ enum HOAmountUnitMisure:String {
     case month = "mm"
     case year = "yy"
     case percent = "%"
-    case night = "n"
+    case night = "nt"
     case pernottamenti = "pnt"
+    case pax = "px"
+    case currency
+    
+    var localCurrencyCode:String {
+        return Locale.current.currency?.identifier ?? "USD"
+    }
+    var localCurrencySymbol:String {
+        
+        return Locale.current.currencySymbol ?? "$"
+    }
     
     func getExtendedRawValue() -> String {
         
@@ -50,6 +60,10 @@ enum HOAmountUnitMisure:String {
             return "notti"
         case .pernottamenti:
             return "pernottamenti"
+        case .pax:
+            return "persone"
+        case .currency:
+            return localCurrencyCode
         }
         
         
@@ -67,6 +81,30 @@ enum HOAmountUnitMisure:String {
     }
     
     
+}
+
+extension HOAmountUnitMisure:FormatStyle {
+    
+    typealias FormatInput = Double
+    typealias FormatOutput = String
+    
+    func format(_ value: Double) -> String {
+        
+        return "\(value)" + " " + self.getRawSymbol()
+        
+    }
+    
+    func getRawSymbol() -> String {
+        
+        switch self {
+            
+        case .currency:
+            return localCurrencySymbol
+        default:
+            return self.rawValue
+        }
+        
+    }
 }
 
 struct HOOperationAmount:Equatable,Hashable {

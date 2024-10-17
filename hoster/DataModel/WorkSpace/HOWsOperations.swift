@@ -69,14 +69,23 @@ extension HOWsOperations {
         return allAccount
     }
     
-    func getNastrinoAccount<Account:HOProAccountDoubleEntry>(for element:Account) -> HONastrinoAccount {
+    func getNastrinoAccount<Account:HOProAccountDoubleEntry>(for element:Account,year:Int?=nil,month:Int?=nil,refUnit:String?=nil) -> HONastrinoAccount {
         
-        let mapOPT = self.all.compactMap({
+        let filtered:[HOOperationUnit] = {
             
-            $0.getScritturaNastrino(for:element)
+            guard let refUnit else { return self.all }
+            
+            let filtered = self.all.filter({ $0.refUnit == refUnit })
+            return filtered
+            
+        }()
+        
+        let mapOPT = filtered.compactMap({
+            
+            $0.getScritturaNastrino(for:element,year: year,mm: month)
         })
         
-        let account = HONastrinoAccount(label: element.getIDCode(), all: mapOPT)
+        let account = HONastrinoAccount(label: element.rawValue, all: mapOPT)
         
         return account
     }

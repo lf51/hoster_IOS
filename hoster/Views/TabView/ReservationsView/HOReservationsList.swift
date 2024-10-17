@@ -124,6 +124,59 @@ struct HOReservationsList: View {
         
         HStack {
             
+           /* Button("DELETE") {
+                
+                let reserv = self.viewModel.db.currentWorkSpace?.wsReservations.all
+                
+                guard let reserv else { return }
+                print("RESERVATION UPDATE: \(reserv.count)")
+                let fields = ["check_out","data_arrivo"]
+                
+                for eachR in reserv {
+                    self.viewModel.deleteSingleField(from: eachR, syncroDataPath: \.workSpaceReservations, fields: fields)
+                }
+                
+                
+                
+            }*/
+            
+            
+            
+           /* Button("UPDATE") {
+                
+                let reserv = self.viewModel.db.currentWorkSpace?.wsReservations.all/*.first(where: {$0.uid == "039C92EA-4C44-4AA3-99BB-D81D01FD9719"})*/
+                print("[UPDATE]_Reservation COUNT \(reserv?.count ?? 0)")
+                guard let reserv else { return }
+                
+                let key = "imputation_period"
+                
+                for eachReser in reserv {
+                    
+                    guard let value = eachReser.imputationPeriod else { return }
+                    
+                    guard let updatePeriod = value.updateSelf() else { return }
+                    
+                    
+                    let path:[String:Any] = [key:["start":updatePeriod.start,"end":updatePeriod.end]]
+                    
+                    guard let optAss = self.viewModel.getOperation(from: eachReser.refOperations ?? []) else { return }
+                    
+                    self.viewModel.publishSingleField(from: eachReser, syncroDataPath: \.workSpaceReservations, valuePath: path)
+                    
+                    for opt in optAss {
+                        
+                        self.viewModel.publishSingleField(from: opt, syncroDataPath: \.workSpaceOperations, valuePath: path)
+                                            
+                        
+                    }
+
+                }
+
+            }*/
+            
+            
+            
+            
             vbCurrentYearView(viewModel: self.viewModel)
 
             Button {

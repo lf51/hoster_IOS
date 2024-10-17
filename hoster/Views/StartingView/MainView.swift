@@ -44,7 +44,7 @@ struct MainView: View {
         case .inFullScreen:
             currentView
                 .overlay {
-                    WaitLoadingView(backgroundColorView: Color.pink, image: "house.circle", imageColor: Color.white, loadingInfo:  {
+                    WaitLoadingView(backgroundColorView: Color.hoBackGround.opacity(0.4), image: "house.circle", imageColor: Color.white, loadingInfo:  {
                         
                             ForEach(self.viewModel.loadStatus,id:\.uid) { load in
                                 
@@ -71,12 +71,15 @@ struct MainView: View {
                     .padding(.trailing)
                     .padding(.leading,2)
                     .background {
-                        Color.gray
-                            .clipShape(RoundedRectangle(cornerRadius: 5.0))
+                        
+                        RoundedRectangle(cornerRadius: 5.0)
+                            .fill(Color.hoAccent)
                             
                     }
-                    
-                    
+                    .padding(.leading,10)
+                    .onTapGesture {
+                        self.viewModel.sendSystemMessage(message: HOSystemMessage(vector: .pop, title: "Loading Log", body: .custom("Da compilare con i messaggi dei vari loadingStatus")))
+                    }
                 }
             
         default: EmptyView()
@@ -89,54 +92,6 @@ struct MainView: View {
         switch self.viewModel.viewCase {
         case .main:
             MainTabView()
-            
-           /* VStack {
-                
-                let user = self.viewModel.db.currentUser
-                let ws = self.viewModel.db.currentWorkSpace
-                
-                Text("authData uuid: \(self.viewModel.authData.uid)")
-                Text("authData email: \(self.viewModel.authData.email ?? "noMail")")
-                
-                Text("userData id: \(user.uid)")
-                Text("user focus WorkSpace id: \(user.wsFocusUnitRef ?? "noFocus")")
-                
-                Text("workSpace Label: \(ws?.wsLabel ?? "no Label")")
-                    .font(.largeTitle)
-                
-                Text("workSpace uuid: \(ws?.uid ?? "no uuid")")
-                Text("workSpaceData uuid: \(ws?.wsData.uid ?? "no uuid")")
-                Text("workSpaceUnit uuid: \(ws?.wsUnit.uid ?? "no uuid")")
-                
-                Text("workspace type: \(ws?.wsType.rawValue() ?? "no Type")")
-                
-                Text("workspace whole name: \(ws?.wsLabel ?? "no label")")
-                
-                Text("all_Unit: \(ws?.wsUnit.all.count ?? 0)")
-                Text("MainUnitName: \(ws?.wsUnit.main.label ?? "no name") ")
-                
-                Text("subsIn:\(ws?.wsUnit.subs?.count ?? 0)")
-                
-                ForEach(ws?.wsUnit.all ?? [],id:\.self) { unit in
-                    
-                    VStack {
-                        Text("\(unit.label)")
-                            .font(.title)
-                            .bold()
-                        Text("type:\(unit.unitType.rawValue)")
-                        Text("pax: \(unit.pax ?? 999)")
-                    }
-                    
-                }
-                
-                Button(action: {
-                    self.viewModel.db.currentWorkSpace = nil
-                   
-                }, label: {
-                    Text("Erase WorkSpace")
-                }) // per test
- 
-            } */
         case .setWorkSpace:
             HOViewSetWorkSpace(
                 authManager: self.authManager,

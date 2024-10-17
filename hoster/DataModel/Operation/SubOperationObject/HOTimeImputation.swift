@@ -246,33 +246,6 @@ extension HOMonthImputation {
 
 extension HOMonthImputation:Codable { }
 
-/*extension HOMonthImputation:Decodable {
-    
-    enum CodingKeys:String,CodingKey {
-        
-        case mmStart = "start_mm"
-        case mmAdvancing = "advancing_mm"
-    }
-    
-    init(from decoder: any Decoder) throws {
-        
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        
-        self.mmStart = try container.decodeIfPresent(Int.self, forKey: .mmStart)
-        self.mmAdvancing = try container.decodeIfPresent(Int.self, forKey: .mmAdvancing)
-    }
-}
-
-extension HOMonthImputation:Encodable {
-    
-    func encode(to encoder: any Encoder) throws {
-        
-        var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encodeIfPresent(self.mmStart, forKey: .mmStart)
-        try container.encodeIfPresent(self.mmAdvancing, forKey: .mmAdvancing)
-    }
-}*/
-
 /// Contiene il mese e l'anno di imputazione a cui imputare effettivamente l'operazione. Può ovviamente differire dalla data di regolamento.
 struct HOTimeImputation:Equatable,Hashable {
     
@@ -554,3 +527,149 @@ extension HOTimeImputation:Encodable {
     }
     
 }
+
+
+// NUOVA VERSIONE
+
+struct HOImputationPeriod:Equatable {
+    
+    var start:Date?
+    var end:Date?
+    /// da la distanza fra lo start e l'end in giorni
+    var ddDistance:Int? {
+        
+        get { self.getDistance() }
+        set { self.setDistance(newValue: newValue) }
+    }
+    
+    var calendar:Calendar { Locale.current.calendar }
+}
+
+extension HOImputationPeriod {
+    
+    func getIntersectionWith(year:Int,mm:Int?) -> DateInterval? {
+        
+        guard let dateInterval else { return nil }
+        
+        let specularDate = DateComponents(calendar:calendar,year: year,month: mm).date
+        
+        guard let specularDate else { return nil }
+        
+        var specularInterval:DateInterval?
+        
+        if let _ = mm {
+            
+            specularInterval = calendar.dateInterval(of: .month, for: specularDate)
+            
+        } else {
+            
+            specularInterval = calendar.dateInterval(of: .year, for: specularDate)
+            
+        }
+        
+        guard let specularInterval else { return nil }
+        
+        let result = dateInterval.intersection(with: specularInterval)
+        return result
+        
+    }
+    
+}
+
+extension HOImputationPeriod {
+    
+    var dateInterval:DateInterval? { self.getDateInterval() }
+    
+    private func getDateInterval() -> DateInterval? {
+        
+        guard let start,
+              let end else { return nil }
+        
+        let interval = DateInterval(start: start, end: end)
+        return interval
+    }
+    
+   /* func updateSelf() -> HOImputationPeriod? {
+        
+        guard let start,
+              let end else { return nil }
+        
+        let start_compo = calendar.dateComponents([.month,.year,.day], from: start)
+        
+        let end_compo = calendar.dateComponents([.month,.year,.day], from: end)
+        
+    
+        let newStart = DateComponents(calendar:calendar,year: start_compo.year,month: start_compo.month,day: start_compo.day).date
+        
+        let newEnd = DateComponents(calendar:calendar,year: end_compo.year,month: end_compo.month,day: end_compo.day).date
+        
+        return HOImputationPeriod(start: newStart, end: newEnd)
+        
+    }*/ // temporanea
+    
+}
+
+extension HOImputationPeriod:Decodable {
+    
+    enum CodingKeys: String, CodingKey {
+        case start
+        case end
+    }
+    
+    init(from decoder: any Decoder) throws {
+        
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        let savedStart = try container.decodeIfPresent(Date.self, forKey: .start)
+        let savedEnd = try container.decodeIfPresent(Date.self, forKey: .end)
+        
+        self.start = updateDecodedDate(from:savedStart)
+        self.end = updateDecodedDate(from:savedEnd)
+        
+    }
+    /// Usiamo un update per conformare tutte le date salvate ad un orario standard che sarà nil aka 24:00 or 12:00 AM. La conformità è basilare per le operazioni sulle date per ottenere intervalli di giorni in modo corretto
+    private func updateDecodedDate(from savedDate:Date?) -> Date? {
+        
+        guard let savedDate else { return nil }
+        
+        let compo = calendar.dateComponents([.month,.year,.day], from: savedDate)
+        
+        let newDate = DateComponents(calendar:calendar,year: compo.year,month: compo.month,day: compo.day).date
+        
+        return newDate
+    }
+}
+
+extension HOImputationPeriod:Encodable {
+    
+    func encode(to encoder: Encoder) throws {
+        
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encodeIfPresent(self.start, forKey: .start)
+        try container.encodeIfPresent(self.end, forKey: .end)
+    }
+}
+
+extension HOImputationPeriod {
+    
+    private func getDistance() -> Int? {
+        
+        guard let start,
+              let end else { return nil }
+        
+        let days = self.calendar.dateComponents([.day], from: start, to: end)
+        return days.day
+    }
+    
+    mutating func setDistance(newValue:Int?) {
+        
+        guard let newValue,
+              let start else { return }
+        
+        let out = self.calendar.date(byAdding: .day, value: newValue, to: start)
+        self.end = out
+        
+    }
+    
+}
+ 
+
