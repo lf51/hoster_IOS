@@ -237,6 +237,7 @@ extension HOOperationUnit {
         
        // entrySpecification.amount = amount
         entrySpecification.amount = self.getAmountRelatedTo(year: year, mm: mm)
+        entrySpecification.type = writing.type
         
         return entrySpecification
        // return nil

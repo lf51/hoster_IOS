@@ -157,9 +157,9 @@ enum HOObjectCategory:String,CaseIterable {
         case .tassePatrimoniali:
             return [.imu,.tari]
         case .imposte:
-            return [.cityTax]
+            return [.cityTax,.vat]
         case .commissioni:
-            return [/*.agenzia,*/.bancarie]
+            return [.agenzia,.bancarie]
         case .edifici:
             return nil
         case .costruzioniLeggere:
@@ -216,4 +216,10 @@ extension HOObjectCategory: Property_FPC {
     }
     
     
+}
+
+extension HOObjectCategory:Comparable {
+    static func < (lhs: HOObjectCategory, rhs: HOObjectCategory) -> Bool {
+        return lhs.rawValue < rhs.rawValue
+    }
 }

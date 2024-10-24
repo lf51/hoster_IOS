@@ -14,6 +14,8 @@ struct HOGeneralDataView: View {
     
     let focusUnit:String?
     
+    @State var openDetails:Bool = false
+    
     var body: some View {
         
         CSZStackVB_Framed(
@@ -44,7 +46,7 @@ struct HOGeneralDataView: View {
                             }()
                             
                             Text("Prenotazioni \(sideLabel)")
-                                 .font(.title2)
+                                // .font(.title2)
                                  .bold()
                                  .foregroundStyle(Color.cinderella_p47)
                                  .opacity(0.8)
@@ -53,33 +55,43 @@ struct HOGeneralDataView: View {
                             
                                 Button(action: {
                                     
-                                    self.viewModel.addToThePath(destinationPath: .home, destinationView: .annualReport)
+                                    self.viewModel.addToThePath(destinationPath: .home, destinationView: .pernottamentiAnnualReport)
                                     
                                 }, label: {
-                                    Image(systemName: "arrow.up.right")
+                                    Image(systemName: "arrow.up.forward.circle.fill")
+                                      //  .imageScale(.large)
                                         .foregroundStyle(Color.hoAccent)
                                 })
                                 
                         }
+                        .font(.title2)
                         
                         HOReservationsResumeLineView(
                                 mmOrdinale: nil,
                                 focusUnit: focusUnit,
                                 firstLineFont: .headline)
                     }
-                    .padding(.bottom,10)
+                   // .padding(.bottom,10)
                         
-                    vbPernottamentoResume()
-                    
-                    vbCommissionsResume()
-                    
-                    vbCityTaxResume()
-                    
-                    
+                    if openDetails {
+                        
+                        vbPernottamentoResume()
+                            .padding(.top,10)
+                        
+                        vbCommissionsResume()
+                        
+                        vbCityTaxResume()
+                        
+                    }
+ 
                 }
                 .padding(.horizontal,10)
                 .padding(.vertical,5)
-                
+                .onTapGesture {
+                    withAnimation {
+                        self.openDetails.toggle()
+                    }
+                }
             }
         
         

@@ -939,6 +939,34 @@ extension HOViewModel {
         return nastrino
     }
     
+    func getRisultatoOperativo() -> (gestioneCorrente:Double,tasse:Double,ammortamenti:Double,consumoScorte:Double,totale:Double)? {
+        
+        guard let ws = self.db.currentWorkSpace else { return nil }
+        
+        // totale area corrente +
+        // totale area tributi +
+        // consumo magazzino +
+        // ammortamento
+        
+        let corrente = ws.wsOperations.getNastrinoAccount(for:HOAreaAccount.corrente,year: self.yyFetchData,month:nil,refUnit: nil)
+        
+        let tributi = ws.wsOperations.getNastrinoAccount(for:HOAreaAccount.tributi,year: self.yyFetchData,month:nil,refUnit: nil)
+    
+        let magazzino = ws.wsOperations.getNastrinoAccount(for:HOAreaAccount.scorte,year: self.yyFetchData,month:nil,refUnit: nil)
+        
+        let fondoAmm = ws.wsOperations.getNastrinoAccount(for:HOAreaAccount.pluriennale,year: self.yyFetchData,month:nil,refUnit: nil)
+        
+        let gestioneCorr = corrente.totalResult
+        let tasse = tributi.totalResult
+        
+        let consumi = magazzino.getResult(throw: .consumo) ?? 0
+        let ammortamenti = fondoAmm.getResult(throw: .ammortamento) ?? 0
+        
+        let total = gestioneCorr + tasse + consumi + ammortamenti
+        
+        return (gestioneCorr,tasse,ammortamenti,consumi,total)
+        
+    }
 }
 
 // area test
@@ -992,7 +1020,7 @@ let commissionLillo:HOOperationUnit = {
     
     var x = HOOperationUnit()
     x.writing = HOWritingAccount(
-        type: .vendita,
+        type: .pagamento,
         dare: HOAreaAccount.corrente.getIDCode(),
         avere: HOImputationAccount.ota.getIDCode(),
         oggetto: HOWritingObject(

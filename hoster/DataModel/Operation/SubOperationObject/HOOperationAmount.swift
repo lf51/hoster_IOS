@@ -32,10 +32,10 @@ enum HOAmountUnitMisure:String {
     var localCurrencyCode:String {
         return Locale.current.currency?.identifier ?? "USD"
     }
-    var localCurrencySymbol:String {
+   /* var localCurrencySymbol:String {
         
         return Locale.current.currencySymbol ?? "$"
-    }
+    }*/
     
     func getExtendedRawValue() -> String {
         
@@ -90,7 +90,22 @@ extension HOAmountUnitMisure:FormatStyle {
     
     func format(_ value: Double) -> String {
         
-        return "\(value)" + " " + self.getRawSymbol()
+        switch self {
+    
+        case .currency:
+            let y = value.formatted(.currency(code: localCurrencyCode))
+            return String(y)
+            
+        default:
+            
+            let stringValue = String(format: "%.2f", value)
+            
+            let doubleValue = Double(stringValue) ?? 0
+            
+            let numberValue = doubleValue.formatted(.number)
+            
+            return "\(numberValue)" + " " + self.getRawSymbol()
+        }
         
     }
     
@@ -99,7 +114,7 @@ extension HOAmountUnitMisure:FormatStyle {
         switch self {
             
         case .currency:
-            return localCurrencySymbol
+            return ""//localCurrencySymbol
         default:
             return self.rawValue
         }

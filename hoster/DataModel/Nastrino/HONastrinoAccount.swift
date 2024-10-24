@@ -11,8 +11,9 @@ struct HOAccWritingRiclassificato {
     
     var info:HOWritingObject?
     
-    var sign:HOAccWritingSign?
+    var sign:HOAccWritingSign? // forse deprecabile dopo l'inserimento del type
     var amount:HOOperationAmount?
+    var type:HOOperationType?
    // var amount:Double?
    // var quantity:Double?
    
@@ -52,6 +53,59 @@ extension HONastrinoAccount {
     }
     
 }
+/// logica HOOperationType related
+extension HONastrinoAccount {
+    
+    func getResult(throw type:HOOperationType,category:HOObjectCategory? = nil,subCategory:HOObjectSubCategory? = nil) -> Double? {
+        
+        let filtered = getFiltered(throw: type,category: category,subCategory: subCategory)
+        
+        guard !filtered.isEmpty else { return nil }
+        
+
+        // operazioni con stesso type dovrebbero portare lo stesso segno al 99,9%. Per essere sicuri splittiamo le somme per segno.
+        
+        let plus = filtered.filter({$0.sign == .plus})
+        let minus = filtered.filter({$0.sign == .minus})
+        
+        let reducePlus = plus.reduce(into: 0.0) { partialResult, deSpecif in
+                
+            partialResult += (deSpecif.amount?.imponibile ?? 0)
+                
+        }
+        
+        let reduceMinus = minus.reduce(into: 0.0) { partialResult, deSpecif in
+                
+            partialResult += (deSpecif.amount?.imponibile ?? 0)
+                
+        }
+        
+        let result = reducePlus - reduceMinus
+        
+        return result
+        
+    }
+    
+    private func getFiltered(throw type:HOOperationType,category:HOObjectCategory? = nil,subCategory:HOObjectSubCategory? = nil) -> [HOAccWritingRiclassificato] {
+        
+        guard let all else { return [] }
+        
+        let start = all.filter({ $0.type == type })
+        
+        guard let category else { return start }
+        
+        let _1 = start.filter({ $0.info?.getCategoryCase() == category })
+        
+        guard let subCategory else { return _1 }
+        
+        let _2 = _1.filter({ $0.info?.getSubCategoryCase() == subCategory })
+        
+        return _2
+        
+    }
+    
+    
+}
 
 extension HONastrinoAccount {
     
@@ -67,6 +121,7 @@ extension HONastrinoAccount {
         return all.filter({ $0.sign == sign })
         
     }
+    
 }
 
 /// total and plus minus amount aggregate
@@ -131,7 +186,7 @@ extension HONastrinoAccount {
         return aggregateObject
     } // forse deprecabile
     
-    /// Array di writing object con amount a saldo. La quantià sarà il saldo fra quella entrata e quella in uscita, il prezzo per unità sarà il prezzo medio o delle quantità in etrata o delle quantità in uscita a seconda del saldo quantità
+    /// Array di writing object con amount a saldo. La quantià sarà il saldo fra quella entrata e quella in uscita, il prezzo per unità sarà il prezzo medio o delle quantità in etrata o delle quantità in uscita a seconda del saldo quantità. Il Writing Object sono accoprtati se categoria, sub, e specification coincidono
     var getObjectWithPartialAmount:[HOWritingObject]? {
         self.getWritingObjectWithPatialAmount()
         
@@ -273,11 +328,27 @@ extension HONastrinoAccount {
 
 extension HONastrinoAccount {
     // 27.04 Temporaneo da sviluppare in ottica di avere per ogni categoria plus minus e sub total. Per ogni sottocategoria di ciascuna categoria il medesimo, e per ogni specifica all'interno di ogni sottoCategoria di ciascuna categoria il medesimo
-    var allCategoryIn:[String] { self.getAllInfo(mappedBy: \.category) }
-    var allSubsIn:[String] { self.getAllInfo(mappedBy: \.subCategory) }
-    var allSpecificIn:[String] { self.getAllInfo(mappedBy: \.specification) }
+    var allCategoryIn:[HOObjectCategory] { // trasformare in [HOObjectCategory] //self.getAllInfo(mappedBy: \.category)
+        self.getAllIn(mappedBy: \.info?.categoryCase)
+    }
+    var allSubCategoriesIn:[HOObjectSubCategory] { //self.getAllInfo(mappedBy: \.subCategory)
+        self.getAllIn(mappedBy: \.info?.subCategoryCase)
+    }
+    var allSpecificIn:[String] { //self.getAllInfo(mappedBy: \.specification)
+        self.getAllIn(mappedBy: \.info?.specification)
+    }
     
-    private func getAllInfo(mappedBy kp:KeyPath<HOWritingObject,String?> ) -> [String] {
+    var allTypeIn:[HOOperationType] { self.getAllIn(mappedBy: \.type) }
+    
+    private func getAllIn<H:Hashable>(mappedBy kp:KeyPath<HOAccWritingRiclassificato,H?> ) -> [H] {
+        guard let all else { return [] }
+        
+        let values = all.compactMap({$0[keyPath: kp]})
+        let cleaned = Set(values)
+        return  Array(cleaned)
+    }
+    
+   /* private func getAllInfo(mappedBy kp:KeyPath<HOWritingObject,String?> ) -> [String] {
      
         guard let all else { return [] }
         
@@ -285,7 +356,7 @@ extension HONastrinoAccount {
         let cleaned = Set(values)
         return  Array(cleaned)
         
-    } // verificare utilità
+    }*/ // verificare utilità
     
     // ok
     var allObjectInNoPartialAmount:[HOWritingObject]? { self.getAllObjectNoPartialAmount() }

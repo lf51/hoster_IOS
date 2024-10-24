@@ -30,6 +30,15 @@ struct HOWritingObject:Equatable { // modificare in HoOperationInfo
         
     }
     
+ 
+}
+
+extension HOWritingObject {
+    
+    var categoryCase:HOObjectCategory? { self.getCategoryCase() }
+    
+    var subCategoryCase:HOObjectSubCategory? { self.getSubCategoryCase() }
+    
     func getSubCategoryCase() -> HOObjectSubCategory? {
         
         guard let subCategory else { return nil }
@@ -40,7 +49,6 @@ struct HOWritingObject:Equatable { // modificare in HoOperationInfo
     func getCategoryCase() -> HOObjectCategory? {
         
         guard let category else { return nil }
-        
         return HOObjectCategory(rawValue: category)
         
     }

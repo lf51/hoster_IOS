@@ -84,9 +84,9 @@ extension HOAreaAccount {
         case .corrente:
             return [.acquisto,.pagamento,.vendita/*,.resoAttivo*/,.resoPassivo,.regalie]
         case .tributi:
-            return [.pagamento,.versamento]
+            return [.pagamento,.versamento,.riscossione]
         case .pluriennale:
-            return [.acquisto/*,.ammortamento*/] // ammortamento va automatizzato
+            return [.acquisto,.ammortamento] // ammortamento va automatizzato
         }
     }
     
@@ -138,10 +138,11 @@ extension HOAreaAccount {
             switch type {
             
             case .pagamento:
-                return [.tassePatrimoniali]
+                return [.tassePatrimoniali,.imposte]
            
-            case .versamento:
+            case .versamento,.riscossione:
                 return [.imposte]
+
             default: return nil
             }
             
@@ -268,11 +269,11 @@ extension HOAreaAccount: Property_FPC {
     func orderAndStorageValue() -> Int {
         switch self {
         case .scorte:
-            return 0
-        case .corrente:
-            return 1
-        case .tributi:
             return 2
+        case .corrente:
+            return 0
+        case .tributi:
+            return 1
         case .pluriennale:
             return 3
         }
@@ -292,4 +293,11 @@ extension HOAreaAccount: Property_FPC_Mappable {
     }
     
     
+}
+
+extension HOAreaAccount:Comparable {
+    
+    static func < (lhs: HOAreaAccount, rhs: HOAreaAccount) -> Bool {
+        return lhs.orderAndStorageValue() < rhs.orderAndStorageValue()
+    }
 }

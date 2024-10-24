@@ -35,7 +35,9 @@ struct HOHomeView: View {
                         .fixedSize()
                     
                     ScrollView {
-                        
+ 
+                        vbRisultatoOperativo()
+
                         HOGeneralDataView(focusUnit: focusUnit)
                         
                         HOMontlyDataView(focusUnit: focusUnit)
@@ -75,6 +77,50 @@ struct HOHomeView: View {
   
         }*/
     } // chiusa body
+    
+    @ViewBuilder private func vbRisultatoOperativo() -> some View {
+        
+        CSZStackVB_Framed(
+            frameWidth: 400,
+            backgroundOpacity: 0.1,
+            shadowColor: .black,
+            rowColor: .scooter_p53,
+            cornerRadius: 5,
+            riduzioneMainBounds: 20) {
+                
+                HStack {
+                    
+                    Text("Risultato Operativo")
+                        .bold()
+                        //.font(.title2)
+                        .foregroundStyle(Color.cinderella_p47)
+                        .opacity(0.8)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        
+                        self.viewModel.addToThePath(destinationPath: .home, destinationView: .annualReport)
+                        
+                    }, label: {
+                        Image(systemName: "arrow.up.forward.circle.fill")
+                            .foregroundStyle(Color.hoAccent)
+                           // .imageScale(.large)
+                    })
+                    
+                }
+                .font(.title2)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+                .padding(.horizontal,10)
+                .padding(.vertical,5)
+                
+                
+            }
+        
+        
+        
+    }
     
    /* @ViewBuilder private func vbCurrentAreaResumeLine() -> some View {
         

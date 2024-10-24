@@ -44,6 +44,7 @@ enum HOImputationAccount:String,CaseIterable { // imputazione diretta
     
     case diversi
     
+    // deprecabili
     case mainUnit // finale diretto e/o indiretto
     case subUnit // label // finale diretto e/o indiretto
   //  case pernottamento // ribaltamento ultimo
@@ -221,4 +222,10 @@ extension HOImputationAccount:Property_FPC {
     
     
     
+}
+
+extension HOImputationAccount:Comparable {
+    static func < (lhs: HOImputationAccount, rhs: HOImputationAccount) -> Bool {
+        return (lhs.getOrderIndex(),lhs.rawValue) < (rhs.getOrderIndex(),rhs.rawValue)
+    }
 }

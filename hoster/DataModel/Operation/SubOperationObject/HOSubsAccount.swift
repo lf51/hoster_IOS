@@ -197,3 +197,10 @@ extension HOObjectSubCategory: Property_FPC {
     
     
 }
+
+extension HOObjectSubCategory:Comparable {
+    
+    static func < (lhs: HOObjectSubCategory, rhs: HOObjectSubCategory) -> Bool {
+        return lhs.rawValue < rhs.rawValue
+    }
+}

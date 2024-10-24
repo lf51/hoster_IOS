@@ -39,6 +39,15 @@ enum HOAccWritingSign:CaseIterable {
     case plus
     case minus
     
+    func getSign() -> String {
+        switch self {
+        case .plus:
+            return "+"
+        case .minus:
+            return "-"
+        }
+    }
+    
     func getSymbol() -> String {
         
         switch self {

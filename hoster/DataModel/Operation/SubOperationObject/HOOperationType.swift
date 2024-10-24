@@ -33,25 +33,25 @@ extension HOOperationType {
     func getGergalDescription() -> String {
         
         switch self {
-        case .acquisto:
+        case .acquisto://
             return "acquistabile"
-        case .pagamento:
+        case .pagamento://
             return "pagabile"
-        case .consumo:
+        case .consumo://
             return "consumabile"
-        case .resoPassivo:
+        case .resoPassivo://
             return "rimborsabile"
         case .ammortamento:
             return "ammortizzabile"
-        case .riscossione:
+        case .riscossione://
             return "riscuotibile"
-        case .versamento:
+        case .versamento: //
             return "versabile"
-        case .vendita:
+        case .vendita://
             return "vendibile"
-        case .resoAttivo:
+        case .resoAttivo://
             return "restituibile"
-        case .regalie:
+        case .regalie://
             return "regalabile"
         }
         
@@ -485,27 +485,34 @@ extension HOOperationType:Property_FPC {
         
         switch self {
         case .acquisto:
-            return 0
-        case .pagamento:
-            return 1
-        case .consumo:
-            return 2
-        case .resoPassivo:
-            return 4
-        case .ammortamento:
-            return 5
-        case .riscossione:
-            return 7
-        case .versamento:
             return 3
-        case .vendita:
+        case .pagamento:
+            return 4
+        case .consumo:
+            return 5
+        case .resoPassivo:
             return 6
-        case .resoAttivo:
+        case .ammortamento:
+            return 7
+        case .riscossione:
+            return 2
+        case .versamento:
             return 8
+        case .vendita:
+            return 0
+        case .resoAttivo:
+            return 1
         case .regalie:
             return 9
         }
     }
     
     
+}
+
+extension HOOperationType:Comparable {
+    
+    static func < (lhs: HOOperationType, rhs: HOOperationType) -> Bool {
+        return lhs.orderAndStorageValue() < rhs.orderAndStorageValue()
+    }
 }
